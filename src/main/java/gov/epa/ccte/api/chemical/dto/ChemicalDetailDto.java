@@ -1,9 +1,10 @@
 package gov.epa.ccte.api.chemical.dto;
 
+import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 import lombok.Data;
 
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
 import java.io.Serializable;
 import java.time.Instant;
 
@@ -11,10 +12,10 @@ import java.time.Instant;
  * A DTO for the {@link gov.epa.ccte.api.chemical.domain.ChemicalDetail} entity
  */
 @Data
+@Schema
 public class ChemicalDetailDto implements Serializable {
-    private final Long id;
     @Size(max = 64)
-    private final String hChemHashKey;
+    private final String id;
     private final String dtxsid;
     private final String dtxcid;
     @Size(max = 255)
@@ -67,7 +68,7 @@ public class ChemicalDetailDto implements Serializable {
     private final String wikipediaArticle;
     @Size(max = 20000)
     private final String descriptorStringTsv;
-    private final Integer isMarkush;
+    private final Boolean isMarkush;
     @NotNull
     private final Instant dateLoaded;
 }

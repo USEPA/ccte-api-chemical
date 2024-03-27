@@ -1,9 +1,9 @@
 package gov.epa.ccte.api.chemical.dto;
 
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 import lombok.Data;
 
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
 import java.io.Serializable;
 
 /**
@@ -27,4 +27,6 @@ public class ChemicalPropertyDto implements Serializable {
     private final String source;
     @Size(max = 1024)
     private final String description;
+    @Size(max = 300)
+    private String propertyId;
 }

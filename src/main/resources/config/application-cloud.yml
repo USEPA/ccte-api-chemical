@@ -27,9 +27,17 @@ spring:
       hibernate.cache.use_query_cache: false
       hibernate.generate_statistics: false
       hibernate.default_schema: ms
+      hibernate.hbm2ddl.auto: none
 springdoc:
   show-actuator: false
   api-docs:
     enabled: true
   swagger-ui:
     enabled: false
+# Logging
+logging:
+  level:
+    com.zaxxer.hikari.HikariConfig: info
+    org.hibernate.SQL: info
+    gov.epa.ccte.api.*: debug
+    org.springframework: warn

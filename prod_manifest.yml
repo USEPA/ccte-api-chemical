@@ -13,4 +13,5 @@ applications:
     env:
       SPRING_PROFILES_ACTIVE: cloud,apikey
       JBP_CONFIG_SPRING_AUTO_RECONFIGURATION: '{ enabled: false }'
+# https://stackoverflow.com/questions/64239373/what-are-stack-threads-in-java
       JBP_CONFIG_OPEN_JDK_JRE: '{ jre: { version: 11.+ }, memory_calculator: { stack_threads: 25 } }'

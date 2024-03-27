@@ -10,9 +10,11 @@ import java.util.List;
 
 @RepositoryRestResource(collectionResourceRel = "fates", path = "fates", itemResourceRel = "fate", exported = false)
 public interface FateRepository extends JpaRepository<Fate, Integer> {
+    <T> List<T> findByDtxsidInOrderByDtxsidAscEndpointNameAsc(String[] dtxsids, Class<T> type);
 
     @Transactional(readOnly = true)
     @RestResource(rel = "findByDtxsid", path = "by-dtxsid", exported = false)
-    List<Fate> findByDtxsid(String dtxsid);
+    <T>
+    List<T> findByDtxsid(String dtxsid, Class<T> type);
 }
 

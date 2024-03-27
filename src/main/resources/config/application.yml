@@ -10,6 +10,9 @@ spring:
     name: chemical
   jmx:
     enabled: false
+  mvc:
+    problemdetails:
+      enabled: false
   data:
     jpa:
       repositories:
@@ -32,7 +35,7 @@ spring:
     hibernate:
       ddl-auto: none
       naming:
-        physical-strategy: org.springframework.boot.orm.jpa.hibernate.SpringPhysicalNamingStrategy
+        physical-strategy: org.hibernate.boot.model.naming.CamelCaseToUnderscoresNamingStrategy
         implicit-strategy: org.springframework.boot.orm.jpa.hibernate.SpringImplicitNamingStrategy
   task:
     execution:
@@ -55,7 +58,8 @@ springdoc:
     enabled: true
   swagger-ui:
     enabled: true
-
+    disable-swagger-default-url: false
+  remove-broken-reference-definitions: false
 server:
   servlet:
     session:
@@ -73,6 +77,10 @@ server:
 
 application:
   api-key-name: "x-api-key"
+  api-env: "Production Environment"
+  api-url: "https://api-ccte.epa.gov"
+  batch-size: 1000
+
 # CORS is disabled by default on microservices, as you should access them through a gateway.
 # If you want to enable it, please uncomment the configuration below.
 # cors:

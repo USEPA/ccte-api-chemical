@@ -4,7 +4,7 @@ applications:
     routes:
 #      - route: ccte-chemical-p.app.cloud.gov
       - route: api-ccte.epa.gov/chemical
-      - route: ccte-api.app.cloud.gov/chemical
+#      - route: ccte-api.app.cloud.gov/chemical
     memory: 2G
     instances: 1
     random-route: false
@@ -13,3 +13,4 @@ applications:
     - https://github.com/cloudfoundry/java-buildpack
     env:
       SPRING_PROFILES_ACTIVE: cloud,apikey
+      JBP_CONFIG_OPEN_JDK_JRE: '{ jre: { version: 17.+}}'

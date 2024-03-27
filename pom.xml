@@ -5,7 +5,7 @@
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>2.7.8</version>
+		<version>3.2.2</version>
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>gov.epa.ccte.api</groupId>
@@ -14,13 +14,17 @@
 	<name>chemical</name>
 	<description>project for chemicals</description>
 	<properties>
-		<java.version>1.8</java.version>
+		<java.version>17</java.version>
 		<testcontainers.version>1.17.6</testcontainers.version>
 		<lombok.version>1.18.24</lombok.version>
 		<mapstruct.version>1.5.3.Final</mapstruct.version>
 	</properties>
 
 	<dependencies>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-web</artifactId>
+		</dependency>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-data-rest</artifactId>
@@ -32,39 +36,13 @@
 		<dependency>
 			<groupId>org.postgresql</groupId>
 			<artifactId>postgresql</artifactId>
-			<version>42.3.8</version>
+			<version>42.4.3</version>
 			<scope>runtime</scope>
-		</dependency>
-		<dependency>
-			<groupId>com.fasterxml.jackson.datatype</groupId>
-			<artifactId>jackson-datatype-hibernate5</artifactId>
-			<version>2.10.4</version>
-		</dependency>
-		<dependency>
-			<groupId>com.fasterxml.jackson.core</groupId>
-			<artifactId>jackson-databind</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>org.projectlombok</groupId>
 			<artifactId>lombok</artifactId>
 			<optional>true</optional>
-		</dependency>
-		<!-- Exception handler - ref https://www.baeldung.com/problem-spring-web -->
-		<dependency>
-			<groupId>org.zalando</groupId>
-			<artifactId>problem-spring-web</artifactId>
-			<version>0.27.0</version>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-web</artifactId>
-			<version>3.0.2</version>
-		</dependency>
-		<!-- https://mvnrepository.com/artifact/org.zalando/jackson-datatype-problem -->
-		<dependency>
-			<groupId>org.zalando</groupId>
-			<artifactId>jackson-datatype-problem</artifactId>
-			<version>0.27.1</version>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.commons</groupId>
@@ -73,8 +51,8 @@
 		<!-- Swagger/OpenAPI doc -->
 		<dependency>
 			<groupId>org.springdoc</groupId>
-			<artifactId>springdoc-openapi-ui</artifactId>
-			<version>1.6.13</version>
+			<artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
+			<version>2.3.0</version>
 		</dependency>
 		<!-- https://mvnrepository.com/artifact/com.epam.indigo/indigo -->
 		<dependency>
@@ -88,10 +66,17 @@
 			<artifactId>indigo-renderer</artifactId>
 			<version>1.6.1</version>
 		</dependency>
+		<!-- https://mvnrepository.com/artifact/com.epam.indigo/indigo-inchi -->
+		<dependency>
+			<groupId>com.epam.indigo</groupId>
+			<artifactId>indigo-inchi</artifactId>
+			<version>1.6.1</version>
+		</dependency>
+		<!-- https://mvnrepository.com/artifact/io.pivotal.cfenv/java-cfenv-boot -->
 		<dependency>
 			<groupId>io.pivotal.cfenv</groupId>
 			<artifactId>java-cfenv-boot</artifactId>
-			<version>2.4.0</version>
+			<version>3.1.4</version>
 		</dependency>
 		<dependency>
 			<groupId>org.mapstruct</groupId>
@@ -114,6 +99,37 @@
 			<artifactId>h2</artifactId>
 			<scope>test</scope>
 		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-webflux</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>com.fasterxml.jackson.datatype</groupId>
+			<artifactId>jackson-datatype-hibernate6</artifactId>
+			<version>2.15.2</version>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-validation</artifactId>
+		</dependency>
+		<!-- https://mvnrepository.com/artifact/uk.ac.cam.ch.opsin/opsin-core -->
+		<dependency>
+			<groupId>uk.ac.cam.ch.opsin</groupId>
+			<artifactId>opsin-core</artifactId>
+			<version>2.8.0</version>
+		</dependency>
+		<!-- https://mvnrepository.com/artifact/uk.ac.cam.ch.opsin/opsin-inchi -->
+		<dependency>
+			<groupId>uk.ac.cam.ch.opsin</groupId>
+			<artifactId>opsin-inchi</artifactId>
+			<version>2.8.0</version>
+		</dependency>
+<!--		<dependency>-->
+<!--			<groupId>gov.epa.ccte.api</groupId>-->
+<!--			<artifactId>ccte-api-core-spring-boot-starter</artifactId>-->
+<!--			<version>1.0.0</version>-->
+<!--		</dependency>-->
 	</dependencies>
 
 	<build>

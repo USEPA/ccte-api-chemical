@@ -2,28 +2,27 @@ package gov.epa.ccte.api.chemical;
 
 import gov.epa.ccte.api.chemical.config.ApplicationProperties;
 import gov.epa.ccte.api.chemical.config.Constants;
+import gov.epa.ccte.api.chemical.config.DefaultProfileUtil;
+import jakarta.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.boot.autoconfigure.web.servlet.error.ErrorMvcAutoConfiguration;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.core.env.Environment;
 
-import javax.annotation.PostConstruct;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Optional;
 
+
 @Slf4j
-@SpringBootApplication (exclude = {ErrorMvcAutoConfiguration.class})
+@SpringBootApplication
 @EnableConfigurationProperties({ApplicationProperties.class})
 public class ChemicalApplication {
-
 	private final Environment env;
 
 	public ChemicalApplication(Environment env) {
@@ -58,6 +57,7 @@ public class ChemicalApplication {
 		log.info("*** Application is started. ***");
 
 		SpringApplication app = new SpringApplication(ChemicalApplication.class);
+		DefaultProfileUtil.addDefaultProfile(app); // dev profile is default
 		ConfigurableApplicationContext ctx = app.run(args);
 		Environment env = ctx.getEnvironment();
 
@@ -104,4 +104,3 @@ public class ChemicalApplication {
 		);
 	}
 }
-

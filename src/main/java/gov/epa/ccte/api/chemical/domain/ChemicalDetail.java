@@ -1,25 +1,29 @@
 package gov.epa.ccte.api.chemical.domain;
 
-import org.hibernate.annotations.Type;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
+import jakarta.validation.constraints.Size;
+import lombok.Getter;
+import lombok.Setter;
 
-import javax.persistence.*;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
-import java.time.Instant;
+import java.math.BigDecimal;
 
+@Getter
+@Setter
 @Entity
-@Table(name = "chemical_details", schema = "ms", indexes = {
-        @Index(name = "chemical_details_sid_cid", columnList = "dtxsid, dtxcid")
-})
+@Table(name = "v_chemical_details", schema = "ch")
 public class ChemicalDetail {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id", nullable = false)
+    @Column(name = "id")
     private Long id;
 
-    @Size(max = 64)
-    @Column(name = "h_chem_hash_key", length = 64)
-    private String hChemHashKey;
+    @Column(name = "dtxsid", length = Integer.MAX_VALUE)
+    private String dtxsid;
+
+    @Column(name = "dtxcid", length = Integer.MAX_VALUE)
+    private String dtxcid;
 
     @Size(max = 255)
     @Column(name = "casrn")
@@ -49,7 +53,7 @@ public class ChemicalDetail {
     private Double monoisotopicMass;
 
     @Column(name = "percent_assays")
-    private Double percentAssays;
+    private BigDecimal percentAssays;
 
     @Column(name = "pubchem_count")
     private Integer pubchemCount;
@@ -67,8 +71,7 @@ public class ChemicalDetail {
     @Column(name = "qc_level_desc")
     private String qcLevelDesc;
 
-    @Size(max = 1)
-    @Column(name = "stereo", length = 1)
+    @Column(name = "stereo", length = Integer.MAX_VALUE)
     private String stereo;
 
     @Column(name = "isotope")
@@ -80,15 +83,16 @@ public class ChemicalDetail {
     @Column(name = "total_assays")
     private Integer totalAssays;
 
+    @Column(name = "toxcast_select", length = Integer.MAX_VALUE)
+    private String toxcastSelect;
+
     @Column(name = "pubchem_cid")
     private Integer pubchemCid;
 
-    @Column(name = "mol_file")
-    @Type(type = "org.hibernate.type.TextType")
+    @Column(name = "mol_file", length = Integer.MAX_VALUE)
     private String molFile;
 
-    @Column(name = "mrv_file")
-    @Type(type = "org.hibernate.type.TextType")
+    @Column(name = "mrv_file", length = Integer.MAX_VALUE)
     private String mrvFile;
 
     @Column(name = "related_substance_count")
@@ -107,12 +111,10 @@ public class ChemicalDetail {
     @Column(name = "iupac_name", length = 5000)
     private String iupacName;
 
-    @Column(name = "smiles")
-    @Type(type = "org.hibernate.type.TextType")
+    @Column(name = "smiles", length = Integer.MAX_VALUE)
     private String smiles;
 
-    @Column(name = "inchi_string")
-    @Type(type = "org.hibernate.type.TextType")
+    @Column(name = "inchi_string", length = Integer.MAX_VALUE)
     private String inchiString;
 
     @Column(name = "average_mass")
@@ -126,12 +128,10 @@ public class ChemicalDetail {
     @Column(name = "qc_notes", length = 4000)
     private String qcNotes;
 
-    @Column(name = "qsar_ready_smiles")
-    @Type(type = "org.hibernate.type.TextType")
+    @Column(name = "qsar_ready_smiles", length = Integer.MAX_VALUE)
     private String qsarReadySmiles;
 
-    @Column(name = "ms_ready_smiles")
-    @Type(type = "org.hibernate.type.TextType")
+    @Column(name = "ms_ready_smiles", length = Integer.MAX_VALUE)
     private String msReadySmiles;
 
     @Size(max = 255)
@@ -146,379 +146,125 @@ public class ChemicalDetail {
     @Column(name = "wikipedia_article")
     private String wikipediaArticle;
 
+    @Size(max = 50)
+    @Column(name = "expocat_median_prediction", length = 50)
+    private String expocatMedianPrediction;
+
+    @Size(max = 5)
+    @Column(name = "expocat", length = 5)
+    private String expocat;
+
+    @Size(max = 5)
+    @Column(name = "nhanes", length = 5)
+    private String nhanes;
+
+    @Size(max = 5)
+    @Column(name = "toxval_data", length = 5)
+    private String toxvalData;
+
+    @Column(name = "water_solubility_test")
+    private Double waterSolubilityTest;
+
+    @Column(name = "water_solubility_opera")
+    private Double waterSolubilityOpera;
+
+    @Column(name = "viscosity_cp_cp_test_pred")
+    private Double viscosityCpCpTestPred;
+
+    @Column(name = "vapor_pressure_mmhg_test_pred")
+    private Double vaporPressureMmhgTestPred;
+
+    @Column(name = "vapor_pressure_mmhg_opera_pred")
+    private Double vaporPressureMmhgOperaPred;
+
+    @Column(name = "thermal_conductivity")
+    private Double thermalConductivity;
+
+    @Column(name = "tetrahymena_pyriformis")
+    private Double tetrahymenaPyriformis;
+
+    @Column(name = "surface_tension")
+    private Double surfaceTension;
+
+    @Column(name = "soil_adsorption_coefficient")
+    private Double soilAdsorptionCoefficient;
+
+    @Column(name = "oral_rat_ld50_mol")
+    private Double oralRatLd50Mol;
+
+    @Column(name = "opera_km_days_opera_pred")
+    private Double operaKmDaysOperaPred;
+
+    @Column(name = "octanol_water_partition")
+    private Double octanolWaterPartition;
+
+    @Column(name = "octanol_air_partition_coeff")
+    private Double octanolAirPartitionCoeff;
+
+    @Column(name = "melting_point_degc_test_pred")
+    private Double meltingPointDegcTestPred;
+
+    @Column(name = "melting_point_degc_opera_pred")
+    private Double meltingPointDegcOperaPred;
+
+    @Column(name = "hr_fathead_minnow")
+    private Double hrFatheadMinnow;
+
+    @Column(name = "hr_diphnia_lc50")
+    private Double hrDiphniaLc50;
+
+    @Column(name = "henrys_law_atm")
+    private Double henrysLawAtm;
+
+    @Column(name = "flash_point_degc_test_pred")
+    private Double flashPointDegcTestPred;
+
+    @Column(name = "devtox_test_pred")
+    private Double devtoxTestPred;
+
+    @Column(name = "density")
+    private Double density;
+
+    @Column(name = "boiling_point_degc_test_pred")
+    private Double boilingPointDegcTestPred;
+
+    @Column(name = "boiling_point_degc_opera_pred")
+    private Double boilingPointDegcOperaPred;
+
+    @Column(name = "biodegradation_half_life_days")
+    private Double biodegradationHalfLifeDays;
+
+    @Column(name = "bioconcentration_factor_test_pred")
+    private Double bioconcentrationFactorTestPred;
+
+    @Column(name = "bioconcentration_factor_opera_pred")
+    private Double bioconcentrationFactorOperaPred;
+
+    @Column(name = "atmospheric_hydroxylation_rate")
+    private Double atmosphericHydroxylationRate;
+
+    @Column(name = "ames_mutagenicity_test_pred")
+    private Double amesMutagenicityTestPred;
+
+    @Column(name = "pkaa_opera_pred")
+    private Double pkaaOperaPred;
+
+    @Column(name = "pkab_opera_pred")
+    private Double pkabOperaPred;
+
     @Size(max = 20000)
     @Column(name = "descriptor_string_tsv", length = 20000)
     private String descriptorStringTsv;
 
+    @Column(name = "logd5_5")
+    private Double logd55;
+
+    @Column(name = "logd7_4")
+    private Double logd74;
+
+    @Column(name = "ready_bio_deg")
+    private Double readyBioDeg;
+
     @Column(name = "is_markush")
-    private Integer isMarkush;
-
-    @NotNull
-    @Column(name = "date_loaded", nullable = false)
-    private Instant dateLoaded;
-
-    @Size(max = 100)
-    @Column(name = "dtxsid", length = 100)
-    private String dtxsid;
-
-    @Size(max = 100)
-    @Column(name = "dtxcid", length = 100)
-    private String dtxcid;
-
-    @Size(max = 10)
-    @Column(name = "toxcast_select", length = 10)
-    private String toxcastSelect;
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getHChemHashKey() {
-        return hChemHashKey;
-    }
-
-    public void setHChemHashKey(String hChemHashKey) {
-        this.hChemHashKey = hChemHashKey;
-    }
-
-    public String getCasrn() {
-        return casrn;
-    }
-
-    public void setCasrn(String casrn) {
-        this.casrn = casrn;
-    }
-
-    public Integer getCompoundId() {
-        return compoundId;
-    }
-
-    public void setCompoundId(Integer compoundId) {
-        this.compoundId = compoundId;
-    }
-
-    public Integer getGenericSubstanceId() {
-        return genericSubstanceId;
-    }
-
-    public void setGenericSubstanceId(Integer genericSubstanceId) {
-        this.genericSubstanceId = genericSubstanceId;
-    }
-
-    public String getPreferredName() {
-        return preferredName;
-    }
-
-    public void setPreferredName(String preferredName) {
-        this.preferredName = preferredName;
-    }
-
-    public Integer getActiveAssays() {
-        return activeAssays;
-    }
-
-    public void setActiveAssays(Integer activeAssays) {
-        this.activeAssays = activeAssays;
-    }
-
-    public Long getCpdataCount() {
-        return cpdataCount;
-    }
-
-    public void setCpdataCount(Long cpdataCount) {
-        this.cpdataCount = cpdataCount;
-    }
-
-    public String getMolFormula() {
-        return molFormula;
-    }
-
-    public void setMolFormula(String molFormula) {
-        this.molFormula = molFormula;
-    }
-
-    public Double getMonoisotopicMass() {
-        return monoisotopicMass;
-    }
-
-    public void setMonoisotopicMass(Double monoisotopicMass) {
-        this.monoisotopicMass = monoisotopicMass;
-    }
-
-    public Double getPercentAssays() {
-        return percentAssays;
-    }
-
-    public void setPercentAssays(Double percentAssays) {
-        this.percentAssays = percentAssays;
-    }
-
-    public Integer getPubchemCount() {
-        return pubchemCount;
-    }
-
-    public void setPubchemCount(Integer pubchemCount) {
-        this.pubchemCount = pubchemCount;
-    }
-
-    public Double getPubmedCount() {
-        return pubmedCount;
-    }
-
-    public void setPubmedCount(Double pubmedCount) {
-        this.pubmedCount = pubmedCount;
-    }
-
-    public Long getSourcesCount() {
-        return sourcesCount;
-    }
-
-    public void setSourcesCount(Long sourcesCount) {
-        this.sourcesCount = sourcesCount;
-    }
-
-    public Integer getQcLevel() {
-        return qcLevel;
-    }
-
-    public void setQcLevel(Integer qcLevel) {
-        this.qcLevel = qcLevel;
-    }
-
-    public String getQcLevelDesc() {
-        return qcLevelDesc;
-    }
-
-    public void setQcLevelDesc(String qcLevelDesc) {
-        this.qcLevelDesc = qcLevelDesc;
-    }
-
-    public String getStereo() {
-        return stereo;
-    }
-
-    public void setStereo(String stereo) {
-        this.stereo = stereo;
-    }
-
-    public Integer getIsotope() {
-        return isotope;
-    }
-
-    public void setIsotope(Integer isotope) {
-        this.isotope = isotope;
-    }
-
-    public Integer getMulticomponent() {
-        return multicomponent;
-    }
-
-    public void setMulticomponent(Integer multicomponent) {
-        this.multicomponent = multicomponent;
-    }
-
-    public Integer getTotalAssays() {
-        return totalAssays;
-    }
-
-    public void setTotalAssays(Integer totalAssays) {
-        this.totalAssays = totalAssays;
-    }
-
-    public Integer getPubchemCid() {
-        return pubchemCid;
-    }
-
-    public void setPubchemCid(Integer pubchemCid) {
-        this.pubchemCid = pubchemCid;
-    }
-
-    public String getMolFile() {
-        return molFile;
-    }
-
-    public void setMolFile(String molFile) {
-        this.molFile = molFile;
-    }
-
-    public String getMrvFile() {
-        return mrvFile;
-    }
-
-    public void setMrvFile(String mrvFile) {
-        this.mrvFile = mrvFile;
-    }
-
-    public Long getRelatedSubstanceCount() {
-        return relatedSubstanceCount;
-    }
-
-    public void setRelatedSubstanceCount(Long relatedSubstanceCount) {
-        this.relatedSubstanceCount = relatedSubstanceCount;
-    }
-
-    public Long getRelatedStructureCount() {
-        return relatedStructureCount;
-    }
-
-    public void setRelatedStructureCount(Long relatedStructureCount) {
-        this.relatedStructureCount = relatedStructureCount;
-    }
-
-    public byte[] getMolImage() {
-        return molImage;
-    }
-
-    public void setMolImage(byte[] molImage) {
-        this.molImage = molImage;
-    }
-
-    public Integer getHasStructureImage() {
-        return hasStructureImage;
-    }
-
-    public void setHasStructureImage(Integer hasStructureImage) {
-        this.hasStructureImage = hasStructureImage;
-    }
-
-    public String getIupacName() {
-        return iupacName;
-    }
-
-    public void setIupacName(String iupacName) {
-        this.iupacName = iupacName;
-    }
-
-    public String getSmiles() {
-        return smiles;
-    }
-
-    public void setSmiles(String smiles) {
-        this.smiles = smiles;
-    }
-
-    public String getInchiString() {
-        return inchiString;
-    }
-
-    public void setInchiString(String inchiString) {
-        this.inchiString = inchiString;
-    }
-
-    public Double getAverageMass() {
-        return averageMass;
-    }
-
-    public void setAverageMass(Double averageMass) {
-        this.averageMass = averageMass;
-    }
-
-    public String getInchikey() {
-        return inchikey;
-    }
-
-    public void setInchikey(String inchikey) {
-        this.inchikey = inchikey;
-    }
-
-    public String getQcNotes() {
-        return qcNotes;
-    }
-
-    public void setQcNotes(String qcNotes) {
-        this.qcNotes = qcNotes;
-    }
-
-    public String getQsarReadySmiles() {
-        return qsarReadySmiles;
-    }
-
-    public void setQsarReadySmiles(String qsarReadySmiles) {
-        this.qsarReadySmiles = qsarReadySmiles;
-    }
-
-    public String getMsReadySmiles() {
-        return msReadySmiles;
-    }
-
-    public void setMsReadySmiles(String msReadySmiles) {
-        this.msReadySmiles = msReadySmiles;
-    }
-
-    public String getIrisLink() {
-        return irisLink;
-    }
-
-    public void setIrisLink(String irisLink) {
-        this.irisLink = irisLink;
-    }
-
-    public String getPprtvLink() {
-        return pprtvLink;
-    }
-
-    public void setPprtvLink(String pprtvLink) {
-        this.pprtvLink = pprtvLink;
-    }
-
-    public String getWikipediaArticle() {
-        return wikipediaArticle;
-    }
-
-    public void setWikipediaArticle(String wikipediaArticle) {
-        this.wikipediaArticle = wikipediaArticle;
-    }
-
-    public String getDescriptorStringTsv() {
-        return descriptorStringTsv;
-    }
-
-    public void setDescriptorStringTsv(String descriptorStringTsv) {
-        this.descriptorStringTsv = descriptorStringTsv;
-    }
-
-    public Integer getIsMarkush() {
-        return isMarkush;
-    }
-
-    public void setIsMarkush(Integer isMarkush) {
-        this.isMarkush = isMarkush;
-    }
-
-    public Instant getDateLoaded() {
-        return dateLoaded;
-    }
-
-    public void setDateLoaded(Instant dateLoaded) {
-        this.dateLoaded = dateLoaded;
-    }
-
-    public String getDtxsid() {
-        return dtxsid;
-    }
-
-    public void setDtxsid(String dtxsid) {
-        this.dtxsid = dtxsid;
-    }
-
-    public String getDtxcid() {
-        return dtxcid;
-    }
-
-    public void setDtxcid(String dtxcid) {
-        this.dtxcid = dtxcid;
-    }
-
-    public String getToxcastSelect() {
-        return toxcastSelect;
-    }
-
-    public void setToxcastSelect(String toxcastSelect) {
-        this.toxcastSelect = toxcastSelect;
-    }
-
+    private Boolean isMarkush;
 }

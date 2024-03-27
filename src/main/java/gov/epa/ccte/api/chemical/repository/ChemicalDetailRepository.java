@@ -8,19 +8,32 @@ import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 import org.springframework.data.rest.core.annotation.RestResource;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Optional;
 
 @SuppressWarnings("unused")
 @RepositoryRestResource(collectionResourceRel = "chemicalDetails", path = "chemical-details", itemResourceRel = "chemicalDetail", exported = false)
 public interface ChemicalDetailRepository extends JpaRepository<ChemicalDetail, Long> {
 
+    // Single chemical search
     @Transactional(readOnly = true)
     @RestResource(rel = "findByDtxsid", path = "by-dtxsid", exported = true)
-    Optional<ChemicalDetail> findByDtxsid(@Param("dtxsid") String dtxsid);
+    <T>
+    Optional<T> findByDtxsid(@Param("dtxsid") String dtxsid, Class<T> type);
 
     @Transactional(readOnly = true)
     @RestResource(rel = "findByDtxcid", path = "by-dtxcid", exported = true)
-    Optional<ChemicalDetail> findByDtxcid(String dtxcid);
+    <T>
+    Optional<T> findByDtxcid(String dtxcid, Class<T> type);
+
+    // Batch search
+    @Transactional(readOnly = true)
+    <T>
+    List<T> findByDtxsidInOrderByDtxsidAsc(String[] dtxsid, Class<T> type);
+
+    @Transactional(readOnly = true)
+    <T>
+    List<T> findByDtxcidInOrderByDtxcidAsc(String[] dtxsid, Class<T> type);
 
     // Query for chemical files
     @Transactional(readOnly = true)

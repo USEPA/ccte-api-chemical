@@ -17,3 +17,4 @@ public class AuthorizationProblem {
     private String title;
     private String detail;
 }
+

@@ -1,7 +1,6 @@
 package gov.epa.ccte.api.chemical.config.converter;
 
 import gov.epa.ccte.api.chemical.domain.ImageFormat;
-import gov.epa.ccte.api.chemical.web.rest.errors.TypeValueNotFoundProblem;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.stereotype.Component;

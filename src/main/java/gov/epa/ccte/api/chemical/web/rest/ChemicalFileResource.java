@@ -5,16 +5,17 @@ import com.epam.indigo.IndigoObject;
 import com.epam.indigo.IndigoRenderer;
 import gov.epa.ccte.api.chemical.domain.ImageFormat;
 import gov.epa.ccte.api.chemical.repository.ChemicalDetailRepository;
-import gov.epa.ccte.api.chemical.web.rest.errors.IdentifierNotFoundProblem;
+import gov.epa.ccte.api.chemical.service.ChemicalImageUtils;
+import gov.epa.ccte.api.chemical.web.rest.errors.IdentifierNotFoundException;
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 
 import static org.springframework.http.MediaType.IMAGE_PNG;
 import static org.springframework.http.MediaType.TEXT_PLAIN;
@@ -24,10 +25,9 @@ import static org.springframework.http.MediaType.TEXT_PLAIN;
  */
 @Tag(name = "Chemical File Resource",
         description = "API endpoints for getting chemical structure data in mol, mrv and image (png or svg format) for given Chemical Identifier (DTXSID or DTXCID).")
-@SecurityRequirement(name = "api_key")
+//@SecurityRequirement(name = "api_key") // no need for api_key for this endpoint
 @Slf4j
 @RestController
-@CrossOrigin
 public class ChemicalFileResource {
 
     //image size constants
@@ -52,11 +52,11 @@ public class ChemicalFileResource {
      *
      * @return the {@link ResponseEntity} with status {@code 200 (OK)} and with body the chemical image}.
      */
-    @Operation(summary = "Get a Chemicals structure image by its dtxsid")
+    @Operation(summary = "Get structure image by dtxsid")
     @RequestMapping(value = "chemical/file/image/search/by-dtxsid/{dtxsid}", method = RequestMethod.GET)
     public @ResponseBody
-    ResponseEntity<byte[]> imageByDtxsid(@PathVariable("dtxsid") String dtxsid,
-                                         @RequestParam(value = "format", required = false) ImageFormat format){
+    ResponseEntity<byte[]> imageByDtxsid(@Parameter(required = true, description = "DSSTox Substance Identifier", example = "DTXSID7020182") @PathVariable("dtxsid") String dtxsid,
+                                         @Parameter(name = "Image Format", description = "In case of absence, it will return png image") @RequestParam(value = "format", required = false) ImageFormat format){
 
         log.debug("dtxsid = {}, format = {}", dtxsid, format);
 
@@ -66,7 +66,7 @@ public class ChemicalFileResource {
             return ResponseEntity.ok().contentType(IMAGE_PNG).body(image);
         }else if(format == ImageFormat.SVG){
             String mol = detailRepository.getMolFileForDtxsid(dtxsid)
-                    .orElseThrow(()->new IdentifierNotFoundProblem("DTXSID",dtxsid));
+                    .orElseThrow(()->new IdentifierNotFoundException("DTXSID",dtxsid));
 
             byte[] image = getSvgImage(mol);
 
@@ -84,11 +84,12 @@ public class ChemicalFileResource {
      *
      * @return the {@link ResponseEntity} with status {@code 200 (OK)} and with body the chemical image}.
      */
-    @Operation(summary = "Get a Chemicals structure image by its dtxcid")
+    @Operation(summary = "Get structure image by dtxcid",
+            description = "This endpoint is deprecated. Please use /chemical-file/image/search/by-dtxcid/{dtxcid} instead.")
     @RequestMapping(value = "chemical/file/image/search/by-dtxcid/{dtxcid}", method = RequestMethod.GET)
     public @ResponseBody
-    ResponseEntity<byte[]> imageByDtxcid(@PathVariable("dtxcid") String dtxcid,
-                                         @RequestParam(value = "format", required = false) ImageFormat format) {
+    ResponseEntity<byte[]> imageByDtxcid(@Parameter(required = true, description = "DSSTox Compound Identifier", example = "DTXCID505") @PathVariable("dtxcid") String dtxcid,
+                                         @Parameter(name = "Image Format", description = "In case of absence, it will return png image") @RequestParam(value = "format", required = false) ImageFormat format) {
 
         log.debug("dtxcid = {}, format = {}", dtxcid, format);
 
@@ -98,9 +99,10 @@ public class ChemicalFileResource {
             return ResponseEntity.ok().contentType(IMAGE_PNG).body(image);
         }else if(format == ImageFormat.SVG){
             String mol = detailRepository.getMolFileForDtxcid(dtxcid)
-                    .orElseThrow(()->new IdentifierNotFoundProblem("DTXCID", dtxcid));
+                    .orElseThrow(()->new IdentifierNotFoundException("DTXCID", dtxcid));
 
-            byte[] image = getSvgImage(mol);
+            // getSvgImage(mol)
+            byte[] image = ChemicalImageUtils.smileToImage(mol, ImageFormat.SVG);
 
             return ResponseEntity.ok().contentType(MediaType.valueOf("image/svg+xml")).body(image);
         }else{
@@ -131,8 +133,7 @@ public class ChemicalFileResource {
         //ChemicalImageUtils.toSvg(molecule);
         molecule.dearomatize();
 
-        byte[] image = renderer.renderToBuffer(molecule);
-        return image;
+        return renderer.renderToBuffer(molecule);
     }
 
     /**
@@ -142,15 +143,16 @@ public class ChemicalFileResource {
      *
      * @return the {@link ResponseEntity} with status {@code 200 (OK)} and with body the chemical mol file}.
      */
-    @Operation(summary = "Get a Chemicals mol file by its dtxsid")
+    @Operation(summary = "Get mol file by dtxsid",
+            description = "This endpoint is deprecated. Please use /chemical-file/mol/search/by-dtxsid/{dtxsid} instead.")
     @RequestMapping(value = "chemical/file/mol/search/by-dtxsid/{dtxsid}", method = RequestMethod.GET)
     public @ResponseBody
-    ResponseEntity<String> molByDtxsid(@PathVariable("dtxsid") String dtxsid){
+    ResponseEntity<String> molByDtxsid(@Parameter(required = true, description = "DSSTox Substance Identifier", example = "DTXSID7020182") @PathVariable("dtxsid") String dtxsid){
 
         log.debug("dtxsid = {}", dtxsid);
 
         String mol = detailRepository.getMolFileForDtxsid(dtxsid)
-                .orElseThrow(()->new IdentifierNotFoundProblem("DTXSID", dtxsid));
+                .orElseThrow(()->new IdentifierNotFoundException("DTXSID", dtxsid));
 
         return ResponseEntity.ok().contentType(TEXT_PLAIN).body(mol);
     }
@@ -162,55 +164,89 @@ public class ChemicalFileResource {
      *
      * @return the {@link ResponseEntity} with status {@code 200 (OK)} and with body the chemical mol file}.
      */
-    @Operation(summary = "Get a Chemicals mol file by its dtxcid")
+    @Operation(summary = "Get mol file by dtxcid",
+            description = "This endpoint is deprecated. Please use /chemical-file/mol/search/by-dtxcid/{dtxcid} instead.")
 
     @RequestMapping(value = "chemical/file/mol/search/by-dtxcid/{dtxcid}", method = RequestMethod.GET)
     public @ResponseBody
-    ResponseEntity<String> molByDtxcid(@PathVariable("dtxcid") String dtxcid){
+    ResponseEntity<String> molByDtxcid(@Parameter(required = true, description = "DSSTox Compound Identifier", example = "DTXCID505") @PathVariable("dtxcid") String dtxcid){
         log.debug("dtxsid = {}", dtxcid);
 
         String mol = detailRepository.getMolFileForDtxcid(dtxcid)
-                .orElseThrow(()->new IdentifierNotFoundProblem("DTXCID", dtxcid));
+                .orElseThrow(()->new IdentifierNotFoundException("DTXCID", dtxcid));
 
         return ResponseEntity.ok().contentType(TEXT_PLAIN).body(mol);
     }
 
     /**
      * {@code GET  chemical/file/mrv/search/by-dtxsid/{dtxsid}" : get the "dtxsid" chemical mrv file.
-     *
      * @param dtxsid the matching dtxcid of the chemical mrv file to retrieve.
-     *
      * @return the {@link ResponseEntity} with status {@code 200 (OK)} and with body the chemical mrv file}.
      */
-    @Operation(summary = "Get a Chemicals mrv file by its dtxsid")
+    @Operation(summary = "Get mrv file by dtxsid",
+            deprecated = true,
+            description = "This endpoint is deprecated. Please use /chemical-file/mrv/search/by-dtxsid/{dtxsid} instead.")
     @RequestMapping(value = "chemical/file/mrv/search/by-dtxsid/{dtxsid}", method = RequestMethod.GET)
     public @ResponseBody
-    ResponseEntity<String> mrvByDtxsid(@PathVariable("dtxsid") String dtxsid){
+    ResponseEntity<String> mrvByDtxsid(@Parameter(required = true, description = "DSSTox Substance Identifier", example = "DTXSID7020182") @PathVariable("dtxsid") String dtxsid){
 
         log.debug("dtxsid = {}", dtxsid);
 
         String mol = detailRepository.getMrvFileForDtxsid(dtxsid)
-                .orElseThrow(()-> new IdentifierNotFoundProblem("DTXSID",dtxsid));
+                .orElseThrow(()-> new IdentifierNotFoundException("DTXSID",dtxsid));
 
         return ResponseEntity.ok().contentType(TEXT_PLAIN).body(mol);
     }
 
     /**
      * {@code GET  chemical/file/mrv/search/by-dtxcid/{dtxcid} : get the "dtxcid" chemical mrv file.
-     *
      * @param dtxcid the matching dtxcid of the chemical mrv file to retrieve.
-     *
      * @return the {@link ResponseEntity} with status {@code 200 (OK)} and with body the chemical mrv file}.
      */
-    @Operation(summary = "Get a Chemicals mrv file by its dtxcid")
+    @Operation(summary = "Get mrv file by dtxcid",
+            description = "This endpoint is deprecated. Please use /chemical-file/mrv/search/by-dtxcid/{dtxcid} instead.")
     @RequestMapping(value = "chemical/file/mrv/search/by-dtxcid/{dtxcid}", method = RequestMethod.GET)
     public @ResponseBody
-    ResponseEntity<String> mrvByDtxcid(@PathVariable("dtxcid") String dtxcid){
+    ResponseEntity<String> mrvByDtxcid(@Parameter(required = true, description = "DSSTox Compound Identifier", example = "DTXCID505") @PathVariable("dtxcid") String dtxcid){
         log.debug("dtxsid = {}", dtxcid);
 
         String mol = detailRepository.getMrvFileForDtxcid(dtxcid)
-                .orElseThrow(()-> new IdentifierNotFoundProblem("DTXCID",dtxcid));
+                .orElseThrow(()-> new IdentifierNotFoundException("DTXCID",dtxcid));
 
         return ResponseEntity.ok().contentType(TEXT_PLAIN).body(mol);
     }
+
+    /**
+     * {@code GET  chemical/file/image/generate?smile=<smiles-string> : get generated structure image for smiles.
+     * @param smiles generate structure image using smiles.
+     * @return the {@link ResponseEntity} with status {@code 200 (OK)} and with body the chemical structure image file}.
+     *
+     *
+     */
+    @Operation(summary = "Get generated structure image for smiles",
+            description = "User can use generate structure image by providing smiles string")
+    @RequestMapping(value = "chemical/file/image/generate", method = RequestMethod.GET)
+    public @ResponseBody
+    ResponseEntity<byte[]> generateImageBySmiles(@Parameter(required = true, description = "SMILES String", example = "CC(C)(C1=CC=C(O)C=C1)C1=CC=C(O)C=C1")
+                                                 @RequestParam(required = true, value = "smiles") String smiles,
+                                                 @Parameter(name = "Image Format", description = "In case of absence, it will return png image")
+                                                 @RequestParam(value = "format", required = false, defaultValue = "PNG") ImageFormat format){
+        log.debug("smiles = {}, image type={}", smiles, format);
+
+        byte[] image = ChemicalImageUtils.smileToImage(smiles, format);
+
+        switch (format){
+            case PNG -> {
+                return ResponseEntity.ok().contentType(IMAGE_PNG).body(image);
+            }
+            case SVG -> {
+                return ResponseEntity.ok().contentType(MediaType.valueOf("image/svg+xml")).body(image);
+            }
+            default -> {
+                return null;
+            }
+        }
+    }
+
 }
+

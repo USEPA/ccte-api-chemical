@@ -1,10 +1,14 @@
 package gov.epa.ccte.api.chemical.domain;
 
-import org.hibernate.annotations.Type;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 
-import javax.persistence.*;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
 import java.time.Instant;
 
 @Entity
@@ -24,7 +28,7 @@ public class ChemicalProperty {
     private String dtxcid;
 
     @Column(name = "prop_type")
-    @Type(type = "org.hibernate.type.TextType")
+    @JdbcTypeCode(SqlTypes.LONGVARCHAR)
     private String propType;
 
     @Size(max = 255)
@@ -35,7 +39,7 @@ public class ChemicalProperty {
     @Column(name = "name")
     private String name;
 
-    @Column(name = "value")
+    @Column(name = "prop_value")
     private Double value;
 
     @Size(max = 255)
@@ -52,6 +56,10 @@ public class ChemicalProperty {
 
     @Column(name = "created_at")
     private Instant createdAt;
+
+    @Size(max = 300)
+    @Column(name = "property_id", length = 300)
+    private String propertyId;
 
     public Integer getId() {
         return id;
@@ -141,4 +149,11 @@ public class ChemicalProperty {
         this.createdAt = createdAt;
     }
 
+    public String getPropertyId() {
+        return propertyId;
+    }
+
+    public void setPropertyId(String propertyId) {
+        this.propertyId = propertyId;
+    }
 }

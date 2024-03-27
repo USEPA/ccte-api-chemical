@@ -1,0 +1,11 @@
+application:
+  api-env: "Staging Environment"
+  api-url: "https://api-ccte-stg.epa.gov"
+
+#logging
+logging:
+  level:
+    com.zaxxer.hikari.HikariConfig: info
+    org.hibernate.SQL: info
+    gov.epa.ccte.api.*: debug
+    org.springframework: warn

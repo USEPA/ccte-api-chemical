@@ -1,25 +1,33 @@
 package gov.epa.ccte.api.chemical.domain;
 
-import org.hibernate.annotations.Type;
+import jakarta.persistence.*;
+import jakarta.validation.constraints.Size;
+import lombok.Getter;
+import lombok.Setter;
 
-import javax.persistence.*;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
 import java.time.Instant;
 
+@Getter
+@Setter
 @Entity
-@Table(name = "chemical_lists", schema = "ms", indexes = {
-        @Index(name = "chemical_lists_nm", columnList = "name")
-})
+@Table(name = "v_chemical_lists", schema = "ch")
 public class ChemicalList {
     @Id
-    @NotNull
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)
     private Integer id;
 
+    @Size(max = 50)
+    @Column(name = "list_name", length = 50)
+    private String listName;
+
     @Size(max = 255)
-    @Column(name = "name")
-    private String name;
+    @Column(name = "label")
+    private String label;
+
+    @Size(max = 50)
+    @Column(name = "type", length = 50)
+    private String type;
 
     @Size(max = 255)
     @Column(name = "visibility")
@@ -28,140 +36,28 @@ public class ChemicalList {
     @Column(name = "is_visible")
     private Boolean isVisible;
 
-    @Column(name = "short_description")
-    @Type(type = "org.hibernate.type.TextType")
+    @Size(max = 500)
+    @Column(name = "short_description", length = 500)
     private String shortDescription;
 
-    @Column(name = "long_description")
-    @Type(type = "org.hibernate.type.TextType")
+    @Column(name = "long_description", length = Integer.MAX_VALUE)
     private String longDescription;
 
-    @Column(name = "created_date")
-    private Instant createdDate;
-
-    @Column(name = "last_modified_date")
-    private Instant lastModifiedDate;
-
-    @Size(max = 255)
-    @Column(name = "created_by")
-    private String createdBy;
-
     @Column(name = "chemical_count")
-    private Integer chemicalCount;
+    private Long chemicalCount;
 
     @Column(name = "created_at")
     private Instant createdAt;
 
     @Size(max = 255)
-    @Column(name = "label")
-    private String label;
+    @Column(name = "created_by")
+    private String createdBy;
 
-    @Size(max = 100)
-    @Column(name = "type", length = 100)
-    private String type;
+    @Column(name = "updated_at")
+    private Instant updatedAt;
 
-    public Integer getId() {
-        return id;
-    }
-
-    public void setId(Integer id) {
-        this.id = id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getVisibility() {
-        return visibility;
-    }
-
-    public void setVisibility(String visibility) {
-        this.visibility = visibility;
-    }
-
-    public Boolean getIsVisible() {
-        return isVisible;
-    }
-
-    public void setIsVisible(Boolean isVisible) {
-        this.isVisible = isVisible;
-    }
-
-    public String getShortDescription() {
-        return shortDescription;
-    }
-
-    public void setShortDescription(String shortDescription) {
-        this.shortDescription = shortDescription;
-    }
-
-    public String getLongDescription() {
-        return longDescription;
-    }
-
-    public void setLongDescription(String longDescription) {
-        this.longDescription = longDescription;
-    }
-
-    public Instant getCreatedDate() {
-        return createdDate;
-    }
-
-    public void setCreatedDate(Instant createdDate) {
-        this.createdDate = createdDate;
-    }
-
-    public Instant getLastModifiedDate() {
-        return lastModifiedDate;
-    }
-
-    public void setLastModifiedDate(Instant lastModifiedDate) {
-        this.lastModifiedDate = lastModifiedDate;
-    }
-
-    public String getCreatedBy() {
-        return createdBy;
-    }
-
-    public void setCreatedBy(String createdBy) {
-        this.createdBy = createdBy;
-    }
-
-    public Integer getChemicalCount() {
-        return chemicalCount;
-    }
-
-    public void setChemicalCount(Integer chemicalCount) {
-        this.chemicalCount = chemicalCount;
-    }
-
-    public Instant getCreatedAt() {
-        return createdAt;
-    }
-
-    public void setCreatedAt(Instant createdAt) {
-        this.createdAt = createdAt;
-    }
-
-    public String getLabel() {
-        return label;
-    }
-
-    public void setLabel(String label) {
-        this.label = label;
-    }
-
-    public String getType() {
-        return type;
-    }
-
-    public void setType(String type) {
-        this.type = type;
-    }
+    @Size(max = 255)
+    @Column(name = "updated_by")
+    private String updatedBy;
 
 }
