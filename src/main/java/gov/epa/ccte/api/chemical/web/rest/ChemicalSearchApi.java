@@ -1,6 +1,7 @@
 package gov.epa.ccte.api.chemical.web.rest;
 
 import java.util.List;
+import java.util.HashMap;
 
 import org.springframework.http.MediaType;
 import org.springframework.http.ProblemDetail;
@@ -85,6 +86,10 @@ public interface ChemicalSearchApi{
     @GetMapping(value = "chemical/msready/search/by-mass/{start}/{end}", produces = MediaType.APPLICATION_JSON_VALUE)
     List<String> msReadyByMass(@Parameter(required = true, description = "Starting mass value", example = "200.90") @PathVariable("start") Double start,
                                @Parameter(required = true, description = "Ending mass value", example = "200.95") @PathVariable("end") Double end);
+    
+    @Operation(summary = "Search ms ready chemicals using bacth of mass ranges")
+    @PostMapping(value = "chemical/msready/search/by-mass/", produces = MediaType.APPLICATION_JSON_VALUE)
+    HashMap<Double, List<String>> msReadyByBatchMass(@RequestBody BatchMsReadyMassForm form);
     
     @Operation(summary = "Search chemicals by exact formula")
     @GetMapping(value = "chemical/search/by-exact-formula/{formula}", produces = MediaType.APPLICATION_JSON_VALUE)

@@ -1,6 +1,7 @@
 package gov.epa.ccte.api.chemical.web.rest;
 
 import java.util.List;
+import java.util.HashMap;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Value;
@@ -119,6 +120,14 @@ public class ChemicalSearchResource implements ChemicalSearchApi {
         log.debug("input mass = {} - {} ", start, end);
         return searchRepository.searchMsReadyMass(start, end);
     }
+    
+    @Override
+    public HashMap<Double, List<String>> msReadyByBatchMass(BatchMsReadyMassForm form) {
+        log.debug("input masses = {} error= {} ", form.getMasses(), form.getError());
+        
+        return chemicalService.getMsReadyBatchResult(form);
+    }
+    
     
     @Override
     public List<String> getChemicalsForExactFormula(String formula) {
