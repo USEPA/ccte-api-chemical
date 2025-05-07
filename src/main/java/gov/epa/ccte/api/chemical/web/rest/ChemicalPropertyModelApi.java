@@ -15,6 +15,8 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+
+
 import java.util.List;
 
 /**
@@ -44,5 +46,16 @@ public interface ChemicalPropertyModelApi {
     @RequestMapping(value = "/file/search/", method = RequestMethod.GET)
     ResponseEntity<byte[]> getModelFileByModelIdAndTypeId(@RequestParam(value = "modelId") Integer modelId,
     														@RequestParam(value = "typeId") Integer typeId);
+
+    @Operation(summary = "Find chemical property model HTML by dtxsid and model id", description = "return model html for requested dtxsid and model id")
+    @RequestMapping(value = "/reports/html/search/", method = RequestMethod.GET)
+    String getModelHTMLByDtxsid(@Parameter(required = true, description = "DSSTox Substance Identifier", example = "DTXSID7020005") String dtxsid,
+    								  @Parameter(required = true, description = "model id", example = "1163") Long modelId);
+
+    @Operation(summary = "Find chemical property model reports by dtxsid", description = "return model reports for requested dtxsid")
+
+    @RequestMapping(value = "/reports/json/search/", method = RequestMethod.GET)
+    String getModelJSONByDtxsid(@Parameter(required = true, description = "DSSTox Substance Identifier", example = "DTXSID7020005") String dtxsid,
+									  @Parameter(required = true, description = "model id", example = "1163") Long modelId);
 
 }

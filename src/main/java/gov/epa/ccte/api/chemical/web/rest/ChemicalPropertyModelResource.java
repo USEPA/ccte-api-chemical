@@ -6,8 +6,10 @@ import static org.springframework.http.MediaType.IMAGE_PNG;
 
 import java.util.*;
 
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
+
 
 import gov.epa.ccte.api.chemical.repository.ModelFilesRepository;
 import gov.epa.ccte.api.chemical.repository.ModelReportsRepository;
@@ -49,5 +51,23 @@ public class ChemicalPropertyModelResource implements ChemicalPropertyModelApi {
             case 4 -> ResponseEntity.ok().contentType(IMAGE_PNG).body(image);
             default -> null;
         };
+    }
+    
+    @Override
+    public String getModelHTMLByDtxsid(String dtxsid, Long modelId) {
+    	log.debug("model report for dtxsid = {} modelid = {}", dtxsid, modelId);
+
+    	String data = reportsRepository.findReportHtmlByDtxsidAndModelId(dtxsid, modelId);
+
+    	return data;
+    }
+    
+    @Override
+    public String getModelJSONByDtxsid(String dtxsid, Long modelId) {
+    	log.debug("model report for dtxsid = {} modelid = {}", dtxsid, modelId);
+
+    	String data = reportsRepository.findReportJsonByDtxsidAndModelId(dtxsid, modelId);
+
+    	return data;
     }
 }

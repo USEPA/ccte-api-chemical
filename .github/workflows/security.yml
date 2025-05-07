@@ -1,0 +1,71 @@
+name: Security Workflows
+
+on:
+  push:
+    branches: [ dev, staging ]
+    tags: [ 'v*.*.*' ]
+  #schedule:
+  # - cron: '00 9 * * 1,3,5' 
+
+jobs:
+  container-scan:
+    runs-on: th878
+    environment: ${{ github.head_ref || github.ref_name }}
+    permissions:
+      contents: read
+      packages: write
+      id-token: write
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Run Container Security Scan Action
+        uses: USEPA/ccte-container-scan@main
+        with:
+          image_name: api-chemical-security-cs
+          dockerfile: Dockerfile
+          output_path: ./output/chemical-report.html
+          cleanup_path: /data/watchtower/ctx-API/container-results/api-chemical/chemical-report.html
+          watchtower_path: /data/watchtower/ctx-API/container-results/api-chemical/chemical-report.html
+
+  trufflehog:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Run Scan
+      uses: USEPA/ccte-secret-scan@main
+      with:
+        base_branch: ${{ github.event.repository.default_branch }}
+
+  build-and-upload-sbom:
+    runs-on: th878
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Generate and Upload SBOM
+        uses: USEPA/ccte-sbom-generator-java@main
+        with:
+          java_version: '17'
+          jira_url: ${{ secrets.JIRA_URL }}
+          jira_token: ${{ secrets.JIRA_TOKEN }}
+          server_hostname: 'ccte-api-dependency-track.epa.gov'
+          api_key: ${{ secrets.SECRET_OWASP_DT_KEY }}
+          project_name: 'ccte-api-chemical'
+          project_version: ${{ github.ref_name }}
+          
+  Zap-scan:
+    runs-on: "th878" 
+    #if: github.event_name == 'schedule'
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        
+      - name: Run Application Security Scan
+        uses: USEPA/ccte-Zap-Scan@main 
+        with:
+          zap_token: ${{ secrets.GITHUB_TOKEN }}
+          zap_target: 'https://api-ccte-stg.epa.gov/docs/chemical.json'
+          zap_format: 'openapi'
+          zap_cmd_options: '-a'
+          x_api_key: ${{ secrets.X_API_KEY }}

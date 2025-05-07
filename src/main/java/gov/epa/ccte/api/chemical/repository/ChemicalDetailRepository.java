@@ -85,6 +85,6 @@ public interface ChemicalDetailRepository extends JpaRepository<ChemicalDetail, 
     Optional<String> getInchikeyForDtxsid(@Param("dtxsid") String dtxsid);
 
     @Transactional(readOnly = true)
-    List<ChemicalDetailStandard2> findByIdGreaterThanAndDtxsidNotNull(Long id, Limit limit);
+    <T>List<T> findByIdGreaterThanAndDtxsidNotNull(Long id, Limit limit, Class<T> type);
 
 }

@@ -12,5 +12,5 @@ public class Page {
     private Integer size=2000;
     private Long total;
     private Long next;
-    private List<ChemicalDetailStandard2> data;
+    private List<?> data;
 }

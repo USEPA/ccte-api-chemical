@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import gov.epa.ccte.api.chemical.domain.ChemicalDetail;
 import gov.epa.ccte.api.chemical.projection.chemicaldetail.ChemicalDetailAll;
+import gov.epa.ccte.api.chemical.projection.chemicaldetail.ChemicalDetailAllIds;
 import gov.epa.ccte.api.chemical.projection.chemicaldetail.ChemicalDetailBase;
 import gov.epa.ccte.api.chemical.projection.chemicaldetail.ChemicalDetailProjection;
 import gov.epa.ccte.api.chemical.projection.chemicaldetail.ChemicalDetailStandard;
@@ -49,10 +50,13 @@ public interface ChemicalDetailApi {
     @Operation(summary = "Find all chemical details", description = "return all chemical details.")
     @ApiResponses(value= {
             @ApiResponse(responseCode = "200", description = "OK",  content = @Content( mediaType = "application/json",
-                    schema=@Schema(oneOf = {ChemicalDetailStandard2.class}))),
+                    schema=@Schema(oneOf = {ChemicalDetailStandard2.class, ChemicalDetailAllIds.class}))),
     })
 	@RequestMapping(value = "/all", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-	Page getAllChemicalDetails(@RequestParam(value = "next", required = false, defaultValue = "1")Long next);
+	Page getAllChemicalDetails(@RequestParam(value = "next", required = false, defaultValue = "1")Long next,
+     				        @Parameter(description = "Specifies if projection is used. Option: all-ids. " +
+     				        "If omitted, the default ChemicalDetailStandard2 data is returned.")
+     					@RequestParam(value = "projection", required = false) String projection);
 
 	/**
 	 * {@code GET  /chemical/detail/by-dtxsid/:dtxsid} : get list of chemicalDetail for the "dtxsid".

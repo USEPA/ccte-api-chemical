@@ -15,7 +15,7 @@ import java.util.List;
 /**
  * API interface for checking availability of data in Wikipedia for GHS Safety data
  */
-@Tag(name = "Pubchem link to GHS Classification ",
+@Tag(name = "Wikipedia link to GHS Classification ",
         description = "API endpoints for checking if chemical has GHS classification safety data in Wikipedia. ")
 @SecurityRequirement(name = "api_key")
 @RequestMapping(value = "chemical/wikipedia")

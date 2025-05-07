@@ -5,6 +5,7 @@ import gov.epa.ccte.api.chemical.repository.ChemicalListRepository;
 import gov.epa.ccte.api.chemical.repository.ChemicalListChemicalRepository;
 import gov.epa.ccte.api.chemical.service.SearchChemicalService;
 import gov.epa.ccte.api.chemical.web.rest.errors.IdentifierNotFoundException;
+import gov.epa.ccte.api.chemical.web.rest.requests.ChemicalListsAndDtxsids;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
@@ -75,5 +76,40 @@ public class ChemicalListResource implements ChemicalListApi {
             case ccdchemicaldetaillists -> listRepository.getListsByDtxsid(dtxsid, "PUBLIC");
             default -> null;
         };
+    }
+
+    @Override
+    public List<String> startWith(String list, String word) {
+        log.debug("list={}, search word={}", list, word);
+        String searchWord = chemicalService.preprocessingSearchWord(word);
+        return chemicalListChemicalRepository.startWith(searchWord, list);
+    }
+
+    @Override
+    public List<String> contain(String list, String word) {
+        log.debug("list={}, search word={}", list, word);
+        String searchWord = chemicalService.preprocessingSearchWord(word);
+        return chemicalListChemicalRepository.contain(searchWord, list);
+    }
+
+    @Override
+    public List<String> exact(String list, String word) {
+        log.debug("list={}, search word={}", list, word);
+        String searchWord = chemicalService.preprocessingSearchWord(word);
+        return chemicalListChemicalRepository.exact(searchWord, list);
+    }
+
+    @Override
+    public List<String> listDtxsids(String list) {
+        log.debug("list={}", list);
+        return chemicalListChemicalRepository.getDtxsids(list);
+    }
+
+    @Override
+    public List<String> contain(ChemicalListsAndDtxsids request) {
+        log.debug("dtxsids = {}, chemical lists = {}", request.getDtxsids().size(), request.getChemicalLists().size());
+        List<String> result = chemicalListChemicalRepository.chemicalListsAndDtxsids(request.getChemicalLists(), request.getDtxsids());
+        log.info("result.size={}", result.size());
+        return result;
     }
 }

@@ -29,10 +29,10 @@ public class ChemicalDetailResource implements ChemicalDetailApi {
 
     
     @Override
-    public Page getAllChemicalDetails(Long next) {
+    public Page getAllChemicalDetails(Long next, String projection) {
         log.debug("nextCursor: {}, totalChemicals = {}", next, totalChemicals);
         
-        return detailService.getAllChemicals(next, batchSize, totalChemicals);
+        return detailService.getAllChemicals(next, batchSize, totalChemicals, projection);
     }
     
     @Override

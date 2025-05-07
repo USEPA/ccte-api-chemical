@@ -9,6 +9,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.domain.Limit;
 import org.springframework.stereotype.Service;
 
+
 import java.util.*;
 import java.util.regex.Pattern;
 
@@ -501,6 +502,7 @@ public class SearchChemicalService {
         }
         return returnList;
     }*/
+    
 }
 
 

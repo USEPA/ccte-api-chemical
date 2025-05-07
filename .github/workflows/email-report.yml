@@ -1,0 +1,17 @@
+name: email 
+
+on:
+  schedule:
+    - cron: '00 9 * * 1,4'
+    
+jobs:
+  send-email:
+    runs-on: "th878" 
+    steps:  
+    - name: Checkout repository
+      uses: actions/checkout@v4
+    - name:  send email every monday and thursday
+      run: |
+           cd /data/watchtower/ctx-API/container-results/api-chemical
+           ls -la
+           python3 email.py 
