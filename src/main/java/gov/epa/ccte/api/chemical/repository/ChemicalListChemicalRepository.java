@@ -40,7 +40,7 @@ public interface ChemicalListChemicalRepository extends JpaRepository<ChemicalLi
 
     @Query("select new gov.epa.ccte.api.chemical.web.rest.GhsLinkResponse(d.dtxsid, " +
             "case when l.dtxsid is null then false else true end, " +
-            "case when l.dtxsid is null then null else 'https://pubchem.ncbi.nlm.nih.gov/compound/' ||  d.inchikey || '#section=GHS-Classification' end ) " +
+            "case when l.dtxsid is null then null else 'https://pubchem.ncbi.nlm.nih.gov/compound/' ||  d.dtxsid || '#section=GHS-Classification' end ) " +
             "from  ChemicalDetail d left join ChemicalListChemical l on l.dtxsid = d.dtxsid and l.listName = 'LCSSPUBCHEM' where d.dtxsid in (?1)")
     List<GhsLinkResponse> isGhsLinkExists(String[] dtxsid);
 
