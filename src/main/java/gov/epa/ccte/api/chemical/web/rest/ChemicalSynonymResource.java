@@ -27,8 +27,12 @@ public class ChemicalSynonymResource implements ChemicalSynonymApi {
     }
 
     @Override
-    public ChemicalSynonymAll synoymsByDtxsid(String dtxsid) {
-        log.info("dtxsid = {}", dtxsid);
+    public Object getSynonymsByDtxsid(String dtxsid, String projection) {
+        log.info("dtxsid = {}, projection = {}", dtxsid, projection);
+
+        if ("ccd-synonyms".equalsIgnoreCase(projection)) {
+            return repository.getFlatSynonymsByDtxsid(dtxsid);
+        }
 
         return repository.findByDtxsidAndIsPublic(dtxsid, true, ChemicalSynonymAll.class)
                 .orElseThrow(() -> new IdentifierNotFoundException("DTXSID", dtxsid));

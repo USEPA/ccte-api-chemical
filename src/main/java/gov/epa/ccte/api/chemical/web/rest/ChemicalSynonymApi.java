@@ -13,6 +13,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
+import gov.epa.ccte.api.chemical.projection.CcdSynonymFlatProjection;
 import gov.epa.ccte.api.chemical.projection.ChemicalSynonymAll;
 
 import java.util.List;
@@ -26,13 +27,17 @@ import java.util.List;
 @RequestMapping(value = "chemical/synonym", produces = MediaType.APPLICATION_JSON_VALUE)
 public interface ChemicalSynonymApi {
 
-    @Operation(summary = "Get synonym by dtxsid")
-    @GetMapping(value = "/search/by-dtxsid/{dtxsid}", produces = MediaType.APPLICATION_JSON_VALUE)
-    @ApiResponses(value= {
-            @ApiResponse(responseCode = "200", description = "OK",  content = @Content( mediaType = "application/json",
-                    schema=@Schema(oneOf = {ChemicalSynonymAll.class})))
-    })
-    ChemicalSynonymAll synoymsByDtxsid(@Parameter(required = true, description = "DSSTox Substance Identifier", example = "DTXSID7020182") @PathVariable("dtxsid") String dtxsid);
+	@Operation(summary = "Get synonyms by dtxsid with projections",
+	        description = "Fetches synonyms based on the specified projection. Available projections: ccd-synonyms (flat list), chemical-synonym-all (default structured view).")
+	@ApiResponses(value = {
+	        @ApiResponse(responseCode = "200", description = "OK", content = @Content(mediaType = "application/json", schema = @Schema(oneOf = {ChemicalSynonymAll.class, CcdSynonymFlatProjection.class})))
+	})
+	@GetMapping(value = "/search/by-dtxsid/{dtxsid}", produces = MediaType.APPLICATION_JSON_VALUE)
+	@ResponseBody
+	Object getSynonymsByDtxsid(@Parameter(required = true, description = "DSSTox Substance Identifier", example = "DTXSID7020182")
+	                          @PathVariable("dtxsid") String dtxsid,
+	                          @Parameter(description = "Projection type: ccd-synonyms or default")
+	                          @RequestParam(value = "projection", required = false) String projection);
 
     @Operation(summary = "Get synonyms by the batch of dtxsids")
     @PostMapping(value = "/search/by-dtxsid/", produces = MediaType.APPLICATION_JSON_VALUE)
