@@ -1,10 +1,7 @@
 package gov.epa.ccte.api.chemical.projection.chemicaldetail;
 
-public interface CcdAssayDetails extends ChemicalDetailBase{
+public interface CcdAssayDetails extends CcdChemicalDetails{
 	
-	String getStereo();
-	
-	Integer getActiveAssays();
 
 	default String getHitc() {
 		if (getActiveAssays() != null && getActiveAssays() > 0) {
