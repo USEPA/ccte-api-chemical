@@ -100,6 +100,8 @@ public class ChemicalDetailResource implements ChemicalDetailApi {
                     detailService.getChemicalDetailsForBatch(ids, ChemicalStructure.class, type);
             case ntatoolkit -> detailService.getChemicalDetailsForBatch(ids, NtaToolkit.class, type);
             case ccdchemicaldetails -> detailService.getChemicalDetailsForBatch(ids, CcdChemicalDetails.class, type);
+            case ccdassaydetails ->
+                    detailService.getChemicalDetailsForBatch(ids, CcdAssayDetails.class, type);
             case compact -> detailService.getChemicalDetailsForBatch(ids, Compact.class, type);
         };
     }

@@ -32,6 +32,8 @@ public interface CcdChemicalDetails extends ChemicalDetailBase {
     Integer getPubchemCount();
 
     Double getPubmedCount();
+    
+    String getStereo();
 
     Long getSourcesCount();
 
