@@ -2,14 +2,14 @@ package gov.epa.ccte.api.chemical.projection.chemicaldetail;
 
 public interface CcdAssayDetails extends CcdChemicalDetails {
 
-	String getTop();
+	Double getTop();
 
-	String getScaledTop();
+	Double getScaledTop();
 
-	String getAc50();
+	Double getAc50();
 
 	Double getLogAc50();
 
-	String getHitc();
+	Integer getHitc();
 
 }
