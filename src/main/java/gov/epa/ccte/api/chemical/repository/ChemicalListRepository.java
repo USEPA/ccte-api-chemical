@@ -67,12 +67,28 @@ public interface ChemicalListRepository extends JpaRepository<ChemicalList, Inte
     List<ChemicalListWithDtxsids> getListsWithDtxsids(String visibility);
 
     @Transactional(readOnly = true)
-    @Query( nativeQuery = true,
-            value = "select l.list_name, l.label, l.type, l.visibility, l.short_description, l.long_description, l.chemical_count, " +
-                    " l.created_at, l.updated_at " +
-                    " from ch.v_chemical_lists l join ch.v_chemical_list_chemicals c on " +
-                    " l.id = c.list_id and c.dtxsid = :dtxsid and l.visibility = :visibility and l.is_visible = true and c.is_public = true " +
-                    " order by l.type, l.list_name, l.label  " )
+    @Query(
+    	    nativeQuery = true,
+    	    value = """
+    	        SELECT DISTINCT ON (l.list_name)
+    	            l.list_name,
+    	            l.label,
+    	            l.type,
+    	            l.visibility,
+    	            l.short_description,
+    	            l.long_description,
+    	            l.chemical_count,
+    	            l.created_at,
+    	            l.updated_at
+    	        FROM ch.v_chemical_lists l
+    	        JOIN ch.v_chemical_list_chemicals c ON l.id = c.list_id
+    	        WHERE c.dtxsid = :dtxsid
+    	          AND l.visibility = :visibility
+    	          AND l.is_visible = true
+    	          AND c.is_public = true
+    	        ORDER BY l.list_name, l.updated_at DESC
+    	    """
+    	)
     List getListsByDtxsid(String dtxsid,String visibility);
 
     @Transactional(readOnly = true)
