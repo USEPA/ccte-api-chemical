@@ -9,6 +9,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Arrays;
 import java.util.List;
 
 
@@ -100,6 +101,8 @@ public class ChemicalDetailResource implements ChemicalDetailApi {
                     detailService.getChemicalDetailsForBatch(ids, ChemicalStructure.class, type);
             case ntatoolkit -> detailService.getChemicalDetailsForBatch(ids, NtaToolkit.class, type);
             case ccdchemicaldetails -> detailService.getChemicalDetailsForBatch(ids, CcdChemicalDetails.class, type);
+            case ccdassaydetails ->
+                    detailService.getCcdAssayDetails(ids);
             case compact -> detailService.getChemicalDetailsForBatch(ids, Compact.class, type);
         };
     }

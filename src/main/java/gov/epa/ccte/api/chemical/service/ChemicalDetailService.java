@@ -1,5 +1,6 @@
 package gov.epa.ccte.api.chemical.service;
 
+import gov.epa.ccte.api.chemical.projection.chemicaldetail.CcdAssayDetails;
 import gov.epa.ccte.api.chemical.projection.chemicaldetail.ChemicalDetailAllIds;
 import gov.epa.ccte.api.chemical.projection.chemicaldetail.ChemicalDetailStandard2;
 import gov.epa.ccte.api.chemical.repository.ChemicalDetailRepository;
@@ -73,5 +74,9 @@ public class ChemicalDetailService {
 
     public Long getTotalChemicals() {
         return detailRepository.count();
+    }
+    
+    public List<CcdAssayDetails> getCcdAssayDetails(String[] dtxsids) {
+        return detailRepository.getFullCcdAssayDetails(List.of(dtxsids));
     }
 }
