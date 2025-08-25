@@ -6,7 +6,9 @@ import gov.epa.ccte.api.chemical.repository.ChemicalSearchRepository;
 import gov.epa.ccte.api.chemical.web.rest.BatchMsReadyMassForm;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.data.domain.Limit;
 import org.springframework.stereotype.Service;
+
 
 import java.util.*;
 import java.util.regex.Pattern;
@@ -21,11 +23,29 @@ public class SearchChemicalService {
     private final ChemicalSearchRepository searchRepository;
     private final OpsinService opsinService;
     private static final Pattern ENCODED_PATTERN = Pattern.compile("(%[0-9A-Fa-f]{2}|\\+)");
+    private final List<String> isThisCASRN;
+    private final List<String> searchMatchWithoutInchikey;
+    private final List<String> searchMatchWithInchikey;
+    private final List<String> searchNames4SingleSearch;
+
 
     public SearchChemicalService(CaffeineFixSynonymService caffeineFixService, ChemicalSearchRepository searchRepository, OpsinService opsinService) {
         this.caffeineFixService = caffeineFixService;
         this.searchRepository = searchRepository;
         this.opsinService = opsinService;
+        // Initialize values
+        isThisCASRN = Arrays.asList("Alternate CAS-RN","Integrated Source CAS-RN","CASRN","FDA CAS-Like Identifier","Deleted CAS-RN");
+        searchMatchWithoutInchikey = Arrays.asList("Deleted CAS-RN","PC-Code","Substance_id","Approved Name","Alternate CAS-RN",
+                "CAS-RN","Synonym","Integrated Source CAS-RN","DSSTox_Compound_Id","Systematic Name","Integrated Source Name",
+                "Expert Validated Synonym","Synonym from Valid Source","FDA CAS-Like Identifier","DSSTox_Substance_Id", "EHCA Number", "EC Number");
+        searchMatchWithInchikey = Arrays.asList("Deleted CAS-RN","PC-Code","Substance_id","Approved Name","Alternate CAS-RN",
+                "CAS-RN","Synonym","Integrated Source CAS-RN","DSSTox_Compound_Id","Systematic Name","Integrated Source Name",
+                "Expert Validated Synonym","Synonym from Valid Source","FDA CAS-Like Identifier","DSSTox_Substance_Id",
+                "InChIKey", "Indigo InChIKey", "EHCA Number", "EC Number");
+        searchNames4SingleSearch = Arrays.asList("Deleted CAS-RN","PC-Code","Approved Name","Alternate CAS-RN","CAS-RN",
+                "CASRN","Synonym","Integrated Source CAS-RN","DSSTox_Compound_Id","Systematic Name","Integrated Source Name",
+                "Expert Validated Synonym","Synonym from Valid Source","FDA CAS-Like Identifier","DSSTox_Substance_Id",
+                "EHCA Number", "EC Number", "InChIKey", "Indigo InChIKey");
     }
 
 
@@ -74,22 +94,31 @@ public class SearchChemicalService {
         // Search word should be trim
         searchWord = searchWord.trim();
 
-        if(isCasrn(searchWord)){
-            log.debug("{} is casrn ", searchWord);
+        // Checking if it's an EC number first, to avoid removing leading zeros from EC numbers
+        if (isECNumber(searchWord)) {
+            log.debug("{} is EC number", searchWord);
             return searchWord;
-        } else if (isInchiKey (searchWord)) {
-            log.debug("{} is inchiKey ", searchWord);
+        }
+
+        // Checking if it's a CASRN-like format with or without dashes and removing leading zeros
+        if (searchWord.matches("^0*\\d{1,7}-?\\d{2}-?\\d$")) {
+            searchWord = searchWord.replaceFirst("^0+", "");
+        }
+
+        if (isCasrn(searchWord)) {
+            log.debug("{} is casrn", searchWord);
             return searchWord;
-        } else if (isCasrn(processCasrnDashes(searchWord))){
+        } else if (isInchiKey(searchWord)) {
+            log.debug("{} is inchiKey", searchWord);
+            return searchWord;
+        } else if (isCasrn(processCasrnDashes(searchWord))) {
             log.debug("{} is casrn with wrong dash", searchWord);
             return processCasrnDashes(searchWord);
-        }else if (isECNumber(searchWord)){
-            log.debug("{} is EC number ", searchWord);
+        } else if (StringUtils.isNumeric(searchWord.replaceAll("-", ""))) {
+            // Partial CASRN or EC Number
             return searchWord;
-        }else if(StringUtils.isNumeric(searchWord.replaceAll("-",""))) {
-            // partial CASRN or EC Number
-            return searchWord;
-        }else{
+        } else {
+
             // check for URLencoded value for Synonyms
 //            if(isUrlEncoded(searchWord)){
 //                try {
@@ -216,8 +245,9 @@ public class SearchChemicalService {
                 dtxsid = ((CcdChemicalSearchResult) chemical).getDtxsid();
             else if (chemical instanceof DtxsidOnly)
                 dtxsid = ((DtxsidOnly) chemical).getDtxsid();
-
-            if(dtxsidList.contains(dtxsid) == false){
+//            else if (chemical instanceof )
+//                dtxsid = ((DtxsidOnly) chemical).getDtxsid();
+            if(!dtxsidList.contains(dtxsid)){
                 dtxsidList.add(dtxsid);
                 returnList.add(chemical);
             } else{
@@ -256,15 +286,17 @@ public class SearchChemicalService {
         if(!isNumeric(word) && !isCasrn(word)) // 80057 - 000008057 (CASRN without dashes)
             suggestions = caffeineFixService.caffeineFix(word.toLowerCase());
 
-        if((suggestions == null || suggestions.isEmpty()) && isInchiKey(word))
-            suggestions = inchikeySuggestion(word);
-
-        // if search is systematic name, find the inchikey for it
-        if(suggestions == null || suggestions.isEmpty())
-            suggestions = opsinSuggestion(word);
-
-        if((suggestions == null || suggestions.isEmpty()) && !isCasrn(word))
-            suggestions = new ArrayList<>(Collections.singletonList(toCasrn(word)));
+        if(suggestions != null && !suggestions.isEmpty()){
+            return suggestions;
+        }else{
+            if(isInchiKey(word))
+                suggestions = inchikeySuggestion(word);
+            else if(isCasrn(word))
+                suggestions = new ArrayList<>(Collections.singletonList(toCasrn(word)));
+            else
+                // if search is systematic name, find the inchikey for it
+                suggestions = opsinSuggestion(word);
+        }
 
         return suggestions;
     }
@@ -338,6 +370,121 @@ public class SearchChemicalService {
         return result;
     }
 
+    public List<ChemicalSearchAll> getStartWith(String word, Integer top) {
+        String searchWord = preprocessingSearchWord(word);
+
+
+        log.debug("input search word = {} and process search word = {}. ", word, searchWord);
+
+        List<ChemicalSearchAll> searchResult; // exact search and final results
+        List<ChemicalSearchAll> searchResult2; // start-with results
+
+        // for adding exact search on top of return result
+        String removeSpaces = searchWord.replaceAll(" ", "");
+
+        // searchResult = searchRepository.findByModifiedValueInOrderByRankAsc(List.of(searchWord, removeSpaces),ChemicalSearchAll.class);
+        searchResult = searchRepository.findByModifiedValueInAndSearchNameInOrderByRankAsc(List.of(searchWord, removeSpaces), searchNames4SingleSearch, ChemicalSearchAll.class);
+
+        log.debug("exact search count {}",searchResult.size());
+
+        if(shouldSearchMore(searchWord, searchResult)) {
+            // avoid InChIKey
+            if (searchWord.length() > 13) {
+                log.debug("search with inchikey");
+                searchResult2 = getStartWithFromDB(searchWord, searchMatchWithInchikey, top);
+            } else {
+                log.debug("search without inchikey");
+                searchResult2 = getStartWithFromDB(searchWord, searchMatchWithoutInchikey, top);
+            }
+
+            searchResult.addAll(searchResult2); // append start-with results
+        }
+        log.debug("{} records match for {}", searchResult.size(), word);
+
+        searchResult = removeDuplicates(searchResult);
+        return searchResult;
+    }
+
+    private List<ChemicalSearchAll> getStartWithFromDB(String searchWord, List<String> searchMatchValues, Integer top) {
+
+        if(top != null && top > 0 ){
+            log.debug("picking up top {} records", top);
+            return searchRepository.findByModifiedValueStartingWithAndSearchNameInOrderByRankAscSearchValue(searchWord,
+                    searchMatchValues, Limit.of(top),
+                    ChemicalSearchAll.class);
+        }else{
+            return searchRepository.findByModifiedValueStartingWithAndSearchNameInOrderByRankAscSearchValue(searchWord,
+                    searchMatchValues, Limit.unlimited(),
+                    ChemicalSearchAll.class);
+        }
+    }
+
+
+    // identify the condition if there is not more searching needed
+    private boolean shouldSearchMore(String searchWord, List<ChemicalSearchAll> searchResult) {
+        if(ChemicalUtils.isDtxsid(searchWord) || ChemicalUtils.isDtxcid(searchWord) || ChemicalUtils.isCasrn(searchWord))
+            return false;
+            // in case CASRN is in number format
+        else if (!searchResult.isEmpty() && isThisCASRN.contains(searchResult.get(0).getSearchName()))
+            return false;
+        else
+            return true;
+    }
+
+    public List getContain(String projection, String searchWord, Integer top) {
+        switch (projection){
+            case "chemicalsearchall": {
+                 // ChemicalSearchAll.class
+                List result = getContainFromDB1(searchWord, top, ChemicalSearchAll.class);
+                return removeDuplicates(result);
+            }
+            case "dtxsidonly":{
+                // DtxsidOnly.class
+                List result =  getContainFromDB1(searchWord, top, DtxsidOnly.class);
+                return removeDuplicates(result);
+            }
+            case "ccdsearchresult":{
+                if(top != null && top > 0 ) {
+                    List result = searchRepository.containCcd(searchWord);
+                    return result.stream().limit(top).toList();
+                }else{
+                    return searchRepository.containCcd(searchWord);
+                }
+            }
+            default: return null;
+        }
+    }
+
+//    private List getContainFromDB1(String searchWord, Integer top, Class aClass) {
+//        if(top != null && top > 0 ) {
+//            log.debug("picking up top {} records", top);
+//            return searchRepository.findByModifiedValueContainsAndSearchNameInOrderByRankAscDtxsidAsc(searchWord, searchMatchWithoutInchikey, Limit.of(top), aClass);
+//            //return searchRepository.findByModifiedValueContainsOrderByRankAscDtxsid(searchWord,Limit.of(top), aClass);
+//        }else{
+//            return searchRepository.findByModifiedValueContainsAndSearchNameInOrderByRankAscDtxsidAsc(searchWord, searchMatchWithInchikey, Limit.unlimited(), aClass);
+//            //return searchRepository.findByModifiedValueContainsOrderByRankAscDtxsid(searchWord, Limit.unlimited(), aClass);
+//        }
+//    }
+
+    private List getContainFromDB1(String searchWord, Integer top, Class aClass) {
+        // Determine if Inchikey logic should be included based on searchWord length
+        boolean useInchikey = searchWord != null && searchWord.length() >= 13;
+
+        // Determine the appropriate search match type
+        var searchMatch = useInchikey ? searchMatchWithInchikey : searchMatchWithoutInchikey;
+
+        // Determine the limit based on the 'top' parameter
+        var limit = (top != null && top > 0) ? Limit.of(top) : Limit.unlimited();
+
+        // Call the repository method with the appropriate parameters
+        return searchRepository.findByModifiedValueContainsAndSearchNameInOrderByRankAscDtxsidAsc(
+                searchWord,
+                searchMatch,
+                limit,
+                aClass
+        );
+    }
+
 
     // This will remove duplicates(same dtxsid number) from search result
 /*    public List<SearchResult> removeSearchResultDuplicates(List<SearchResult> results) {
@@ -355,6 +502,7 @@ public class SearchChemicalService {
         }
         return returnList;
     }*/
+    
 }
 
 

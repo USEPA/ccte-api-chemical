@@ -1,7 +1,44 @@
-application:
-  api-env: "Staging Environment"
-  api-url: "https://api-ccte-stg.epa.gov"
 
+# ===================================================================
+# Spring Boot configuration for the "stg" profile.
+#
+# This configuration overrides the application.yml file.
+# ===================================================================
+
+spring:
+  application:
+    name: chemical
+  jackson:
+    serialization:
+      indent-output: true
+  datasource:
+    type: com.zaxxer.hikari.HikariDataSource
+    url: ${CTX_CONNECTION_STRING}
+    username: ${CTX_USER}
+    password: ${CTX_PASSWORD}
+    hikari:
+      poolName: Hikari
+      auto-commit: false
+      #data-source-class-name: org.postgresql.ds.PGSimpleDataSource
+#      minimum-idle: 5
+#      maximum-pool-size: 20
+#      idle-timeout: 30000
+#      max-lifetime: 2000000
+#      connection-timeout: 30000
+  jpa:
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+    show-sql: true
+    properties:
+      hibernate.id.new_generator_mappings: true
+      hibernate.connection.provider_disables_autocommit: true
+      hibernate.cache.use_second_level_cache: false
+      hibernate.cache.use_query_cache: false
+      hibernate.generate_statistics: false
+      hibernate.default_schema: ms
+      hibernate.hbm2ddl.auto: none
+Springdoc:
+  swagger-ui:
+    show-extensions: true
 #logging
 logging:
   level:
@@ -9,3 +46,12 @@ logging:
     org.hibernate.SQL: info
     gov.epa.ccte.api.*: debug
     org.springframework: warn
+    org.apache.catalina: debug
+    org.apache.coyote: debug
+    org.apache.tomcat: debug
+
+# server
+server:
+  servlet:
+    context-path: /
+  port: 9300

@@ -1,6 +1,7 @@
 package gov.epa.ccte.api.chemical.web.rest.errors;
 
 import org.springframework.http.*;
+import org.springframework.lang.NonNull;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -14,8 +15,8 @@ import java.util.Map;
 @RestControllerAdvice
 public class APIExceptionHandler extends ResponseEntityExceptionHandler {
 
-    @ExceptionHandler(HigherNumberOfDtxsidException.class)
-    ProblemDetail handleHigherNumberOfDtxsidException(HigherNumberOfDtxsidException ex){
+    @ExceptionHandler(HigherNumberOfIdsException.class)
+    ProblemDetail handleHigherNumberOfDtxsidException(HigherNumberOfIdsException ex){
         return ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, ex.getMessage());
     }
 
@@ -49,7 +50,7 @@ public class APIExceptionHandler extends ResponseEntityExceptionHandler {
 //    }
 
     @Override
-    protected ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException ex, HttpHeaders headers, HttpStatusCode status, WebRequest request) {
+    protected ResponseEntity<Object> handleMethodArgumentNotValid(@NonNull MethodArgumentNotValidException ex, @NonNull HttpHeaders headers, @NonNull HttpStatusCode status, @NonNull WebRequest request) {
 
         ProblemDetail problemDetail = ProblemDetail.forStatus(HttpStatus.BAD_REQUEST);
         problemDetail.setTitle("Constraint Violations");

@@ -10,10 +10,12 @@ import lombok.Setter;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 
+import java.time.OffsetDateTime;
+
 @Getter
 @Setter
 @Entity
-@Table(name = "chemical_synonym", schema = "ms")
+@Table(name = "v_chemical_snonyms", schema = "ch")
 public class ChemicalSynonym {
     @Id
     @Size(max = 45)
@@ -28,24 +30,30 @@ public class ChemicalSynonym {
     @JdbcTypeCode(SqlTypes.LONGVARCHAR)
     private String validSynonym;
 
-    @Column(name = "good_synonyms")
+    @Column(name = "good_synonym")
     @JdbcTypeCode(SqlTypes.LONGVARCHAR)
     private String goodSynonyms;
 
-    @Column(name = "delete_synonyms")
+    @Column(name = "deleted_synonym")
     @JdbcTypeCode(SqlTypes.LONGVARCHAR)
     private String deleteSynonyms;
 
-    @Column(name = "other_synonyms")
+    @Column(name = "other_synonym")
     @JdbcTypeCode(SqlTypes.LONGVARCHAR)
     private String otherSynonyms;
 
-    @Column(name = "beilstein_synonyms")
+    @Column(name = "beilstein_synonym")
     @JdbcTypeCode(SqlTypes.LONGVARCHAR)
     private String beilsteinSynonyms;
 
-    @Column(name = "alternate_synonyms")
+    @Column(name = "alternate_synonym")
     @JdbcTypeCode(SqlTypes.LONGVARCHAR)
     private String alternateSynonyms;
+
+    @Column(name = "is_public")
+    private Boolean isPublic;
+
+    @Column(name = "import_date")
+    private OffsetDateTime importDate;
 
 }
