@@ -78,7 +78,7 @@ server:
 application:
   api-key-name: "x-api-key"
   api-env: "Production Environment"
-  api-url: "https://api-ccte.epa.gov"
+  api-url: "https://comptox.epa.gov/ctx-api"
   batch-size: 1000
 
 # CORS is disabled by default on microservices, as you should access them through a gateway.
