@@ -74,7 +74,7 @@ public interface ChemicalPropertyPredictedRepository extends JpaRepository<Chemi
     			MAX(d.prop_value) AS experimentalMax,
     			MIN(pd.prop_value) AS predictedMin,
     			MAX(pd.prop_value) AS predictedMax,
-    		pd.prop_unit AS unit
+    			pd.prop_unit AS unit
     		FROM
     			chemprop.mv_predicted_data pd
     		LEFT JOIN
@@ -88,3 +88,4 @@ public interface ChemicalPropertyPredictedRepository extends JpaRepository<Chemi
     				""", nativeQuery = true)
     List<ChemicalPropertySummary> findSummaryByDtxsidAndPropName(@Param("dtxsid")String dtxsid, @Param("propName")String propName, @Param("propCategory")String propCategory);
 }
+
