@@ -39,23 +39,15 @@ public interface ChemicalPropertyPredictedRepository extends JpaRepository<Chemi
     			pd.prop_name AS propName,
     			PERCENTILE_CONT(0.5) WITHIN GROUP (ORDER BY d.prop_value) AS experimentalMedian,
     			PERCENTILE_CONT(0.5) WITHIN GROUP (ORDER BY pd.prop_value) AS predictedMedian,
-    		CASE
-    			WHEN AVG(d.prop_value) IS NULL THEN 'null'
-    			ELSE CONCAT(AVG(d.prop_value), '(', COUNT(distinct d.prop_value), ')')
-    		END AS experimentalAverage,
-    		CASE
-    			WHEN AVG(pd.prop_value) IS NULL THEN 'null'
-    			ELSE CONCAT(AVG(pd.prop_value), '(', COUNT(distinct pd.prop_value), ')')
-    		END AS predictedAverage,
-    		CASE
-    			WHEN MAX(d.prop_value) > MIN(d.prop_value) THEN CONCAT(CONCAT(MIN(d.prop_value), ' to '), MAX(d.prop_value))
-    			ELSE CAST(MAX(d.prop_value) AS text)
-    		END AS experimentalRange,
-    		CASE
-    			WHEN MAX(pd.prop_value) > MIN(pd.prop_value) THEN CONCAT(CONCAT(MIN(pd.prop_value), ' to '), MAX(pd.prop_value))
-    			ELSE CAST(MAX(pd.prop_value) AS text)
-    		END AS predictedRange,
-    		pd.prop_unit AS unit
+    			AVG(d.prop_value) AS experimentalAverage,
+    			COUNT(distinct d.prop_value) AS experimentalCount,
+    			AVG(pd.prop_value) AS predictedAverage,
+    			COUNT(distinct pd.prop_value) AS predictedCount,
+    			MIN(d.prop_value) AS experimentalMin,
+    			MAX(d.prop_value) AS experimentalMax,
+    			MIN(pd.prop_value) AS predictedMin,
+    			MAX(pd.prop_value) AS predictedMax,
+    			pd.prop_unit AS unit
     		FROM
     			chemprop.mv_predicted_data pd
     		LEFT JOIN
@@ -74,23 +66,15 @@ public interface ChemicalPropertyPredictedRepository extends JpaRepository<Chemi
     			pd.prop_name AS propName,
     			PERCENTILE_CONT(0.5) WITHIN GROUP (ORDER BY d.prop_value) AS experimentalMedian,
     			PERCENTILE_CONT(0.5) WITHIN GROUP (ORDER BY pd.prop_value) AS predictedMedian,
-    		CASE
-    			WHEN AVG(d.prop_value) IS NULL THEN 'null'
-    			ELSE CONCAT(AVG(d.prop_value), '(', COUNT(distinct d.prop_value), ')')
-    		END AS experimentalAverage,
-    		CASE
-    			WHEN AVG(pd.prop_value) IS NULL THEN 'null'
-    			ELSE CONCAT(AVG(pd.prop_value), '(', COUNT(distinct pd.prop_value), ')')
-    		END AS predictedAverage,
-    		CASE
-    			WHEN MAX(d.prop_value) > MIN(d.prop_value) THEN CONCAT(CONCAT(MIN(d.prop_value), ' to '), MAX(d.prop_value))
-    			ELSE CAST(MAX(d.prop_value) AS text)
-    		END AS experimentalRange,
-    		CASE
-    			WHEN MAX(pd.prop_value) > MIN(pd.prop_value) THEN CONCAT(CONCAT(MIN(pd.prop_value), ' to '), MAX(pd.prop_value))
-    			ELSE CAST(MAX(pd.prop_value) AS text)
-    		END AS predictedRange,
-    		pd.prop_unit AS unit
+    			AVG(d.prop_value) AS experimentalAverage,
+    			COUNT(distinct d.prop_value) AS experimentalCount,
+    			AVG(pd.prop_value) AS predictedAverage,
+    			COUNT(distinct pd.prop_value) AS predictedCount,
+    			MIN(d.prop_value) AS experimentalMin,
+    			MAX(d.prop_value) AS experimentalMax,
+    			MIN(pd.prop_value) AS predictedMin,
+    			MAX(pd.prop_value) AS predictedMax,
+    			pd.prop_unit AS unit
     		FROM
     			chemprop.mv_predicted_data pd
     		LEFT JOIN
@@ -104,3 +88,4 @@ public interface ChemicalPropertyPredictedRepository extends JpaRepository<Chemi
     				""", nativeQuery = true)
     List<ChemicalPropertySummary> findSummaryByDtxsidAndPropName(@Param("dtxsid")String dtxsid, @Param("propName")String propName, @Param("propCategory")String propCategory);
 }
+
