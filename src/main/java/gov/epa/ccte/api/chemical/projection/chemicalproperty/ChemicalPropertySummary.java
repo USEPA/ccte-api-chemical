@@ -3,12 +3,16 @@ package gov.epa.ccte.api.chemical.projection.chemicalproperty;
 public interface ChemicalPropertySummary {
 
 	String getPropName();
-	String getExperimentalAverage();
+	Float getExperimentalAverage();
+	Integer getExperimentalCount();
 	Float getExperimentalMedian();
-	String getExperimentalRange();    
-	String getPredictedAverage();     
+	Float getExperimentalMin();
+	Float getExperimentalMax();
+	Float getPredictedAverage();  
+	Integer getPredictedCount();
 	Float getPredictedMedian();
-	String getPredictedRange();
+	Float getPredictedMin();
+	Float getPredictedMax();
 	String getUnit();
 
 }
