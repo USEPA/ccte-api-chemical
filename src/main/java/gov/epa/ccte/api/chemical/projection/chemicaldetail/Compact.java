@@ -7,9 +7,14 @@ import io.swagger.v3.oas.annotations.media.Schema;
  */
 @Schema(name = "compact", description = "Minimum attributes for chemical details APIs")
 public interface Compact extends ChemicalDetailBase {
+	
     String getDtxsid();
-
     String getCasrn();
-
     String getPreferredName();
+    
+    
+    Void setDtxsid(String dtxsid);
+    Void setCasrn(String casrn);
+    Void setPreferredName(String preferredName);
+    
 }

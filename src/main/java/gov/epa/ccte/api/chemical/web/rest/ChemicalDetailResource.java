@@ -9,7 +9,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Arrays;
 import java.util.List;
 
 
@@ -40,7 +39,7 @@ public class ChemicalDetailResource implements ChemicalDetailApi {
     public ChemicalDetailBase detailByDtxsid( String dtxsid, ChemicalDetailProjection projection) {
         log.debug("dtxsid = {}", dtxsid);
 
-        List data = getChemicalDetails(new String[]{dtxsid}, "dtxsid", projection);
+        List<?> data = getChemicalDetails(new String[]{dtxsid}, "dtxsid", projection);
 
         if(data.isEmpty())
             throw  new IdentifierNotFoundException("dtxsid", dtxsid);
@@ -53,7 +52,7 @@ public class ChemicalDetailResource implements ChemicalDetailApi {
     public ChemicalDetailBase detailsByDtxcid(String dtxcid, ChemicalDetailProjection projection) {
         log.debug("dtxcid = {}", dtxcid);
 
-        List data = getChemicalDetails(new String[]{dtxcid}, "dtxcid", projection);
+        List<?> data = getChemicalDetails(new String[]{dtxcid}, "dtxcid", projection);
 
         if(data.isEmpty())
             throw  new IdentifierNotFoundException("dtxcid", dtxcid);
@@ -62,47 +61,43 @@ public class ChemicalDetailResource implements ChemicalDetailApi {
     }
     
     @Override
-    public List batchDtxsidSearch(String[] dtxsids, ChemicalDetailProjection projection) {
+    public List<?> batchDtxsidSearch(String[] dtxsids, ChemicalDetailProjection projection) {
 
         log.debug("dtxsids = {}", dtxsids.length);
 
         if(dtxsids.length > batchSize)
             throw new HigherNumberOfIdsException(dtxsids.length, batchSize, "dtxsid" );
 
-        List data =  getChemicalDetails(dtxsids, "dtxsid", projection);
+        List<?> data =  getChemicalDetails(dtxsids, "dtxsid", projection);
         log.debug("database return {}", data.size());
 
         return data;
     }
    
     @Override
-    public List batchDtxcidSearch(String[] dtxcids, ChemicalDetailProjection projection) {
+    public List<?> batchDtxcidSearch(String[] dtxcids, ChemicalDetailProjection projection) {
 
         log.debug("dtxcids = {}", dtxcids.length);
 
         if(dtxcids.length > batchSize)
             throw new HigherNumberOfIdsException(dtxcids.length, batchSize, "dtxcid" );
 
-        List data =  getChemicalDetails(dtxcids, "dtxcid", projection);
+        List<?> data =  getChemicalDetails(dtxcids, "dtxcid", projection);
         log.debug("database return {}", data.size());
 
         return data;
     }
 
-    private List getChemicalDetails(String[] ids, String type, ChemicalDetailProjection projection) {
+    // Allocates ALL (optional) chemical detail projections to ALL chemical detail endpoints. Default is ChemicalDetailAll.class
+    List<?> getChemicalDetails(String[] ids, String type, ChemicalDetailProjection projection) {
         return switch (projection) {
-            case chemicaldetailall ->
-                    detailService.getChemicalDetailsForBatch(ids, ChemicalDetailAll.class, type);
-            case chemicaldetailstandard ->
-                    detailService.getChemicalDetailsForBatch(ids, ChemicalDetailStandard.class, type);
-            case chemicalidentifier ->
-                    detailService.getChemicalDetailsForBatch(ids, ChemicalIdentifier.class, type);
-            case chemicalstructure ->
-                    detailService.getChemicalDetailsForBatch(ids, ChemicalStructure.class, type);
+            case chemicaldetailall -> detailService.getChemicalDetailsForBatch(ids, ChemicalDetailAll.class, type);
+            case chemicaldetailstandard -> detailService.getChemicalDetailsForBatch(ids, ChemicalDetailStandard.class, type);
+            case chemicalidentifier -> detailService.getChemicalDetailsForBatch(ids, ChemicalIdentifier.class, type);
+            case chemicalstructure -> detailService.getChemicalDetailsForBatch(ids, ChemicalStructure.class, type);
             case ntatoolkit -> detailService.getChemicalDetailsForBatch(ids, NtaToolkit.class, type);
             case ccdchemicaldetails -> detailService.getChemicalDetailsForBatch(ids, CcdChemicalDetails.class, type);
-            case ccdassaydetails ->
-                    detailService.getCcdAssayDetails(ids);
+            case ccdassaydetails -> detailService.getCcdAssayDetails(ids);
             case compact -> detailService.getChemicalDetailsForBatch(ids, Compact.class, type);
         };
     }

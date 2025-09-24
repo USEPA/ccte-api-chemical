@@ -28,7 +28,7 @@ public class ChemicalListResource implements ChemicalListApi {
     }
 
     @Override
-    public List listAll(ChemicalListProjection projection) {
+    public List<?> listAll(ChemicalListProjection projection) {
         return switch (projection) {
             case chemicallistall -> listRepository.findByVisibilityAndIsVisibleOrderByTypeAscListNameAsc("PUBLIC", true, ChemicalListAll.class);
             case chemicallistname -> listRepository.findByVisibilityAndIsVisibleOrderByTypeAscListNameAsc("PUBLIC", true, ChemicalListName.class);
@@ -43,7 +43,7 @@ public class ChemicalListResource implements ChemicalListApi {
     }
 
     @Override
-    public List listByType(String type, ChemicalListProjection projection) {
+    public List<?> listByType(String type, ChemicalListProjection projection) {
         return switch (projection) {
             case chemicallistall -> listRepository.findByTypeAndVisibilityAndIsVisibleOrderByListNameAsc(type, "PUBLIC", true, ChemicalListAll.class);
             case chemicallistname -> listRepository.findByTypeAndVisibilityAndIsVisibleOrderByListNameAsc(type, "PUBLIC", true, ChemicalListName.class);
@@ -58,8 +58,6 @@ public class ChemicalListResource implements ChemicalListApi {
         return switch (projection) {
             case chemicallistall -> listRepository.findByListNameIgnoreCaseAndVisibilityAndIsVisible(listName, "PUBLIC", true, ChemicalListAll.class)
                     .orElseThrow(() -> new IdentifierNotFoundException("List name", listName));
-            case chemicallistname -> listRepository.findByListNameIgnoreCaseAndVisibilityAndIsVisible(listName, "PUBLIC", true, ChemicalListName.class)
-                    .orElseThrow(() -> new IdentifierNotFoundException("List name", listName));
             case chemicallistwithdtxsids -> listRepository.getListWithDtxsidsByListName(listName, "PUBLIC")
                     .orElseThrow(() -> new IdentifierNotFoundException("List name", listName));
             default -> null;
@@ -67,13 +65,13 @@ public class ChemicalListResource implements ChemicalListApi {
     }
 
     @Override
-    public List listByDtxsid(String dtxsid, ChemicalListProjection projection) {
+    public List<?> listByDtxsid(String dtxsid, ChemicalListProjection projection) {
         log.debug("dtxsid={}, projection={}", dtxsid, projection);
         List<String> chemicalLists = chemicalListChemicalRepository.getListNames(dtxsid, "PUBLIC");
         return switch (projection) {
             case chemicallistname -> listRepository.findByListNameInIgnoreCaseAndVisibilityAndIsVisibleOrderByListNameAsc(chemicalLists, "PUBLIC", true, ChemicalListName.class);
             case chemicallistall -> listRepository.getListsByDtxsid(dtxsid, "PUBLIC");
-            case ccdchemicaldetaillists -> listRepository.getListsByDtxsid(dtxsid, "PUBLIC");
+            case ccdchemicaldetaillists -> listRepository.getListsByDtxsidCcd(dtxsid, "PUBLIC");
             default -> null;
         };
     }
