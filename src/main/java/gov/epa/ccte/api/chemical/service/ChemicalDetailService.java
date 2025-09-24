@@ -56,7 +56,7 @@ public class ChemicalDetailService {
 
     	}
 
-    private Long maximumId(List<ChemicalDetailStandard2> data) {
+    public Long maximumId(List<ChemicalDetailStandard2> data) {
         if(!data.isEmpty()){
             return (data.get(data.size()-1)).getId();
         }else{
@@ -64,7 +64,7 @@ public class ChemicalDetailService {
         }
     }
 
-    private Long maximumId2(List<ChemicalDetailAllIds> data) {
+    public Long maximumId2(List<ChemicalDetailAllIds> data) {
         if(!data.isEmpty()){
             return (data.get(data.size()-1)).getId();
         }else{

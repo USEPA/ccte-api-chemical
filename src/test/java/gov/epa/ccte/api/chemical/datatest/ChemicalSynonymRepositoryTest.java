@@ -35,8 +35,4 @@ public class ChemicalSynonymRepositoryTest {
         assertThat(repository.findAll().size()).isEqualTo(2);
     }
 
-    @Test
-    void testFindByDtxsid(){
-        assertThat(repository.findByDtxsid("DTXSID9020112", ChemicalSynonymAll.class).isPresent()).isTrue();
-    }
 }

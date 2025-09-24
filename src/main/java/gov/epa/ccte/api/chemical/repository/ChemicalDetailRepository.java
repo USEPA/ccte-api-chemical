@@ -22,22 +22,18 @@ public interface ChemicalDetailRepository extends JpaRepository<ChemicalDetail, 
     // Single chemical search
     @Transactional(readOnly = true)
     @RestResource(rel = "findByDtxsid", path = "by-dtxsid", exported = true)
-    <T>
-    Optional<T> findByDtxsid(@Param("dtxsid") String dtxsid, Class<T> type);
+    <T>List<T> findByDtxsid(@Param("dtxsid") String dtxsid, Class<T> type);
 
     @Transactional(readOnly = true)
     @RestResource(rel = "findByDtxcid", path = "by-dtxcid", exported = true)
-    <T>
-    Optional<T> findByDtxcid(String dtxcid, Class<T> type);
+    <T>List<T> findByDtxcid(String dtxcid, Class<T> type);
 
     // Batch search
     @Transactional(readOnly = true)
-    <T>
-    List<T> findByDtxsidInOrderByDtxsidAsc(String[] dtxsid, Class<T> type);
+    <T>List<T> findByDtxsidInOrderByDtxsidAsc(String[] dtxsid, Class<T> type);
 
     @Transactional(readOnly = true)
-    <T>
-    List<T> findByDtxcidInOrderByDtxcidAsc(String[] dtxcid, Class<T> type);
+    <T>List<T> findByDtxcidInOrderByDtxcidAsc(String[] dtxcid, Class<T> type);
 
     // Query for chemical files
 
@@ -91,6 +87,7 @@ public interface ChemicalDetailRepository extends JpaRepository<ChemicalDetail, 
     @Query(value = """
     	    SELECT
     	        -- CcdChemicalDetails fields
+    	        cd.id AS id,
     	        cd.dtxsid AS dtxsid,
     	        cd.dtxcid AS dtxcid,
     	        cd.casrn AS casrn,
@@ -104,6 +101,8 @@ public interface ChemicalDetailRepository extends JpaRepository<ChemicalDetail, 
     	        cd.inchi_string AS inchiString,
     	        cd.inchikey AS inchikey,
     	        cd.average_mass AS averageMass,
+    	        cd.percent_assays AS percentAssays,
+    	        cd.toxcast_select AS toxcastSelect,
     	        cd.qsar_ready_smiles AS qsarReadySmiles,
     	        cd.ms_ready_smiles AS msReadySmiles,
     	        cd.qc_level AS qcLevel,
