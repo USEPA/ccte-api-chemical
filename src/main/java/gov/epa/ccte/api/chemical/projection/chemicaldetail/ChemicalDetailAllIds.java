@@ -7,4 +7,9 @@ public interface ChemicalDetailAllIds {
 	String getDtxsid();
 	String getDtxcid();
 
+	
+	Void setId(Long id);
+	Void setDtxsid(String dtxsid);
+	Void setDtxcid(String dtxcid);
+	
 }

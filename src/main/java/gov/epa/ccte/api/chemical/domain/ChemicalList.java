@@ -2,7 +2,10 @@ package gov.epa.ccte.api.chemical.domain;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Size;
+import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.AllArgsConstructor;
 import lombok.Setter;
 
 import java.time.Instant;
@@ -10,6 +13,9 @@ import java.time.Instant;
 @Getter
 @Setter
 @Entity
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 @Table(name = "v_chemical_lists", schema = "ch")
 public class ChemicalList {
     @Id

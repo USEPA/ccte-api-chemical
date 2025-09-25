@@ -16,14 +16,13 @@ import java.util.Optional;
 
 @RepositoryRestResource(collectionResourceRel = "chemicalSynonym", path = "chemical-synonym", itemResourceRel = "chemicalSynonym", exported = false)
 public interface ChemicalSynonymRepository extends JpaRepository<ChemicalSynonym, String> {
-	
-    @Transactional(readOnly = true)
+
+	@Transactional(readOnly = true)
     @RestResource(rel = "findByDtxsid", path = "by-dtxsid", exported = false)
-    <T>
-    Optional<T> findByDtxsid(String dtxsid, Class<T> type);
-
+    <T> Optional<T> findByDtxsid(String dtxsid, Class<T> type);
+    
     <T> Optional<T> findByDtxsidAndIsPublic(String dtxsid, Boolean isPublic, Class<T> type);
-
+    
     <T> List<T> findByDtxsidInAndIsPublicOrderByDtxsidAsc(Collection<String> dtxsids, Boolean isPublic, Class<T> type);
     
     @Query(nativeQuery = true,

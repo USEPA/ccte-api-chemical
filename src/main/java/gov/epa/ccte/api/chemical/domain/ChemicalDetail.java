@@ -8,7 +8,6 @@ import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.math.BigDecimal;
 
 @Getter
 @Setter
@@ -53,7 +52,7 @@ public class ChemicalDetail {
     private Double monoisotopicMass;
 
     @Column(name = "percent_assays")
-    private BigDecimal percentAssays;
+    private Double percentAssays;
 
     @Column(name = "pubchem_count")
     private Integer pubchemCount;

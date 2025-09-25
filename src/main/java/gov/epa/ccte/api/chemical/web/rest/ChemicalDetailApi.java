@@ -107,7 +107,7 @@ public interface ChemicalDetailApi {
                             schema=@Schema(oneOf = {ProblemDetail.class})))
     })
     @RequestMapping(value = "/detail/search/by-dtxsid/", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
-	List batchDtxsidSearch(@io.swagger.v3.oas.annotations.parameters.RequestBody(required = true, description = "JSON array of DSSTox Substance Identifier",
+	List<?> batchDtxsidSearch(@io.swagger.v3.oas.annotations.parameters.RequestBody(required = true, description = "JSON array of DSSTox Substance Identifier",
             content = {@Content (array = @ArraySchema(schema = @Schema(implementation = String.class)),
             examples = {@ExampleObject("\"[\\\"DTXSID7020182\\\",\\\"DTXSID9020112\\\"]\"")})})
                     @RequestBody String[] dtxsids,
@@ -130,7 +130,7 @@ public interface ChemicalDetailApi {
                             schema=@Schema(oneOf = {ProblemDetail.class})))
     })
     @RequestMapping(value = "/detail/search/by-dtxcid/", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
-	List batchDtxcidSearch( @io.swagger.v3.oas.annotations.parameters.RequestBody(required = true, description = "JSON array of DSSTox Compound Identifier",
+	List<?> batchDtxcidSearch( @io.swagger.v3.oas.annotations.parameters.RequestBody(required = true, description = "JSON array of DSSTox Compound Identifier",
             content = {@Content (array = @ArraySchema(schema = @Schema(implementation = String.class)),
             examples = {@ExampleObject("\"[\\\"DTXCID505\\\",\\\"DTXSID9020112\\\"]\"")})})
                     @RequestBody String[] dtxcids,
