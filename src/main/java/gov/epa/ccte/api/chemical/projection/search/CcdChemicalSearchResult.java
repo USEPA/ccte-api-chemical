@@ -1,19 +1,25 @@
 package gov.epa.ccte.api.chemical.projection.search;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+
 import jakarta.persistence.Transient;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.math.BigInteger;
 
 @Setter
 @Getter
-//@RequiredArgsConstructor
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class CcdChemicalSearchResult {
 
     @JsonProperty("dtxsid")
-    final private String dtxsid;
+    private String dtxsid;
 
     // column for UI - it is not in table
     @Transient
@@ -21,100 +27,100 @@ public class CcdChemicalSearchResult {
     private Boolean selected = false;
 
     @JsonProperty("dtxcid")
-    final private String dtxcid;
+    private String dtxcid;
 
     @JsonProperty("genericSubstanceId")
-    final private Integer genericSubstanceId;
+    private Integer genericSubstanceId;
 
     @JsonProperty("casrn")
-    final private String casrn;
+    private String casrn;
 
     @JsonProperty("preferredName")
-    final private String preferredName;
+    private String preferredName;
 
     @JsonProperty("compoundId")
-    final private Integer compoundId;
+    private Integer compoundId;
 
     @JsonProperty("stereo")
-    final private Integer stereo;
+    private Integer stereo;
 
     @JsonProperty("isotope")
-    final private Integer isotope;
+    private Integer isotope;
 
     @JsonProperty("multicomponent")
-    final private Integer multicomponent;
+    private Integer multicomponent;
 
     @JsonProperty("pubchemCount")
-    final private Integer pubchemCount;
+    private Integer pubchemCount;
 
     @JsonProperty("pubmedCount")
-    final private Integer pubmedCount;
+    private Integer pubmedCount;
 
     @JsonProperty("sourcesCount")
-    final private Integer sourcesCount;
+    private Integer sourcesCount;
 
     @JsonProperty("cpdataCount")
-    final private Long cpdataCount;
+    private Long cpdataCount;
 
     @JsonProperty("activeAssays")
-    final private Integer activeAssays;
+    private Integer activeAssays;
 
     @JsonProperty("totalAssays")
-    final private Integer totalAssays;
+    private Integer totalAssays;
 
     @JsonProperty("percentAssays")
-    final private BigInteger percentAssays;
+    private BigInteger percentAssays;
 
     @JsonProperty("toxcastSelect")
-    final private String toxcastSelect;
+    private String toxcastSelect;
 
     @JsonProperty("monoisotopicMass")
-    final private Double monoisotopicMass;
+    private Double monoisotopicMass;
 
     @JsonProperty("molFormula")
-    final private String molFormula;
+    private String molFormula;
 
     @JsonProperty("qcLevel")
-    final private Integer qcLevel;
+    private Integer qcLevel;
 
     @JsonProperty("qcLevelDesc")
-    final private String qcLevelDesc;
+    private String qcLevelDesc;
 
     @JsonProperty("pubchemCid")
-    final private Integer pubchemCid;
+    private Integer pubchemCid;
 
     @JsonProperty("hasStructureImage")
-    final private Boolean hasStructureImage;
+    private Boolean hasStructureImage;
 
     @JsonProperty("relatedSubstanceCount")
-    final private Integer relatedSubstanceCount;
+    private Integer relatedSubstanceCount;
 
     @JsonProperty("relatedStructureCount")
-    final private Integer relatedStructureCount;
+    private Integer relatedStructureCount;
 
     @JsonProperty("iupacName")
-    final private String iupacName;
+    private String iupacName;
 
     @JsonProperty("smiles")
-    final private String smiles;
+    private String smiles;
 
     @JsonProperty("inchiString")
-    final private String inchiString;
+    private String inchiString;
 
-    @JsonProperty("inchiKey")
-    final private String inchikey;
+    @JsonProperty("inchikey")
+    private String inchikey;
 
     @JsonProperty("averageMass")
-    final private Double averageMass;
+    private Double averageMass;
 
     @JsonProperty("rank")
-    final private Integer rank;
+    private Integer rank;
 
     @JsonProperty("searchMatch")
-    final private String searchMatch;
+    private String searchMatch;
 
     @JsonProperty("searchWord")
-    final private String searchWord;
+    private String searchWord;
 
     public CcdChemicalSearchResult(String dtxsid, String dtxcid, Integer genericSubstanceId, String casrn, String preferredName, Integer compoundId, Integer stereo, Integer isotope, Integer multicomponent, Integer pubchemCount, Integer pubmedCount, Integer sourcesCount, Long cpdataCount, Integer activeAssays, Integer totalAssays, BigInteger percentAssays, String toxcastSelect, Double monoisotopicMass, String molFormula, Integer qcLevel, String qcLevelDesc, Integer pubchemCid, Boolean hasStructureImage, Integer relatedSubstanceCount, Integer relatedStructureCount, String iupacName, String smiles, String inchiString, String inchikey, Double averageMass, Integer rank, String searchMatch, String searchWord) {
         this.dtxsid = dtxsid;
@@ -151,5 +157,5 @@ public class CcdChemicalSearchResult {
         this.rank = rank;
         this.searchMatch = searchMatch;
         this.searchWord = searchWord;
-    }
+    }    
 }
