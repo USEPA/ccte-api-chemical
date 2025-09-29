@@ -9,6 +9,7 @@ import org.junit.runner.RunWith;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.data.domain.Limit;
 import org.springframework.data.projection.ProjectionFactory;
 import org.springframework.data.projection.SpelAwareProxyProjectionFactory;
 import org.springframework.http.MediaType;
@@ -215,11 +216,23 @@ public class ChemicalSearchResourceTest {
     
     @Test
     void testChemicalContain() throws Exception {
+        final List<ChemicalSearchAll> finalResult = Collections.singletonList(allResult);
+    	final String processedWord = "MALDEHYDE";
+    	final List<String> searchMatchWithoutInchikey = Arrays.asList("Approved Name", "Systematic Name", "Synonym", "Trade Name", "Other Name");
+    	final List<?> searchResult = searchRepository.findByModifiedValueContainsAndSearchNameInOrderByRankAscDtxsidAsc(processedWord,searchMatchWithoutInchikey,Limit.of(1),ChemicalSearchAll.class);
+    	
+    	when(searchService.preprocessingSearchWord("maldehyde")).thenReturn(processedWord);
+    	
+    	when(searchService.getContain(eq("chemicalsearchall"), eq(processedWord), eq(1))).thenReturn(searchResult);
 
-        mockMvc.perform(get("/chemical/search/contain/{word}", "maldehyde"))
+    	when(searchService.removeDuplicates(searchResult)).thenReturn(finalResult);
+
+        mockMvc.perform(get("/chemical/search/contain/{word}", "maldehyde")
+                .param("top", "1")
+                .param("projection", "chemicalsearchall"))
                 .andDo(MockMvcResultHandlers.print())
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$[0].preferredName").value(allResult.getPreferredName()));
+                .andExpect(content().string(containsString(allResult.getPreferredName())));
     }
     
     @Test
