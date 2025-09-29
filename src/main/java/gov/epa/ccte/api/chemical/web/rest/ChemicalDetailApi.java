@@ -76,13 +76,13 @@ public interface ChemicalDetailApi {
             @RequestParam(value = "projection", required = false, defaultValue = "chemicaldetailall") ChemicalDetailProjection projection);
 
 	/**
-	 * {@code GET  /chemical/detail/by-smiles/:smiles} : get Compact list of chemicalDetail for the "smiles".
+	 * {@code GET  /chemical/detail/by-smiles/:smiles} : get Compact list of chemicalDetail for the "SMILES".
 	 *
-	 * @param smiles the matching smiles of the chemicalDetail to retrieve.
+	 * @param SMILES the matching SMILES of the chemicalDetail to retrieve.
 	 * @return the {@link ResponseEntity} with status {@code 200 (OK)} and with body the list of compact chemicalDetail}.
 	 */
-	@Operation(summary = "Get data by smiles",
-            description = "Specify the smiels as a parameter, and available projection is Compact.")
+	@Operation(summary = "Get data by SMILES",
+            description = "Specify the SMILES as a parameter, and available projection is Compact.")
     @ApiResponses(value= {
             @ApiResponse(responseCode = "200", description = "OK",  content = @Content( mediaType = "application/json",
                     schema=@Schema(oneOf = {Compact.class})))
@@ -156,3 +156,4 @@ public interface ChemicalDetailApi {
                     ChemicalDetailProjection projection);
 
 }
+
