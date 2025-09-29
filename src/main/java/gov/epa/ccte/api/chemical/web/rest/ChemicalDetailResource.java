@@ -1,6 +1,7 @@
 package gov.epa.ccte.api.chemical.web.rest;
 
 import gov.epa.ccte.api.chemical.projection.chemicaldetail.*;
+import gov.epa.ccte.api.chemical.repository.ChemicalDetailRepository;
 import gov.epa.ccte.api.chemical.service.ChemicalDetailService;
 import gov.epa.ccte.api.chemical.web.rest.errors.HigherNumberOfIdsException;
 import gov.epa.ccte.api.chemical.web.rest.errors.IdentifierNotFoundException;
@@ -17,13 +18,15 @@ import java.util.List;
 public class ChemicalDetailResource implements ChemicalDetailApi {
     
 	private final ChemicalDetailService detailService;
+	private final ChemicalDetailRepository detailRepository;
     @Value("${application.batch-size}")
     private Integer batchSize;
 	
     private Long totalChemicals;
 	
-    public ChemicalDetailResource(ChemicalDetailService detailService) {
+    public ChemicalDetailResource(ChemicalDetailService detailService, ChemicalDetailRepository detailRepository) {
         this.detailService = detailService;
+        this.detailRepository = detailRepository;
         totalChemicals = detailService.getTotalChemicals();
     }
 
@@ -46,6 +49,14 @@ public class ChemicalDetailResource implements ChemicalDetailApi {
         else
             return (ChemicalDetailBase) data.get(0);
     }
+    
+    public List<Compact> detailBySmiles(String smiles) {
+		log.debug("smiles = {}", smiles);
+		
+		List<Compact> data = detailRepository.findBySmiles(smiles);
+		
+		return data;
+	}
 
     
     @Override

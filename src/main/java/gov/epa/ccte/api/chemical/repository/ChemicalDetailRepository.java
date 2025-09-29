@@ -3,6 +3,8 @@ package gov.epa.ccte.api.chemical.repository;
 import gov.epa.ccte.api.chemical.domain.ChemicalDetail;
 import gov.epa.ccte.api.chemical.projection.chemicaldetail.CcdAssayDetails;
 import gov.epa.ccte.api.chemical.projection.chemicaldetail.ChemicalDetailStandard2;
+import gov.epa.ccte.api.chemical.projection.chemicaldetail.Compact;
+
 import org.springframework.data.domain.Limit;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -28,6 +30,10 @@ public interface ChemicalDetailRepository extends JpaRepository<ChemicalDetail, 
     @RestResource(rel = "findByDtxcid", path = "by-dtxcid", exported = true)
     <T>List<T> findByDtxcid(String dtxcid, Class<T> type);
 
+    @Transactional(readOnly = true)
+    @RestResource(rel = "findBySmiles", path = "by-smiles", exported = true)
+    List<Compact> findBySmiles(@Param("smiles")String smiles);
+    
     // Batch search
     @Transactional(readOnly = true)
     <T>List<T> findByDtxsidInOrderByDtxsidAsc(String[] dtxsid, Class<T> type);
