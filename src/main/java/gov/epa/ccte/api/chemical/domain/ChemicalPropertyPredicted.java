@@ -1,6 +1,6 @@
 package gov.epa.ccte.api.chemical.domain;
 
-import java.util.Date;
+import java.time.LocalDateTime;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -8,12 +8,18 @@ import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Getter
 @Setter
 @Entity
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 @Table(name = "mv_predicted_data", schema = "chemprop")
 public class ChemicalPropertyPredicted {
     @Id
@@ -38,7 +44,7 @@ public class ChemicalPropertyPredicted {
     private String canonQsarSmiles;
     
     @Column(name = "generic_substance_updated_at")
-    private Date genericSubstanceUpdatedAt;
+    private LocalDateTime genericSubstanceUpdatedAt;
     
     @Size(max = 255)
     @Column(name = "prop_name")
