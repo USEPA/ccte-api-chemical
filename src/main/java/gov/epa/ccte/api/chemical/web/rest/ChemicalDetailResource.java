@@ -51,7 +51,7 @@ public class ChemicalDetailResource implements ChemicalDetailApi {
     }
     
     public List<Compact> detailBySmiles(String smiles) {
-		log.debug("smiles = {}", smiles);
+		log.debug("SMILES = {}", smiles);
 		
 		List<Compact> data = detailRepository.findBySmiles(smiles);
 		
@@ -113,5 +113,6 @@ public class ChemicalDetailResource implements ChemicalDetailApi {
         };
     }
 }
+
 
 
