@@ -3,6 +3,7 @@ package gov.epa.ccte.api.chemical.web.rest;
 import gov.epa.ccte.api.chemical.projection.chemicaldetail.*;
 import gov.epa.ccte.api.chemical.repository.ChemicalDetailRepository;
 import gov.epa.ccte.api.chemical.service.ChemicalDetailService;
+import gov.epa.ccte.api.chemical.service.SearchChemicalService;
 import gov.epa.ccte.api.chemical.web.rest.errors.HigherNumberOfIdsException;
 import gov.epa.ccte.api.chemical.web.rest.errors.IdentifierNotFoundException;
 import gov.epa.ccte.api.chemical.web.rest.requests.Page;
@@ -19,14 +20,17 @@ public class ChemicalDetailResource implements ChemicalDetailApi {
     
 	private final ChemicalDetailService detailService;
 	private final ChemicalDetailRepository detailRepository;
+    private final SearchChemicalService chemicalService;
+
     @Value("${application.batch-size}")
     private Integer batchSize;
 	
     private Long totalChemicals;
 	
-    public ChemicalDetailResource(ChemicalDetailService detailService, ChemicalDetailRepository detailRepository) {
+    public ChemicalDetailResource(ChemicalDetailService detailService, ChemicalDetailRepository detailRepository, SearchChemicalService chemicalService) {
         this.detailService = detailService;
         this.detailRepository = detailRepository;
+        this.chemicalService = chemicalService;
         totalChemicals = detailService.getTotalChemicals();
     }
 
@@ -53,7 +57,9 @@ public class ChemicalDetailResource implements ChemicalDetailApi {
     public List<Compact> detailBySmiles(String smiles) {
 		log.debug("SMILES = {}", smiles);
 		
-		List<Compact> data = detailRepository.findBySmiles(smiles);
+		String searchWord = chemicalService.preprocessingSearchWord(smiles);
+		
+		List<Compact> data = detailRepository.findBySmiles(searchWord);
 		
 		return data;
 	}
