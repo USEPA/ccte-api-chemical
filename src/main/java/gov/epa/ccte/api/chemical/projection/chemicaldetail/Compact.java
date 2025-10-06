@@ -1,5 +1,7 @@
 package gov.epa.ccte.api.chemical.projection.chemicaldetail;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import io.swagger.v3.oas.annotations.media.Schema;
 
 /**
@@ -11,7 +13,8 @@ public interface Compact extends ChemicalDetailBase {
     String getDtxsid();
     String getCasrn();
     String getPreferredName();
-    
+    @JsonIgnore
+    String getSmiles();
     
     Void setDtxsid(String dtxsid);
     Void setCasrn(String casrn);

@@ -34,6 +34,10 @@ public interface ChemicalDetailRepository extends JpaRepository<ChemicalDetail, 
     @RestResource(rel = "findBySmiles", path = "by-smiles", exported = true)
     List<Compact> findBySmiles(@Param("smiles")String smiles);
     
+    // Query for SimilarSearchService
+    @Query(value = "select smiles from ChemicalDetail where smiles is not null")
+    String[] getAllSmiles();
+    
     // Batch search
     @Transactional(readOnly = true)
     <T>List<T> findByDtxsidInOrderByDtxsidAsc(String[] dtxsid, Class<T> type);
