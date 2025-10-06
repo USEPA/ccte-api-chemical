@@ -1,9 +1,8 @@
 package gov.epa.ccte.api.chemical.web.rest;
 
 import gov.epa.ccte.api.chemical.projection.chemicaldetail.*;
-import gov.epa.ccte.api.chemical.repository.ChemicalDetailRepository;
 import gov.epa.ccte.api.chemical.service.ChemicalDetailService;
-import gov.epa.ccte.api.chemical.service.SearchChemicalService;
+import gov.epa.ccte.api.chemical.service.SimilarSearchService;
 import gov.epa.ccte.api.chemical.web.rest.errors.HigherNumberOfIdsException;
 import gov.epa.ccte.api.chemical.web.rest.errors.IdentifierNotFoundException;
 import gov.epa.ccte.api.chemical.web.rest.requests.Page;
@@ -13,24 +12,21 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-
 @Slf4j
 @RestController
 public class ChemicalDetailResource implements ChemicalDetailApi {
     
 	private final ChemicalDetailService detailService;
-	private final ChemicalDetailRepository detailRepository;
-    private final SearchChemicalService chemicalService;
+    private final SimilarSearchService similarSearchService;
 
     @Value("${application.batch-size}")
     private Integer batchSize;
 	
     private Long totalChemicals;
 	
-    public ChemicalDetailResource(ChemicalDetailService detailService, ChemicalDetailRepository detailRepository, SearchChemicalService chemicalService) {
+ ChemicalDetailResource(ChemicalDetailService detailService, SimilarSearchService similarSearchService) {
         this.detailService = detailService;
-        this.detailRepository = detailRepository;
-        this.chemicalService = chemicalService;
+        this.similarSearchService = similarSearchService;
         totalChemicals = detailService.getTotalChemicals();
     }
 
@@ -55,14 +51,13 @@ public class ChemicalDetailResource implements ChemicalDetailApi {
     }
     
     public List<Compact> detailBySmiles(String smiles) {
-		log.debug("SMILES = {}", smiles);
-		
-		String searchWord = chemicalService.preprocessingSearchWord(smiles);
-		
-		List<Compact> data = detailRepository.findBySmiles(searchWord);
-		
-		return data;
-	}
+        log.debug("SMILES = {}", java.net.URLDecoder.decode(smiles, java.nio.charset.StandardCharsets.UTF_8));
+
+        List<Compact> data = similarSearchService.similarSearch(smiles);
+        
+        return data;
+
+    }
 
     
     @Override
@@ -119,6 +114,3 @@ public class ChemicalDetailResource implements ChemicalDetailApi {
         };
     }
 }
-
-
-
