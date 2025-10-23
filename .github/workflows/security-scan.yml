@@ -1,0 +1,23 @@
+name: Application-security-scan
+
+on:
+  push:
+   branches: [ "dev", "staging", "zap-scan-modification"  ]
+    
+jobs:
+  security-scan:
+    runs-on: ubuntu-latest
+    steps:
+     - name: Set up "x-api-key" as an environment variable
+       run: |
+        echo "x-api-key=${{ secrets.X_API_KEY }}" >> $GITHUB_ENV
+     - name: perform passive scan
+       uses: zaproxy/action-api-scan@v0.6.0
+       with:
+         token: ${{ secrets.GITHUB_TOKEN }}
+         format: openapi
+         target: 'https://api-ccte-stg.epa.gov/docs/chemical.json'
+         cmd_options: '-a'
+       env:
+         ZAP_AUTH_HEADER_VALUE: "x-api-key=${{ secrets.X_API_KEY }}"
+         

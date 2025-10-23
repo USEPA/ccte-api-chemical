@@ -70,7 +70,7 @@ public interface ChemicalListRepository extends JpaRepository<ChemicalList, Inte
 			    SELECT *
 			    FROM (
 			        SELECT DISTINCT ON (l.list_name)
-			        	l.id,
+			        	  l.id,
 			            l.list_name,
 			            l.label,
 			            l.type,
@@ -92,6 +92,7 @@ public interface ChemicalListRepository extends JpaRepository<ChemicalList, Inte
 			    ORDER BY latest_lists.type, latest_lists.list_name, latest_lists.label
 			""")
     List<ChemicalListAll> getListsByDtxsid(String dtxsid,String visibility);
+
 
     @Transactional(readOnly = true)
     @Query( nativeQuery = true, value = """
