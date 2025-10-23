@@ -48,10 +48,10 @@ public class ChemicalSearchResource implements ChemicalSearchApi {
     }
     
     @Override
-    public List chemicalEqual(String word, String projection) {
+    public List<?> chemicalEqual(String word, String projection) {
         String searchWord = chemicalService.preprocessingSearchWord(word);
         log.debug("input search word = {} and process search word = {}. ", word, searchWord);
-        List searchResult = null;
+        List<?> searchResult = null;
         switch (projection) {
             case "chemicalsearchall":
                 searchResult = searchRepository.findByModifiedValueOrderByRankAsc(searchWord, ChemicalSearchAll.class);
@@ -72,10 +72,10 @@ public class ChemicalSearchResource implements ChemicalSearchApi {
             return searchResult;
     }
     @Override
-    public List chemicalContain(String word, Integer top, String projection) {
+    public List<?> chemicalContain(String word, Integer top, String projection) {
         String searchWord = chemicalService.preprocessingSearchWord(word);
         log.debug("input search word = {} and process search word = {}. projection = {}", word, searchWord, projection);
-        List searchResult = chemicalService.getContain(projection, searchWord, top);
+        List<?> searchResult = chemicalService.getContain(projection, searchWord, top);
         searchResult = chemicalService.removeDuplicates(searchResult);
         if (searchResult == null || searchResult.isEmpty())
             throw new ChemicalSearchNotFoundException(chemicalService.getErrorMsgs(word), chemicalService.getSuggestions(word));
@@ -104,7 +104,7 @@ public class ChemicalSearchResource implements ChemicalSearchApi {
     }
     
     @Override
-    public List msReadyByBatchDtxcid(String[] dtxcids) {
+    public List<?> msReadyByBatchDtxcid(String[] dtxcids) {
         log.info("dtxcid size = {}", dtxcids.length);
 
         if (dtxcids.length > batchSize) {

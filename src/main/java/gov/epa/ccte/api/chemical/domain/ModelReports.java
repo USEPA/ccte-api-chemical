@@ -5,7 +5,10 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.Size;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import org.hibernate.annotations.JdbcTypeCode;
@@ -14,7 +17,9 @@ import org.hibernate.type.SqlTypes;
 @Getter
 @Setter
 @Entity
-
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 @Table(name = "mv_predicted_reports", schema = "chemprop")
 public class ModelReports {
     @Id

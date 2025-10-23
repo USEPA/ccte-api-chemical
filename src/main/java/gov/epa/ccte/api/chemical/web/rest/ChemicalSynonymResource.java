@@ -39,13 +39,15 @@ public class ChemicalSynonymResource implements ChemicalSynonymApi {
     }
 
     @Override
-    public List synoymsByBatchDtxsid(String[] dtxsids) {
+    public List<ChemicalSynonymAll> synoymsByBatchDtxsid(String[] dtxsids) {
         log.info("dtxsid size = {}", dtxsids.length);
 
         if (dtxsids.length > batchSize) {
             throw new HigherNumberOfIdsException(dtxsids.length, batchSize, "dtxsid");
         }
+        
+        List<ChemicalSynonymAll> data = repository.findByDtxsidInAndIsPublicOrderByDtxsidAsc(Arrays.asList(dtxsids), true, ChemicalSynonymAll.class);
 
-        return repository.findByDtxsidInAndIsPublicOrderByDtxsidAsc(Arrays.asList(dtxsids), true, ChemicalSynonymAll.class);
+        return data;
     }
 }

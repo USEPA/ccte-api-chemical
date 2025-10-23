@@ -10,4 +10,6 @@ public interface ChemicalPropertyNames {
 	
     String getPropertyName();
     
+    Void setPropertyName(String propertyName);
+    
 }

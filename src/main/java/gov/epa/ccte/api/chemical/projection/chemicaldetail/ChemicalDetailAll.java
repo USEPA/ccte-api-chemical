@@ -7,150 +7,154 @@ import io.swagger.v3.oas.annotations.media.Schema;
  */
 @Schema(name = "chemicaldetailall", description = "All attributes available for chemical details APIs")
 public interface ChemicalDetailAll extends ChemicalDetailBase {
-    String getId();
-
+	
+    Long getId();
     String getCasrn();
-
     Integer getCompoundId();
-
     Integer getGenericSubstanceId();
-
     String getPreferredName();
-
     Integer getActiveAssays();
-
     Long getCpdataCount();
-
     String getMolFormula();
-
     Double getMonoisotopicMass();
-
     Double getPercentAssays();
-
     Integer getPubchemCount();
-
     Double getPubmedCount();
-
     Long getSourcesCount();
-
     Integer getQcLevel();
-
     String getQcLevelDesc();
-
     String getStereo();
-
     Integer getIsotope();
-
     Integer getMulticomponent();
-
     Integer getTotalAssays();
-
     Integer getPubchemCid();
-
     Long getRelatedSubstanceCount();
-
     Long getRelatedStructureCount();
-
     Integer getHasStructureImage();
-
     String getIupacName();
-
     String getSmiles();
-
     String getInchiString();
-
     Double getAverageMass();
-
     String getInchikey();
-
     String getQcNotes();
-
     String getQsarReadySmiles();
-
     String getMsReadySmiles();
-
     String getIrisLink();
-
     String getPprtvLink();
-
     String getWikipediaArticle();
-
     String getDescriptorStringTsv();
-
     Boolean getIsMarkush();
-
     String getDtxsid();
-
     String getDtxcid();
-
     String getToxcastSelect();
-
     String getExpocatMedianPrediction();
-
     String getExpocat();
-
     String getNhanes();
-
     String getToxvalData();
-
     Double getWaterSolubilityTest();
-
     Double getWaterSolubilityOpera();
-
     Double getViscosityCpCpTestPred();
-
     Double getVaporPressureMmhgTestPred();
-
     Double getVaporPressureMmhgOperaPred();
-
     Double getThermalConductivity();
-
     Double getTetrahymenaPyriformis();
-
     Double getSurfaceTension();
-
     Double getSoilAdsorptionCoefficient();
-
     Double getOralRatLd50Mol();
-
     Double getOperaKmDaysOperaPred();
-
     Double getOctanolWaterPartition();
-
     Double getOctanolAirPartitionCoeff();
-
     Double getMeltingPointDegcTestPred();
-
     Double getMeltingPointDegcOperaPred();
-
     Double getHrFatheadMinnow();
-
     Double getHrDiphniaLc50();
-
     Double getHenrysLawAtm();
-
     Double getFlashPointDegcTestPred();
-
     Double getDevtoxTestPred();
-
     Double getDensity();
-
     Double getBoilingPointDegcTestPred();
-
     Double getBoilingPointDegcOperaPred();
-
     Double getBiodegradationHalfLifeDays();
-
     Double getBioconcentrationFactorTestPred();
-
     Double getBioconcentrationFactorOperaPred();
-
     Double getAtmosphericHydroxylationRate();
-
     Double getAmesMutagenicityTestPred();
-
     Double getPkaaOperaPred();
-
     Double getPkabOperaPred();
 
+    
+    Void setId(Long id);
+    Void setCasrn(String casrn);
+    Void setCompoundId(Integer compoundId);
+    Void setGenericSubstanceId(Integer genericSubstanceId);
+    Void setPreferredName(String preferredName);
+    Void setActiveAssays(Integer activeAssays);
+    Void setCpdataCount(Long cpdataCount);
+    Void setMolFormula(String molFormula);
+    Void setMonoisotopicMass(Double monoisotopicMass);
+    Void setPercentAssays(Double percentAssays);
+    Void setPubchemCount(Integer pubchemCount);
+    Void setPubmedCount(Double pubmedCount);
+    Void setSourcesCount(Long sourcesCount);
+    Void setQcLevel(Integer qcLevel);
+    Void setQcLevelDesc(String getQcLevelDesc);
+    Void setStereo(String stereo);
+    Void setIsotope(Integer isotope);
+    Void setMulticomponent(Integer multicomponent);
+    Void setTotalAssays(Integer totalAssays);
+    Void setPubchemCid(Integer pubchemCid);
+    Void setRelatedSubstanceCount(Long relatedSubstanceCount);
+    Void setRelatedStructureCount(Long relatedStructureCount);
+    Void setHasStructureImage(Integer hasStructureImage);
+    Void setIupacName(String iupacName);
+    Void setSmiles(String smiles);
+    Void setInchiString(String inchiString);
+    Void setAverageMass(Double averageMass);
+    Void setInchikey(String inchikey);
+    Void setQcNotes(String qcNotes);
+    Void setQsarReadySmiles(String qsarReadySmiles);
+    Void setMsReadySmiles(String msReadySmiles);
+    Void setIrisLink(String irisLink);
+    Void setPprtvLink(String pprtvLink);
+    Void setWikipediaArticle(String wikipediaArticle);
+    Void setDescriptorStringTsv(String descriptorStringTsv);
+    Void setIsMarkush(Boolean isMarkush);
+    Void setDtxsid(String dtxsid);
+    Void setDtxcid(String dtxcid);
+    Void setToxcastSelect(String toxcastSelect);
+    Void setExpocatMedianPrediction(String expocatMedianPrediction);
+    Void setExpocat(String expocat);
+    Void setNhanes(String nhanes);
+    Void setToxvalData(String toxvalData);
+    Void setWaterSolubilityTest(Double waterSolubilityTest);
+    Void setWaterSolubilityOpera(Double waterSolubilityOpera);
+    Void setViscosityCpCptestPred(Double viscosityCpCpTestPred);
+    Void setVaporPressuremmhgTestPred(Double vaporPressureMmhgTestPred);
+    Void setVaporPresureMmhgOperaPred(Double vaporPressureMmhgOperaPred);
+    Void setThermalConductivity(Double thermalConductivity);
+    Void setTetrahymenaPyriformis(Double tetrahymenaPyriformis);
+    Void setSurfaceTension(Double surfaceTension);
+    Void setSoilAbsorptionCoefficient(Double soilAdsorptionCoefficient);
+    Void setOralRatLd50Mol(Double oralRatLd50Mol);
+    Void setOperaKmDayOperaPred(Double operaKmDaysOperaPred);
+    Void setOctanolWaterpartition(Double octanolWaterPartition);
+    Void setOctanolAirPartitionCoeff(Double octanolAirPartitionCoeff);
+    Void setMeltingPointDegctestPred(Double meltingPointDegcTestPred);
+    Void setMeltingPointDegcOperaPred(Double meltingPointDegcOperaPred);
+    Void setHrFatheadMinnow(Double hrFatheadMinnow);
+    Void setHrDiphniaLc50(Double hrDiphniaLc50);
+    Void setHenrysLawAtm(Double henrysLawAtm);
+    Void setFlashPointDegcTestPred(Double flashPointDegcTestPred);
+    Void setDevtoxTestpred(Double devtoxTestPred);
+    Void setDensity(Double density);
+    Void setBoilingPointDegcTestPred(Double boilingPointDegcTestPred);
+    Void setBoilingPointDegcOperaPred(Double boilingPointDegcOperaPred);
+    Void setBiodegredationHalfLifeDays(Double biodegradationHalfLifeDays);
+    Void setBiodegredationFactorTestPred(Double bioconcentrationFactorTestPred);
+    Void setBioconcentrationFactorOperaPred(Double bioconcentrationFactorOperaPred);
+    Void setAtmosphericHydroxylationRate(Double atmosphericHydroxylationRate);
+    Void setAmesMutagenicityTestPred(Double amesMutagenicityTestPred);
+    Void setPkaaOperaPred(Double pkaaOperaPred);
+    Void setPkabOperaPred(Double pkabOperaPred);
+    
 }

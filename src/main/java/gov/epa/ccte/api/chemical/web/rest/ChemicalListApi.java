@@ -29,8 +29,8 @@ public interface ChemicalListApi {
             @ApiResponse(responseCode = "200", description = "OK", content = @Content(mediaType = "application/json",
                     schema=@Schema(oneOf = {ChemicalListAll.class, ChemicalListName.class})))
     })
-    @GetMapping(value = "/")
-    List listAll(@RequestParam(value = "projection", required = false, defaultValue = "chemicallistall") ChemicalListProjection projection);
+    @GetMapping(value = "/all")
+    List<?> listAll(@RequestParam(value = "projection", required = false, defaultValue = "chemicallistall") ChemicalListProjection projection);
 
     @Operation(summary = "Get all list types")
     @GetMapping(value = "/type")
@@ -42,13 +42,13 @@ public interface ChemicalListApi {
                     schema=@Schema(oneOf = {ChemicalListAll.class, ChemicalListName.class})))
     })
     @GetMapping(value = "/search/by-type/{type}")
-    List listByType(@Parameter(required = true, description = "Chemical List Type", example = "other") @PathVariable String type,
+    List<?> listByType(@Parameter(required = true, description = "Chemical List Type", example = "other") @PathVariable String type,
                     @RequestParam(value = "projection", required = false, defaultValue = "chemicallistall") ChemicalListProjection projection);
 
     @Operation(summary = "Get public lists by name")
     @ApiResponses(value= {
             @ApiResponse(responseCode = "200", description = "OK", content = @Content(mediaType = "application/json",
-                    schema=@Schema(oneOf = {ChemicalListAll.class, ChemicalListName.class})))
+                    schema=@Schema(oneOf = {ChemicalListAll.class, ChemicalListWithDtxsids.class})))
     })
     @GetMapping(value = "/search/by-name/{listName}")
     ChemicalListBase listByName(@Parameter(required = true, description = "Chemical List Name", example = "40CFR1164") @PathVariable String listName,
@@ -60,7 +60,7 @@ public interface ChemicalListApi {
                     schema=@Schema(oneOf = {ChemicalListAll.class, ChemicalListName.class})))
     })
     @GetMapping(value = "/search/by-dtxsid/{dtxsid}")
-    List listByDtxsid(@Parameter(required = true, description = "DSSTox Substance Identifier", example = "DTXSID1020560") @PathVariable String dtxsid,
+    List<?> listByDtxsid(@Parameter(required = true, description = "DSSTox Substance Identifier", example = "DTXSID1020560") @PathVariable String dtxsid,
                       @RequestParam(value = "projection", required = false, defaultValue = "chemicallistall") ChemicalListProjection projection);
 
     @Operation(summary = "Get DTXSIDs for a list name and starting value of chemical name")

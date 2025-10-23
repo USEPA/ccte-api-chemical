@@ -19,6 +19,7 @@ import gov.epa.ccte.api.chemical.projection.chemicaldetail.ChemicalDetailStandar
 import gov.epa.ccte.api.chemical.projection.chemicaldetail.ChemicalDetailStandard2;
 import gov.epa.ccte.api.chemical.projection.chemicaldetail.ChemicalIdentifier;
 import gov.epa.ccte.api.chemical.projection.chemicaldetail.ChemicalStructure;
+import gov.epa.ccte.api.chemical.projection.chemicaldetail.Compact;
 import gov.epa.ccte.api.chemical.projection.chemicaldetail.NtaToolkit;
 import gov.epa.ccte.api.chemical.web.rest.requests.Page;
 import io.swagger.v3.oas.annotations.Operation;
@@ -75,6 +76,23 @@ public interface ChemicalDetailApi {
             @RequestParam(value = "projection", required = false, defaultValue = "chemicaldetailall") ChemicalDetailProjection projection);
 
 	/**
+	 * {@code GET  /chemical/detail/by-smiles/:smiles} : get Compact list of chemicalDetail for the "SMILES".
+	 *
+	 * @param SMILES the matching SMILES of the chemicalDetail to retrieve.
+	 * @return the {@link ResponseEntity} with status {@code 200 (OK)} and with body the list of compact chemicalDetail}.
+	 */
+	@Operation(summary = "Get data by SMILES",
+            description = "Specify the SMILES as a parameter, and available projection is Compact.")
+    @ApiResponses(value= {
+            @ApiResponse(responseCode = "200", description = "OK",  content = @Content( mediaType = "application/json",
+                    schema=@Schema(oneOf = {Compact.class})))
+    })
+    @RequestMapping(value = "/detail/search/by-smiles/", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	List<Compact> detailBySmiles(@Parameter(required = true, description = "Simplified Molecular Input Line Entry System", example = "CC(C)(C1=CC=C(O)C=C1)C1=CC=C(O)C=C1") 
+							@RequestParam(value = "smiles", required = true) String smiles);
+ 
+
+	/**
 	 * {@code GET  /chemical/detail/by-dtxcid/:dtxcid} : get list of chemicalDetail for the "dtxcid".
 	 *
 	 * @param dtxcid the matching dtxcid of the chemicalDetail to retrieve.
@@ -107,7 +125,7 @@ public interface ChemicalDetailApi {
                             schema=@Schema(oneOf = {ProblemDetail.class})))
     })
     @RequestMapping(value = "/detail/search/by-dtxsid/", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
-	List batchDtxsidSearch(@io.swagger.v3.oas.annotations.parameters.RequestBody(required = true, description = "JSON array of DSSTox Substance Identifier",
+	List<?> batchDtxsidSearch(@io.swagger.v3.oas.annotations.parameters.RequestBody(required = true, description = "JSON array of DSSTox Substance Identifier",
             content = {@Content (array = @ArraySchema(schema = @Schema(implementation = String.class)),
             examples = {@ExampleObject("\"[\\\"DTXSID7020182\\\",\\\"DTXSID9020112\\\"]\"")})})
                     @RequestBody String[] dtxsids,
@@ -130,7 +148,7 @@ public interface ChemicalDetailApi {
                             schema=@Schema(oneOf = {ProblemDetail.class})))
     })
     @RequestMapping(value = "/detail/search/by-dtxcid/", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
-	List batchDtxcidSearch( @io.swagger.v3.oas.annotations.parameters.RequestBody(required = true, description = "JSON array of DSSTox Compound Identifier",
+	List<?> batchDtxcidSearch( @io.swagger.v3.oas.annotations.parameters.RequestBody(required = true, description = "JSON array of DSSTox Compound Identifier",
             content = {@Content (array = @ArraySchema(schema = @Schema(implementation = String.class)),
             examples = {@ExampleObject("\"[\\\"DTXCID505\\\",\\\"DTXSID9020112\\\"]\"")})})
                     @RequestBody String[] dtxcids,
@@ -138,3 +156,4 @@ public interface ChemicalDetailApi {
                     ChemicalDetailProjection projection);
 
 }
+
