@@ -68,7 +68,7 @@ public class ChemicalDetailDto implements Serializable {
     private final String wikipediaArticle;
     @Size(max = 20000)
     private final String descriptorStringTsv;
-    private final Integer isMarkush;
+    private final Boolean isMarkush;
     @NotNull
     private final Instant dateLoaded;
 }

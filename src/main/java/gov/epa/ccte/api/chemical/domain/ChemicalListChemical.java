@@ -26,4 +26,7 @@ public class ChemicalListChemical {
     @Column(name = "dtxsid")
     private String dtxsid;
 
+    @Column(name = "is_public")
+    private Boolean isPublic;
+
 }

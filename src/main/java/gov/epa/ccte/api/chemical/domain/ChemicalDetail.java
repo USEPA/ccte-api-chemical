@@ -5,14 +5,19 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.Size;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.math.BigDecimal;
 
 @Getter
 @Setter
 @Entity
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 @Table(name = "v_chemical_details", schema = "ch")
 public class ChemicalDetail {
     @Id
@@ -53,7 +58,7 @@ public class ChemicalDetail {
     private Double monoisotopicMass;
 
     @Column(name = "percent_assays")
-    private BigDecimal percentAssays;
+    private Double percentAssays;
 
     @Column(name = "pubchem_count")
     private Integer pubchemCount;
@@ -128,7 +133,8 @@ public class ChemicalDetail {
     @Column(name = "qc_notes", length = 4000)
     private String qcNotes;
 
-    @Column(name = "qsar_ready_smiles", length = Integer.MAX_VALUE)
+    @Size(max = 3000)
+    @Column(name = "qsar_ready_smiles", length = 3000)
     private String qsarReadySmiles;
 
     @Column(name = "ms_ready_smiles", length = Integer.MAX_VALUE)
@@ -266,5 +272,5 @@ public class ChemicalDetail {
     private Double readyBioDeg;
 
     @Column(name = "is_markush")
-    private Integer isMarkush;
+    private Boolean isMarkush;
 }

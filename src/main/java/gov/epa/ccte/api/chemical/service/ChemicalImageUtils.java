@@ -59,8 +59,8 @@ public final class ChemicalImageUtils {
 
         log.debug("smiles={} , image format = {}", smiles, imageFormat.toString());
 
-        Integer width=300;
-        Integer height = 300;
+//        Integer width=300;
+//        Integer height = 300;
 
         Indigo indigo = new Indigo();
 

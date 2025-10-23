@@ -15,7 +15,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.filter.GenericFilterBean;
 
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
 import java.util.Optional;
@@ -73,7 +72,7 @@ public class ApiKeyRequestFilter extends GenericFilterBean {
         // dump the request headers
         log.info("*** request headers ***");
 //        Enumeration<String> headerNames = ((HttpServletRequest) servletRequest).getHeaderNames();
-//
+
 //        if (headerNames != null) {
 //            while (headerNames.hasMoreElements()) {
 //                String header = headerNames.nextElement();
@@ -123,6 +122,9 @@ public class ApiKeyRequestFilter extends GenericFilterBean {
         String origin = Optional.ofNullable(req.getHeader("origin")).orElse("");  // example - origin = http://localhost:8888
         String referer = Optional.ofNullable(req.getHeader("Referer")).orElse("");  // example - referer = http://localhost:8888/dashboard
         String path = Optional.ofNullable(req.getServletPath()).orElse(""); // example - path = /chemical/file/image/search/by-dtxsid/DTXSID7020182
+        String server = Optional.ofNullable(req.getHeader("x-forwarded-server")).orElse("");  // example - x-forwarded-server = comptoxstaging.rtpnc.epa.gov
+        String host = Optional.ofNullable(req.getHeader("host")).orElse("");  // example - Header: host = api-ccte-stg.epa.gov
+
 
         String refererdHost;
         if(!referer.isEmpty()){
@@ -131,16 +133,20 @@ public class ApiKeyRequestFilter extends GenericFilterBean {
             refererdHost = ""; //"https://" + req.getHeader("Referer").split("/")[2];  // example - referredHost = localhost:8888
         }
 
-        log.debug("method = {}, origin = {}, referer ={}, refererdHost = {}, path={} ",method, origin, referer, refererdHost, path);
+        log.debug("method = {}, origin = {}, x-forwarded-server = {}, host = {}, referer ={}, refererdHost = {}, path={} ",method, origin, server, host, referer, refererdHost, path);
 
         // if chemical/file path - allow access to images without any api key
-        if(path.contains("/chemical/file/")){
+        if(path.contains("/chemical/file/") || path.contains("/chemical/health")){
             log.debug("skipping api-key check");
             return false;
         }
+//        log.debug("host check = {}", approvedOrigin("https://"+ host));
+//        log.debug("server check = {}", approvedOrigin("https://"+ server));
+//        log.debug("refererdHost check = {}", approvedOrigin(refererdHost));
+//        log.debug("origin check = {}", approvedOrigin(origin));
 
 //        if(method.equalsIgnoreCase("OPTIONS") || approvedOrigin(origin) || approvedOrigin(refererdHost))
-        if(approvedOrigin(origin) || approvedOrigin(refererdHost))
+        if(approvedOrigin(origin) || approvedOrigin(refererdHost) || approvedOrigin("https://"+ server))
             return false;
         else
             return true;
@@ -152,7 +158,7 @@ public class ApiKeyRequestFilter extends GenericFilterBean {
     }
 
 
-    private String getApiKeyFromQueryParam(String query) throws UnsupportedEncodingException {
+    private String getApiKeyFromQueryParam(String query){
 
         // an example -  format=svg&x-api-key=f1d96bdd-223a-434e-b1c0-af373a59a19e
 

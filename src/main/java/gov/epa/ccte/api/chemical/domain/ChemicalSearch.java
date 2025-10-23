@@ -11,7 +11,7 @@ import java.math.BigInteger;
 import java.time.Instant;
 
 @Entity
-@Table(name = "chemical_search", schema = "ms")
+@Table(name = "v_chemical_search", schema = "ch")
 // start - projection mappings for search results
 @SqlResultSetMapping( name = "ccd",
         classes = @ConstructorResult(
@@ -62,24 +62,39 @@ import java.time.Instant;
                 " cd.percent_assays, cd.toxcast_select, cd.monoisotopic_mass, cd.mol_formula, cd.qc_level, cd.qc_level_desc, cd.pubchem_cid, " +
                 " cd.has_structure_image, cd.related_substance_count, cd.related_structure_count, cd.iupac_name, cd.smiles, cd.inchi_string, " +
                 " cd.inchikey, cd.average_mass, sc.rank, sc.search_name as search_match, sc.search_value as search_word\n" +
-                " from ms.chemical_details  cd join ( \n" +
+                " from ch.v_chemical_details  cd join ( \n" +
                 " select  dtxsid, dtxcid, search_name, search_value, modified_value,rank \n" +
-                " from ms.chemical_search where modified_value = :searchWord ) sc on cd.dtxsid=sc.dtxsid or cd.dtxcid=sc.dtxcid " +
+                " from ch.v_chemical_search where modified_value = :searchWord ) sc on cd.dtxsid=sc.dtxsid or cd.dtxcid=sc.dtxcid " +
                 " order by rank, search_value asc "
+)
+@NamedNativeQuery(
+        name = "ChemicalSearch.startWithCcd",
+        resultSetMapping = "ccd",
+        query = " select cd.dtxsid,  cd.dtxcid, cd.generic_substance_id, cd.casrn, cd.preferred_name, cd.compound_id, cd.stereo, cd.isotope, cd.multicomponent, cd.pubchem_count, cd.pubmed_count, cd.sources_count, cd.cpdata_count, cd.active_assays, cd.total_assays, cd.percent_assays, cd.toxcast_select, cd.monoisotopic_mass, cd.mol_formula, cd.qc_level, cd.qc_level_desc, cd.pubchem_cid, cd.has_structure_image, cd.related_substance_count, cd.related_structure_count, cd.iupac_name, cd.smiles, cd.inchi_string, cd.inchikey, cd.average_mass, sc.rank, sc.search_name as search_match, sc.search_value as search_word\n" +
+                " from ch.v_chemical_details  cd join (\n" +
+                " select  dtxsid, dtxcid, search_name, search_value, modified_value,rank\n" +
+                " from ch.v_chemical_search where modified_value like :searchWord )  sc\n" +
+                "    on cd.dtxsid=sc.dtxsid and cd.dtxsid is not null\n" +
+                " union all\n" +
+                " select cd.dtxsid,  cd.dtxcid, cd.generic_substance_id, cd.casrn, cd.preferred_name, cd.compound_id, cd.stereo, cd.isotope, cd.multicomponent, cd.pubchem_count, cd.pubmed_count, cd.sources_count, cd.cpdata_count, cd.active_assays, cd.total_assays, cd.percent_assays, cd.toxcast_select, cd.monoisotopic_mass, cd.mol_formula, cd.qc_level, cd.qc_level_desc, cd.pubchem_cid, cd.has_structure_image, cd.related_substance_count, cd.related_structure_count, cd.iupac_name, cd.smiles, cd.inchi_string, cd.inchikey, cd.average_mass, sc.rank, sc.search_name as search_match, sc.search_value as search_word\n" +
+                " from ch.v_chemical_details  cd join (\n" +
+                " select  dtxsid, dtxcid, search_name, search_value , modified_value,rank\n" +
+                " from ch.v_chemical_search where modified_value like :searchWord% )  sc\n" +
+                "    on cd.dtxsid is null and cd.dtxcid=sc.dtxcid"
 )
 @NamedNativeQuery(
         name = "ChemicalSearch.containCcd",
         resultSetMapping = "ccd",
         query = " select cd.dtxsid,  cd.dtxcid, cd.generic_substance_id, cd.casrn, cd.preferred_name, cd.compound_id, cd.stereo, cd.isotope, cd.multicomponent, cd.pubchem_count, cd.pubmed_count, cd.sources_count, cd.cpdata_count, cd.active_assays, cd.total_assays, cd.percent_assays, cd.toxcast_select, cd.monoisotopic_mass, cd.mol_formula, cd.qc_level, cd.qc_level_desc, cd.pubchem_cid, cd.has_structure_image, cd.related_substance_count, cd.related_structure_count, cd.iupac_name, cd.smiles, cd.inchi_string, cd.inchikey, cd.average_mass, sc.rank, sc.search_name as search_match, sc.search_value as search_word\n" +
-                " from ms.chemical_details  cd join (\n" +
+                " from ch.v_chemical_details  cd join (\n" +
                 " select  dtxsid, dtxcid, search_name, search_value, modified_value,rank\n" +
-                " from ms.chemical_search where modified_value like :searchWord )  sc\n" +
+                " from ch.v_chemical_search where modified_value like CONCAT('%', :searchWord,'%') )  sc\n" +
                 "    on cd.dtxsid=sc.dtxsid and cd.dtxsid is not null\n" +
                 " union all\n" +
                 " select cd.dtxsid,  cd.dtxcid, cd.generic_substance_id, cd.casrn, cd.preferred_name, cd.compound_id, cd.stereo, cd.isotope, cd.multicomponent, cd.pubchem_count, cd.pubmed_count, cd.sources_count, cd.cpdata_count, cd.active_assays, cd.total_assays, cd.percent_assays, cd.toxcast_select, cd.monoisotopic_mass, cd.mol_formula, cd.qc_level, cd.qc_level_desc, cd.pubchem_cid, cd.has_structure_image, cd.related_substance_count, cd.related_structure_count, cd.iupac_name, cd.smiles, cd.inchi_string, cd.inchikey, cd.average_mass, sc.rank, sc.search_name as search_match, sc.search_value as search_word\n" +
-                " from ms.chemical_details  cd join (\n" +
+                " from ch.v_chemical_details  cd join (\n" +
                 " select  dtxsid, dtxcid, search_name, search_value , modified_value,rank\n" +
-                " from ms.chemical_search where modified_value like :searchWord )  sc\n" +
+                " from ch.v_chemical_search where modified_value like CONCAT('%', :searchWord,'%') )  sc\n" +
                 "    on cd.dtxsid is null and cd.dtxcid=sc.dtxcid"
 )
 // end - named queries for search results
@@ -132,7 +147,7 @@ public class ChemicalSearch {
     private Integer hasStructureImage;
 
     @Column(name = "is_markush")
-    private Integer isMarkush;
+    private Boolean isMarkush;
 
     @Size(max = 50)
     @Column(name = "created_by", length = 50)
@@ -237,11 +252,11 @@ public class ChemicalSearch {
         this.hasStructureImage = hasStructureImage;
     }
 
-    public Integer getIsMarkush() {
+    public Boolean getIsMarkush() {
         return isMarkush;
     }
 
-    public void setIsMarkush(Integer isMarkush) {
+    public void setIsMarkush(Boolean isMarkush) {
         this.isMarkush = isMarkush;
     }
 

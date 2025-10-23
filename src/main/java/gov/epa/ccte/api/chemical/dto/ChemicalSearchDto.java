@@ -27,5 +27,5 @@ public class ChemicalSearchDto implements Serializable {
     private final String searchValue;
     private final Integer rank;
     private final Integer hasStructureImage;
-    private final Integer isMarkush;
+    private final Boolean isMarkush;
 }

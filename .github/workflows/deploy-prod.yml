@@ -1,0 +1,88 @@
+name: deploy-prod
+
+on:
+  workflow_dispatch:
+    inputs:
+      logLevel:
+        description: 'Log level'
+        required: true
+        default: 'warning'
+        type: choice
+        options:
+        - info
+        - warning
+        - debug
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+      with:
+        ref: main
+        lfs: true
+    - run: git lfs pull
+    - uses: actions/setup-java@v4
+      with:
+        java-version: '17'
+        distribution: 'corretto'
+        
+    - name: Run the Maven clean package
+      run: mvn clean package -DskipTests
+
+    - uses: actions/upload-artifact@master
+      with:
+        name: chemical-jar
+        path: ./target
+      
+  deploy:
+    runs-on: ubuntu-latest
+    needs: build
+    
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          lfs: true
+      - run: git lfs pull
+      - uses: actions/download-artifact@master
+        with:
+          name: chemical-jar
+          path: ./target
+      - name: Deploy to cloud.gov
+        uses: cloud-gov/cg-cli-tools@main
+        with:
+          cf_username: ${{ secrets.CF_SERVICE_USERNAME }}
+          cf_password: ${{ secrets.CF_SERVICE_KEY }}
+          cf_org: epa-ord
+          cf_space: ccte-prod
+          cf_command: push -f manifest-prod.yml --no-start
+          
+  bind-db-service:
+    runs-on: ubuntu-latest
+    needs: deploy
+    
+    steps:
+      - name: Bind app to DB service
+        uses: cloud-gov/cg-cli-tools@main
+        with:
+          cf_username: ${{ secrets.CF_SERVICE_USERNAME }}
+          cf_password: ${{ secrets.CF_SERVICE_KEY }}
+          cf_org: epa-ord
+          cf_space: ccte-prod
+          cf_command: bind-service ccte-chemical-prod db-prod
+          
+  restage:
+    runs-on: ubuntu-latest
+    needs: bind-db-service
+    
+    steps:
+      - name: Restage app
+        uses: cloud-gov/cg-cli-tools@main
+        with:
+          cf_username: ${{ secrets.CF_SERVICE_USERNAME }}
+          cf_password: ${{ secrets.CF_SERVICE_KEY }}
+          cf_org: epa-ord
+          cf_space: ccte-prod
+          cf_command: restage ccte-chemical-prod

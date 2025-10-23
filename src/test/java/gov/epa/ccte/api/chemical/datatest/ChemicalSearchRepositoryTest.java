@@ -6,6 +6,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
+import org.springframework.data.domain.Limit;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.ActiveProfiles;
 
@@ -47,7 +48,7 @@ public class ChemicalSearchRepositoryTest {
 
     @Test
     void testFindByModifiedValueStartingWithAndSearchNameInOrderByRankAscSearchValue(){
-        assertThat(repository.findByModifiedValueStartingWithAndSearchNameInOrderByRankAscSearchValue("BPA", searchMatchWithoutInchikey, ChemicalSearchAll.class).size()).isEqualTo(1);
+        assertThat(repository.findByModifiedValueStartingWithAndSearchNameInOrderByRankAscSearchValue("BPA", searchMatchWithoutInchikey, Limit.unlimited(), ChemicalSearchAll.class).size()).isEqualTo(1);
     }
 
     @Test
@@ -57,6 +58,6 @@ public class ChemicalSearchRepositoryTest {
 
     @Test
     void testFindByModifiedValueContainsOrderByRankAscDtxsidAsc(){
-        assertThat(repository.findByModifiedValueContainsOrderByRankAscDtxsid("BPA", ChemicalSearchAll.class).size()).isEqualTo(1);
+        assertThat(repository.findByModifiedValueContainsOrderByRankAscDtxsid("BPA", Limit.unlimited(), ChemicalSearchAll.class).size()).isEqualTo(1);
     }
 }

@@ -1,0 +1,38 @@
+name: GH Packages Deployment
+
+# This workflow uses actions that are not certified by GitHub.
+# They are provided by a third-party and are governed by
+# separate terms of service, privacy policy, and support
+# documentation.
+
+on:
+  push:
+    branches: [ "main" ]
+
+jobs:
+  maven-build-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v1
+      - name: Set up JDK 1.17
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'corretto'
+          java-version: '17'
+          cache: 'maven'
+          server-id: github # value of repository/id field of the pom.xml
+          server-username: GITHUB_USER_REF  # env variable name for username
+          server-password: GITHUB_TOKEN_REF # env variable name for GitHub Pers
+      - name: Maven Package
+        env:
+          GITHUB_USER_REF: USEPA
+          GITHUB_TOKEN_REF: ${{ secrets.GH_PACKAGE_REPO_PASSWORD }}
+        run: |
+          mvn clean package -DskipTests
+      - name: Deploy to Github Package Registry
+        env:
+          GITHUB_USER_REF: USEPA
+          GITHUB_TOKEN_REF: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          mvn deploy -DskipTests

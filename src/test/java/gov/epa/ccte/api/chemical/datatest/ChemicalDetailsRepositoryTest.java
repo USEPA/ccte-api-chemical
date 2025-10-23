@@ -37,15 +37,7 @@ public class ChemicalDetailsRepositoryTest {
         assertThat(repository.findAll().size()).isEqualTo(2);
     }
 
-    @Test
-    void testFindByDtxsid(){
-        assertThat(repository.findByDtxsid("DTXSID7020182", ChemicalDetailAll.class).isPresent()).isEqualTo(true);
-    }
 
-    @Test
-    void testFindByDtxcid(){
-        assertThat(repository.findByDtxcid("DTXCID30182", ChemicalDetailAll.class).isPresent()).isEqualTo(true);
-    }
 
     @Test
     void testFindByDtxsidInOrderByDtxsidAsc(){

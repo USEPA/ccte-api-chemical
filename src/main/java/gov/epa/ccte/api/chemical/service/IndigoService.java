@@ -68,13 +68,27 @@ public class IndigoService {
         }
     }
 
-    public String mol2inchikey(String mol){
+    public String mol2inchi(String mol){
         try {
             Indigo indigo = getIndigo();
             IndigoObject m = indigo.loadMolecule(mol);
             IndigoInchi indigoInchi = new IndigoInchi(indigo);
             String inchi = indigoInchi.getInchi(m);
             return inchi;
+        } catch ( IndigoException ex ) {
+            log.error("mol2smiles {}: {}", mol, ex.getMessage());
+            return null;
+        }
+    }
+
+    public String mol2inchikey(String mol){
+        try {
+            Indigo indigo = getIndigo();
+            IndigoObject m = indigo.loadMolecule(mol);
+            IndigoInchi indigoInchi = new IndigoInchi(indigo);
+            String inchi = indigoInchi.getInchi(m);
+            String inchikey = indigoInchi.getInchiKey(inchi);
+            return inchikey;
         } catch ( IndigoException ex ) {
             log.error("mol2smiles {}: {}", mol, ex.getMessage());
             return null;

@@ -38,17 +38,17 @@ public class ChemicalListRepositoryTest {
 
     @Test
     void testFindByVisibilityOrderByListNameAsc(){
-        assertThat(repository.findByVisibilityOrderByTypeAscListNameAsc("PUBLIC", ChemicalListAll.class).size()).isEqualTo(2);
+        assertThat(repository.findByVisibilityAndIsVisibleOrderByTypeAscListNameAsc("PUBLIC", true, ChemicalListAll.class).size()).isEqualTo(2);
     }
 
     @Test
     void testFindByType(){
-        assertThat(repository.findByTypeAndVisibility("federal", "PUBLIC", ChemicalListAll.class).size()).isEqualTo(1);
+        assertThat(repository.findByTypeAndVisibilityAndIsVisibleOrderByListNameAsc("federal", "PUBLIC", true, ChemicalListAll.class).size()).isEqualTo(1);
     }
 
     @Test
     void testFindByListName(){
-        assertThat(repository.findByListNameIgnoreCaseAndVisibility("MICROCYSTIN", "PUBLIC", ChemicalListAll.class).isPresent()).isTrue();
+        assertThat(repository.findByListNameIgnoreCaseAndVisibilityAndIsVisible("MICROCYSTIN", "PUBLIC", true, ChemicalListAll.class).isPresent()).isTrue();
     }
 
     @Test
