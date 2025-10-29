@@ -7,6 +7,7 @@ import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.RestController;
 
+import gov.epa.ccte.api.chemical.projection.search.CcdChemicalSearchResult;
 import gov.epa.ccte.api.chemical.projection.search.ChemicalBatchSearchResult;
 import gov.epa.ccte.api.chemical.projection.search.ChemicalSearchAll;
 import gov.epa.ccte.api.chemical.projection.search.ChemicalSearchInternal;
@@ -56,6 +57,7 @@ public class ChemicalSearchResource implements ChemicalSearchApi {
             case "chemicalsearchall":
                 searchResult = searchRepository.findByModifiedValueOrderByRankAsc(searchWord, ChemicalSearchAll.class);
                 searchResult = chemicalService.removeDuplicates(searchResult);
+                searchResult = chemicalService.applyStartWithRankFilter((List<ChemicalSearchAll>)searchResult);
                 break;
             case "dtxsidonly":
                 searchResult = searchRepository.findByModifiedValueOrderByRankAsc(searchWord, DtxsidOnly.class);
@@ -64,6 +66,7 @@ public class ChemicalSearchResource implements ChemicalSearchApi {
             case "ccdsearchresult":
                 searchResult = searchRepository.equalCcd(searchWord);
                 searchResult = chemicalService.removeDuplicates(searchResult);
+                searchResult = chemicalService.applyRankFilterSearchResult((List<CcdChemicalSearchResult>)searchResult);
                 break;
         }
         if (searchResult == null || searchResult.isEmpty())
