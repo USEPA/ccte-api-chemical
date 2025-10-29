@@ -1,8 +1,7 @@
 package gov.epa.ccte.api.chemical.repository;
 
 import gov.epa.ccte.api.chemical.domain.ChemicalPropertyPredicted;
-import gov.epa.ccte.api.chemical.projection.chemicalproperty.ChemicalPropertyNames;
-import gov.epa.ccte.api.chemical.projection.chemicalproperty.ChemicalPropertySummary;
+import gov.epa.ccte.api.chemical.projection.chemicalproperty.*;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -87,5 +86,64 @@ public interface ChemicalPropertyPredictedRepository extends JpaRepository<Chemi
     			pd.prop_name, pd.prop_unit
     				""", nativeQuery = true)
     List<ChemicalPropertySummary> findSummaryByDtxsidAndPropName(@Param("dtxsid")String dtxsid, @Param("propName")String propName, @Param("propCategory")String propCategory);
+    
+    @Query(value = """
+    		SELECT
+    		    d.source_name AS sourceName,
+    		    d.source_description AS sourceDescription,
+    		    d.public_source_url AS publicSourceUrl,
+    		    d.prop_value AS propValue,
+    		    d.direct_url AS directUrl,
+    		    d.exp_details_species_latin AS speciesLatin,
+    		    d.exp_details_response_site AS responseSite,
+    		    CASE 
+    		    	WHEN d.direct_url IS NULL THEN 'Not Available'
+    		    	WHEN d.direct_url IN ('https://ochem.eu/home/show.do', 'https://www.echemportal.org/echemportal/property-search') THEN 'Not Available' 
+    		    	ELSE 'Available' 
+    		    END AS availability,
+    		    CASE 
+    		    	WHEN d.direct_url IS NULL THEN FALSE
+    		    	WHEN d.direct_url IN ('https://ochem.eu/home/show.do', 'https://www.echemportal.org/echemportal/property-search') THEN FALSE
+    		    	ELSE TRUE
+			    END AS showLink
+
+    		FROM
+    			chemprop.mv_experimental_data d
+    		WHERE
+    			d.dtxsid = :dtxsid AND d.prop_name = :propName AND  d.prop_category = :propCategory AND d.prop_value IS NOT NULL
+    				""", nativeQuery = true)
+    List<ChemicalPropertySummaryExperimental> findExpermentalSummaryByDtxsidAndPropName(@Param("dtxsid")String dtxsid, @Param("propName")String propName, @Param("propCategory")String propCategory);
+    
+    @Query(value = """
+    		SELECT
+    		    pd.source_name AS sourceName,
+    		    pd.source_description AS sourceDescription,
+    		    pd.prop_value AS propValue,
+    		    CAST('https://ctx-api-dev.ccte.epa.gov/chemical/property/model/reports/html/search/?dtxsid=' || :dtxsid || '&modelId=' || CAST(pd.model_id AS VARCHAR) AS VARCHAR) AS link,
+    		    CASE 
+    		    	WHEN r.report_html IS NULL THEN 'Not Available'
+    		    	ELSE 'Available' 
+    		    END AS linkAvailability,
+    		    CASE 
+    		    	WHEN r.report_html IS NULL THEN FALSE
+    		    	ELSE TRUE
+			    END AS showLink,
+			    pd.qmrf_url AS qmrfUrl,
+			    CASE 
+			    	WHEN pd.qmrf_url IS NULL THEN 'Not Available'
+			    	ELSE 'Available' 
+			    END AS qmrfAvailability,
+			    pd.has_qmrf AS showQmrf
+
+    		FROM
+    			chemprop.mv_predicted_data pd
+    		LEFT JOIN
+    			chemprop.mv_predicted_reports r
+    		ON
+    			pd.dtxsid = r.dtxsid AND pd.model_id = r.model_id
+    		WHERE
+    			pd.dtxsid = :dtxsid AND pd.prop_name = :propName AND  pd.prop_category = :propCategory AND pd.prop_value IS NOT NULL
+    				""", nativeQuery = true)
+    List<ChemicalPropertySummaryPredicted> findPredictedSummaryByDtxsidAndPropName(@Param("dtxsid")String dtxsid, @Param("propName")String propName, @Param("propCategory")String propCategory);
 }
 
