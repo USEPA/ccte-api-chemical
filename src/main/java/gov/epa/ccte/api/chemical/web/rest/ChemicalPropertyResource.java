@@ -1,9 +1,7 @@
 package gov.epa.ccte.api.chemical.web.rest;
 
 import gov.epa.ccte.api.chemical.domain.ChemicalPropertyPredicted;
-import gov.epa.ccte.api.chemical.projection.chemicalproperty.ChemicalPropertyAll;
-import gov.epa.ccte.api.chemical.projection.chemicalproperty.ChemicalPropertyNames;
-import gov.epa.ccte.api.chemical.projection.chemicalproperty.ChemicalPropertySummary;
+import gov.epa.ccte.api.chemical.projection.chemicalproperty.*;
 import gov.epa.ccte.api.chemical.repository.ChemicalPropertyExperimentalRepository;
 import gov.epa.ccte.api.chemical.repository.ChemicalPropertyPredictedRepository;
 import gov.epa.ccte.api.chemical.web.rest.errors.HigherNumberOfIdsException;
@@ -129,6 +127,26 @@ public class ChemicalPropertyResource implements ChemicalPropertyApi {
         return data;
 
     }
+    
+    @Override
+    public List<ChemicalPropertySummaryExperimental> propertySummaryExperimentalByDtxsidAndName(String dtxsid, String propName) {
+		log.info("dtxsid = {}, property name = {}", dtxsid, propName);
+		String propCategory = "Physchem";
+		List<ChemicalPropertySummaryExperimental> data =  predictedRepository.findExpermentalSummaryByDtxsidAndPropName(dtxsid, propName, propCategory);
+			
+		return data;
+
+	}
+    
+    @Override
+    public List<ChemicalPropertySummaryPredicted> propertySummaryPredictedByDtxsidAndName(String dtxsid, String propName) {
+		log.info("dtxsid = {}, property name = {}", dtxsid, propName);
+		String propCategory = "Physchem";
+		List<ChemicalPropertySummaryPredicted> data =  predictedRepository.findPredictedSummaryByDtxsidAndPropName(dtxsid, propName, propCategory);
+			
+		return data;
+
+	}
 
     // *********************** Property Summary - End *************************************
     // *********************** Fate - Start *************************************
@@ -175,5 +193,25 @@ public class ChemicalPropertyResource implements ChemicalPropertyApi {
         return data;
 
     }
+    
+    @Override
+    public List<ChemicalPropertySummaryExperimental> fateSummaryExperimentalByDtxsidAndName(String dtxsid, String propName) {
+		log.info("dtxsid = {}, property name = {}", dtxsid, propName);
+		String propCategory = "Env. Fate/transport";
+		List<ChemicalPropertySummaryExperimental> data =  predictedRepository.findExpermentalSummaryByDtxsidAndPropName(dtxsid, propName, propCategory);
+			
+		return data;
+
+	}
+    
+    @Override
+    public List<ChemicalPropertySummaryPredicted> fateSummaryPredictedByDtxsidAndName(String dtxsid, String propName) {
+		log.info("dtxsid = {}, property name = {}", dtxsid, propName);
+		String propCategory = "Env. Fate/transport";
+		List<ChemicalPropertySummaryPredicted> data =  predictedRepository.findPredictedSummaryByDtxsidAndPropName(dtxsid, propName, propCategory);
+			
+		return data;
+
+	}
     
 }

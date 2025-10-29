@@ -1,9 +1,7 @@
 package gov.epa.ccte.api.chemical.web.rest;
 
 import gov.epa.ccte.api.chemical.domain.ChemicalPropertyPredicted;
-import gov.epa.ccte.api.chemical.projection.chemicalproperty.ChemicalPropertyAll;
-import gov.epa.ccte.api.chemical.projection.chemicalproperty.ChemicalPropertyNames;
-import gov.epa.ccte.api.chemical.projection.chemicalproperty.ChemicalPropertySummary;
+import gov.epa.ccte.api.chemical.projection.chemicalproperty.*;
 import gov.epa.ccte.api.chemical.web.rest.errors.HigherNumberOfIdsException;
 import io.swagger.v3.oas.annotations.*;
 import io.swagger.v3.oas.annotations.media.*;
@@ -188,6 +186,42 @@ public interface ChemicalPropertyApi {
     List<ChemicalPropertySummary> propertySummaryByDtxsidAndName(@RequestParam(value ="dtxsid", required = true) String dtxsid,
     															@RequestParam(value ="propName", required = true) String propName);
     
+	/**
+	 * {@code GET  chemical/property/summary/experimental/search/ : get list of individual property value summaries for the "dtxsid" and "propertyName".
+	 *
+	 * @param dtxsid the matching dtxsid of the property summaries to retrieve.
+	 * @param propertyName the matching propertyName of the property summaries to retrieve.
+	 * 
+	 * @return the {@link ResponseEntity} with status {@code 200 (OK)} and with body the list of property summaries}.
+	 */
+	@Operation(summary = "Get experimental value summaries by dtxsid and property name (Physchem)",
+           description = "Specify the dtxsid and propertyName as parameters.")
+   @ApiResponses(value= {
+           @ApiResponse(responseCode = "200", description = "OK",  content = @Content( mediaType = "application/json",
+                   schema=@Schema(oneOf = {ChemicalPropertySummaryExperimental.class})))
+   })
+    @GetMapping(value = "chemical/property/summary/experimental/search/", produces = MediaType.APPLICATION_JSON_VALUE)
+    List<ChemicalPropertySummaryExperimental> propertySummaryExperimentalByDtxsidAndName(@RequestParam(value ="dtxsid", required = true) String dtxsid,
+    															@RequestParam(value ="propName", required = true) String propName);
+	
+	/**
+	 * {@code GET  chemical/property/summary/predicted/search/ : get list of individual property value summaries for the "dtxsid" and "propertyName".
+	 *
+	 * @param dtxsid the matching dtxsid of the property summaries to retrieve.
+	 * @param propertyName the matching propertyName of the property summaries to retrieve.
+	 * 
+	 * @return the {@link ResponseEntity} with status {@code 200 (OK)} and with body the list of property summaries}.
+	 */
+	@Operation(summary = "Get predicted value summaries by dtxsid and property name (Physchem)",
+           description = "Specify the dtxsid and propertyName as parameters.")
+   @ApiResponses(value= {
+           @ApiResponse(responseCode = "200", description = "OK",  content = @Content( mediaType = "application/json",
+                   schema=@Schema(oneOf = {ChemicalPropertySummaryExperimental.class})))
+   })
+    @GetMapping(value = "chemical/property/summary/predicted/search/", produces = MediaType.APPLICATION_JSON_VALUE)
+    List<ChemicalPropertySummaryPredicted> propertySummaryPredictedByDtxsidAndName(@RequestParam(value ="dtxsid", required = true) String dtxsid,
+    															@RequestParam(value ="propName", required = true) String propName);
+	
     // *********************** Property Summary - end *************************************
     // *********************** Fate - Start *************************************
     
@@ -260,6 +294,42 @@ public interface ChemicalPropertyApi {
    })
     @GetMapping(value = "chemical/fate/summary/search/", produces = MediaType.APPLICATION_JSON_VALUE)
     List<ChemicalPropertySummary> fateSummaryByDtxsidAndName(@RequestParam(value ="dtxsid", required = true) String dtxsid,
+    															@RequestParam(value ="propName", required = true) String propName);
+	
+	/**
+	 * {@code GET  chemical/fate/summary/experimental/search/ : get list of individual property value summaries for the "dtxsid" and "propertyName".
+	 *
+	 * @param dtxsid the matching dtxsid of the property summaries to retrieve.
+	 * @param propertyName the matching propertyName of the property summaries to retrieve.
+	 * 
+	 * @return the {@link ResponseEntity} with status {@code 200 (OK)} and with body the list of property summaries}.
+	 */
+	@Operation(summary = "Get experimental value summaries by dtxsid and property name (Env. Fate)",
+           description = "Specify the dtxsid and propertyName as parameters.")
+   @ApiResponses(value= {
+           @ApiResponse(responseCode = "200", description = "OK",  content = @Content( mediaType = "application/json",
+                   schema=@Schema(oneOf = {ChemicalPropertySummaryExperimental.class})))
+   })
+    @GetMapping(value = "chemical/fate/summary/experimental/search/", produces = MediaType.APPLICATION_JSON_VALUE)
+    List<ChemicalPropertySummaryExperimental> fateSummaryExperimentalByDtxsidAndName(@RequestParam(value ="dtxsid", required = true) String dtxsid,
+    															@RequestParam(value ="propName", required = true) String propName);
+	
+	/**
+	 * {@code GET  chemical/fate/summary/predicted/search/ : get list of individual property value summaries for the "dtxsid" and "propertyName".
+	 *
+	 * @param dtxsid the matching dtxsid of the property summaries to retrieve.
+	 * @param propertyName the matching propertyName of the property summaries to retrieve.
+	 * 
+	 * @return the {@link ResponseEntity} with status {@code 200 (OK)} and with body the list of property summaries}.
+	 */
+	@Operation(summary = "Get predicted value summaries by dtxsid and property name (Env. Fate)",
+           description = "Specify the dtxsid and propertyName as parameters.")
+   @ApiResponses(value= {
+           @ApiResponse(responseCode = "200", description = "OK",  content = @Content( mediaType = "application/json",
+                   schema=@Schema(oneOf = {ChemicalPropertySummaryExperimental.class})))
+   })
+    @GetMapping(value = "chemical/fate/summary/predicted/search/", produces = MediaType.APPLICATION_JSON_VALUE)
+    List<ChemicalPropertySummaryPredicted> fateSummaryPredictedByDtxsidAndName(@RequestParam(value ="dtxsid", required = true) String dtxsid,
     															@RequestParam(value ="propName", required = true) String propName);
 
 }
