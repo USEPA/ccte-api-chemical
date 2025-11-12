@@ -88,10 +88,11 @@ public class ChemicalSearchResource implements ChemicalSearchApi {
     
     @Override
     public List<ChemicalBatchSearchResult> chemicalBatchEqual(String words) {
-        String[] searchWords = chemicalService.preprocessingSearchWord(words.split("\n"));
-        log.debug("input search words = {} and process search word count = {}. ", words, searchWords.length);
-        List<ChemicalSearchInternal> searchResult = searchRepository.findByModifiedValueInOrderByRankAsc(List.of(searchWords), ChemicalSearchInternal.class);
-        return chemicalService.processBatchResult(searchResult, searchWords);
+        String[] originalWords = words.split("\n");
+        String[] processedWords = chemicalService.preprocessingSearchWord(originalWords);
+        log.debug("input search words = {} and process search word count = {}. ", words, processedWords.length);
+        List<ChemicalSearchInternal> searchResult = searchRepository.findByModifiedValueInOrderByRankAsc(List.of(processedWords), ChemicalSearchInternal.class);
+        return chemicalService.processBatchResult(searchResult, originalWords, processedWords);
     }
     
     @Override
@@ -157,4 +158,5 @@ public class ChemicalSearchResource implements ChemicalSearchApi {
     }
     
 }
+
 
