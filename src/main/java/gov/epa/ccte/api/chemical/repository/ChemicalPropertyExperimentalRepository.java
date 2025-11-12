@@ -1,8 +1,8 @@
 package gov.epa.ccte.api.chemical.repository;
 
 import gov.epa.ccte.api.chemical.domain.ChemicalPropertyExperimental;
-import gov.epa.ccte.api.chemical.projection.chemicalproperty.ChemicalPropertyAll;
-import gov.epa.ccte.api.chemical.projection.chemicalproperty.ChemicalPropertyNames;
+import gov.epa.ccte.api.chemical.dto.ChemicalFateAllDto;
+import gov.epa.ccte.api.chemical.projection.chemicalproperty.*;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -14,82 +14,11 @@ import java.util.List;
 @RepositoryRestResource(exported = false)
 public interface ChemicalPropertyExperimentalRepository extends JpaRepository<ChemicalPropertyExperimental, Long> {
 
-    @Query(value = """
-			SELECT 
-				ex.id AS id,
-				ex.dtxsid AS dtxsid,
-				ex.dtxcid AS dtxcid,
-				ex.smiles AS smiles,
-				ex.prop_name AS propName,
-				ex.dataset AS dataset,
-				ex.prop_value AS propValue,
-				ex.prop_unit AS propUnit,
-				ex.prop_value_id AS propValueId,
-				ex.prop_value_original AS propValueOriginal,
-				ex.prop_value_text AS propValueText,
-				ex.exp_details_temperature_c AS expDetailsTemperatureC,
-				ex.exp_details_pressure_mmhg AS expDetailsPressureMmhg,
-				ex.exp_details_ph AS expDetailsPh,
-				ex.exp_details_response_site AS expDetailsResponseSite,
-				ex.exp_details_species_latin AS expDetailsSpeciesLatin,
-				ex.exp_details_species_common AS expDetailsSpeciesCommon,
-				ex.exp_details_species_supercategory AS expDetailsSpeciesSupercategory,
-				ex.source_name AS sourceName,
-				ex.source_description AS SourceDescription,
-				ex.public_source_name AS publicSourceName,
-				ex.public_source_description AS publicSourceDescription,
-				ex.public_source_url AS publicSourceUrl,
-				ex.direct_url AS directUrl,
-				ex.ls_name AS lsName,
-				ex.ls_citation AS lsCitation,
-				ex.ls_doi AS lsDoi,
-				ex.brief_citation AS briefCitation,
-				ex.public_source_original_name AS publicSourceOriginalName,
-				ex.public_source_original_description AS publicSourceOriginalDescription,
-				ex.public_source_original_url AS publicSourceOriginalUrl
-			FROM chemprop.mv_experimental_data ex
-			WHERE ex.dtxsid = :dtxsid AND ex.prop_category = 'Physchem'
-			""", nativeQuery = true)
-    List<ChemicalPropertyAll> findExperimentalByDtxsid(String dtxsid);
+    @Transactional(readOnly = true)
+    <T> List<T> findByDtxsidInOrderByDtxsidAsc(String[] dtxsids, Class<T> type);
 
-    
-    @Query(value = """
-			SELECT 
-				ex.id AS id,
-				ex.dtxsid AS dtxsid,
-				ex.dtxcid AS dtxcid,
-				ex.smiles AS smiles,
-				ex.prop_name AS propName,
-				ex.dataset AS dataset,
-				ex.prop_value AS propValue,
-				ex.prop_unit AS propUnit,
-				ex.prop_value_id AS propValueId,
-				ex.prop_value_original AS propValueOriginal,
-				ex.prop_value_text AS propValueText,
-				ex.exp_details_temperature_c AS expDetailsTemperatureC,
-				ex.exp_details_pressure_mmhg AS expDetailsPressureMmhg,
-				ex.exp_details_ph AS expDetailsPh,
-				ex.exp_details_response_site AS expDetailsResponseSite,
-				ex.exp_details_species_latin AS expDetailsSpeciesLatin,
-				ex.exp_details_species_common AS expDetailsSpeciesCommon,
-				ex.exp_details_species_supercategory AS expDetailsSpeciesSupercategory,
-				ex.source_name AS sourceName,
-				ex.source_description AS SourceDescription,
-				ex.public_source_name AS publicSourceName,
-				ex.public_source_description AS publicSourceDescription,
-				ex.public_source_url AS publicSourceUrl,
-				ex.direct_url AS directUrl,
-				ex.ls_name AS lsName,
-				ex.ls_citation AS lsCitation,
-				ex.ls_doi AS lsDoi,
-				ex.brief_citation AS briefCitation,
-				ex.public_source_original_name AS publicSourceOriginalName,
-				ex.public_source_original_description AS publicSourceOriginalDescription,
-				ex.public_source_original_url AS publicSourceOriginalUrl
-			FROM chemprop.mv_experimental_data ex
-			WHERE ex.dtxsid in :dtxsids AND ex.prop_category = 'Physchem'
-			""", nativeQuery = true)
-    List<ChemicalPropertyAll> findExperimentalByDtxsidInOrderByDtxsidAsc(String[] dtxsids);
+    @Transactional(readOnly = true)
+    <T>List<T> findByDtxsid(String dtxsid, Class<T> type);
 
     
     @Transactional(readOnly = true)
@@ -107,80 +36,55 @@ public interface ChemicalPropertyExperimentalRepository extends JpaRepository<Ch
     // *********************** Fate - Start *************************************
     
     @Query(value = """
-			SELECT 
-				ex.id AS id,
-				ex.dtxsid AS dtxsid,
-				ex.dtxcid AS dtxcid,
-				ex.smiles AS smiles,
-				ex.prop_name AS propName,
-				ex.dataset AS dataset,
-				ex.prop_value AS propValue,
-				ex.prop_unit AS propUnit,
-				ex.prop_value_id AS propValueId,
-				ex.prop_value_original AS propValueOriginal,
-				ex.prop_value_text AS propValueText,
-				ex.exp_details_temperature_c AS expDetailsTemperatureC,
-				ex.exp_details_pressure_mmhg AS expDetailsPressureMmhg,
-				ex.exp_details_ph AS expDetailsPh,
-				ex.exp_details_response_site AS expDetailsResponseSite,
-				ex.exp_details_species_latin AS expDetailsSpeciesLatin,
-				ex.exp_details_species_common AS expDetailsSpeciesCommon,
-				ex.exp_details_species_supercategory AS expDetailsSpeciesSupercategory,
-				ex.source_name AS sourceName,
-				ex.source_description AS SourceDescription,
-				ex.public_source_name AS publicSourceName,
-				ex.public_source_description AS publicSourceDescription,
-				ex.public_source_url AS publicSourceUrl,
-				ex.direct_url AS directUrl,
-				ex.ls_name AS lsName,
-				ex.ls_citation AS lsCitation,
-				ex.ls_doi AS lsDoi,
-				ex.brief_citation AS briefCitation,
-				ex.public_source_original_name AS publicSourceOriginalName,
-				ex.public_source_original_description AS publicSourceOriginalDescription,
-				ex.public_source_original_url AS publicSourceOriginalUrl
-			FROM chemprop.mv_experimental_data ex
-			WHERE ex.dtxsid = :dtxsid AND ex.prop_category = 'Env. Fate/transport'
-			""", nativeQuery = true)
-    List<ChemicalPropertyAll> findFateByDtxsid(String dtxsid);
+    	    WITH experimentalFate AS (
+    	        SELECT ex.prop_name, row_to_json(ex) AS data
+    	        FROM chemprop.mv_experimental_data ex
+    	        WHERE ex.dtxsid IN (:dtxsid) AND ex.prop_category = 'Env. Fate/transport'
+    	    ),
+    	    predictedFate AS (
+    	        SELECT pd.prop_name, row_to_json(pd) AS data
+    	        FROM chemprop.mv_predicted_data pd
+    	        WHERE pd.dtxsid IN (:dtxsid) AND pd.prop_category = 'Env. Fate/transport'
+    	    )
+    	    SELECT 
+    	        COALESCE(ef.prop_name, pf.prop_name) AS propName,
+    	        COALESCE(json_agg(ef.data), '[]'::json) AS experimentalFateData,
+    	        COALESCE(json_agg(pf.data), '[]'::json) AS predictedFateData
+    	    FROM experimentalFate ef
+    	    FULL OUTER JOIN predictedFate pf ON ef.prop_name = pf.prop_name
+    	    GROUP BY COALESCE(ef.prop_name, pf.prop_name)
+    	    """, nativeQuery = true)
+    	List<ChemicalFateAllDto> findFateByDtxsid(String dtxsid);
     
     
     @Query(value = """
-			SELECT 
-				ex.id AS id,
-				ex.dtxsid AS dtxsid,
-				ex.dtxcid AS dtxcid,
-				ex.smiles AS smiles,
-				ex.prop_name AS propName,
-				ex.dataset AS dataset,
-				ex.prop_value AS propValue,
-				ex.prop_unit AS propUnit,
-				ex.prop_value_id AS propValueId,
-				ex.prop_value_original AS propValueOriginal,
-				ex.prop_value_text AS propValueText,
-				ex.exp_details_temperature_c AS expDetailsTemperatureC,
-				ex.exp_details_pressure_mmhg AS expDetailsPressureMmhg,
-				ex.exp_details_ph AS expDetailsPh,
-				ex.exp_details_response_site AS expDetailsResponseSite,
-				ex.exp_details_species_latin AS expDetailsSpeciesLatin,
-				ex.exp_details_species_common AS expDetailsSpeciesCommon,
-				ex.exp_details_species_supercategory AS expDetailsSpeciesSupercategory,
-				ex.source_name AS sourceName,
-				ex.source_description AS SourceDescription,
-				ex.public_source_name AS publicSourceName,
-				ex.public_source_description AS publicSourceDescription,
-				ex.public_source_url AS publicSourceUrl,
-				ex.direct_url AS directUrl,
-				ex.ls_name AS lsName,
-				ex.ls_citation AS lsCitation,
-				ex.ls_doi AS lsDoi,
-				ex.brief_citation AS briefCitation,
-				ex.public_source_original_name AS publicSourceOriginalName,
-				ex.public_source_original_description AS publicSourceOriginalDescription,
-				ex.public_source_original_url AS publicSourceOriginalUrl
-			FROM chemprop.mv_experimental_data ex
-			WHERE ex.dtxsid in :dtxsids AND ex.prop_category = 'Env. Fate/transport'
-			""", nativeQuery = true)
-    List<ChemicalPropertyAll> findFateByDtxsidInOrderByDtxsidAsc(String[] dtxsids);
+    	    SELECT dtxsid,
+    	           json_agg(json_build_object(
+    	               'propName', prop_name,
+    	               'experimentalFateData', experimentalFateData,
+    	               'predictedFateData', predictedFateData
+    	           )) AS properties
+    	    FROM (
+    	        SELECT COALESCE(ef.dtxsid, pf.dtxsid) AS dtxsid,
+    	               COALESCE(ef.prop_name, pf.prop_name) AS prop_name,
+    	               COALESCE(json_agg(ef.data) FILTER (WHERE ef.data IS NOT NULL), '[]'::json) AS experimentalFateData,
+    	               COALESCE(json_agg(pf.data) FILTER (WHERE pf.data IS NOT NULL), '[]'::json) AS predictedFateData
+    	        FROM (
+    	            SELECT ex.dtxsid, ex.prop_name, row_to_json(ex) AS data
+    	            FROM chemprop.mv_experimental_data ex
+    	            WHERE ex.dtxsid IN (:dtxsids) AND ex.prop_category = 'Env. Fate/transport'
+    	        ) ef
+    	        FULL OUTER JOIN (
+    	            SELECT pd.dtxsid, pd.prop_name, row_to_json(pd) AS data
+    	            FROM chemprop.mv_predicted_data pd
+    	            WHERE pd.dtxsid IN (:dtxsids) AND pd.prop_category = 'Env. Fate/transport'
+    	        ) pf
+    	        ON ef.dtxsid = pf.dtxsid AND ef.prop_name = pf.prop_name
+    	        GROUP BY COALESCE(ef.dtxsid, pf.dtxsid), COALESCE(ef.prop_name, pf.prop_name)
+    	    ) sub
+    	    GROUP BY dtxsid
+    	    ORDER BY dtxsid ASC
+    	    """, nativeQuery = true)
+    	List<Object[]> findFateByDtxsidInOrderByDtxsidAsc(String[] dtxsids);
     
 }

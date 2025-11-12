@@ -1,6 +1,9 @@
 package gov.epa.ccte.api.chemical.web.rest;
 
+import gov.epa.ccte.api.chemical.domain.ChemicalPropertyExperimental;
 import gov.epa.ccte.api.chemical.domain.ChemicalPropertyPredicted;
+import gov.epa.ccte.api.chemical.dto.ChemicalFateAllDto;
+import gov.epa.ccte.api.chemical.dto.ChemicalFateBatchDto;
 import gov.epa.ccte.api.chemical.projection.chemicalproperty.*;
 import gov.epa.ccte.api.chemical.web.rest.errors.HigherNumberOfIdsException;
 import io.swagger.v3.oas.annotations.*;
@@ -13,6 +16,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ProblemDetail;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
 import java.util.List;
 
 @Tag(name = "Chemical Property Resource", description = "API endpoints for getting chemical properties (experimental and/or predictive) for a given DTXSID (Chemical Identifier).")
@@ -31,10 +35,10 @@ public interface ChemicalPropertyApi {
             description = "Specify the dtxsid as part of the path.")
     @ApiResponses(value= {
             @ApiResponse(responseCode = "200", description = "OK",  content = @Content( mediaType = "application/json",
-                    schema=@Schema(oneOf = {ChemicalPropertyAll.class})))
+                    schema=@Schema(oneOf = {ChemicalPropertyExperimental.class})))
     })
     @GetMapping(value = "chemical/property/experimental/search/by-dtxsid/{dtxsid}", produces = MediaType.APPLICATION_JSON_VALUE)
-    List<ChemicalPropertyAll> experimentalPropertyByDtxsid(@Parameter(required = true, description = "DSSTox Substance Identifier", example = "DTXSID7020182") @PathVariable("dtxsid") String dtxsid);
+    List<ChemicalPropertyExperimental> experimentalPropertyByDtxsid(@Parameter(required = true, description = "DSSTox Substance Identifier", example = "DTXSID7020182") @PathVariable("dtxsid") String dtxsid);
     
 	/**
 	 * {@code GET  chemical/property/experimental/search/by-range/{propertyName}/{start}/{end} : get list of experimental properties (Physchem) for the "propertyName" and range("start","end").
@@ -46,10 +50,10 @@ public interface ChemicalPropertyApi {
             description = "Specify the propertyName, start, and end as part of the path.")
     @ApiResponses(value= {
             @ApiResponse(responseCode = "200", description = "OK",  content = @Content( mediaType = "application/json",
-                    schema=@Schema(oneOf = {ChemicalPropertyAll.class})))
+                    schema=@Schema(oneOf = {ChemicalPropertyExperimental.class})))
     })
     @GetMapping(value = "chemical/property/experimental/search/by-range/{propertyName}/{start}/{end}", produces = MediaType.APPLICATION_JSON_VALUE)
-    List<ChemicalPropertyAll> experimentalPropertyByRange(@PathVariable("propertyName") String propertyName, @PathVariable("start") Double start, @PathVariable("end") Double end);
+    List<ChemicalPropertyExperimental> experimentalPropertyByRange(@PathVariable("propertyName") String propertyName, @PathVariable("start") Double start, @PathVariable("end") Double end);
 
 	/**
 	 * {@code GET  chemical/property/experimental/name : get list of all experimental property names (Physchem).
@@ -73,14 +77,14 @@ public interface ChemicalPropertyApi {
     @Operation(summary = "Get experimental properties by the batch of dtxsid(s)", description = "Note: Maximum ${application.batch-size} DTXSIDs per request")
     @ApiResponses(value= {
             @ApiResponse(responseCode = "200", description = "Successfull",  content = @Content( mediaType = "application/json",
-                    schema=@Schema(oneOf = {ChemicalPropertyAll.class}))),
+                    schema=@Schema(oneOf = {ChemicalPropertyExperimental.class}))),
             @ApiResponse(responseCode = "400", description = "When user has submitted more then allowed number (${application.batch-size}) of DTXSID(s).",
                     content = @Content( mediaType = "application/json",
                     examples = {@ExampleObject(value = "{\"title\":\"Validation Error\",\"status\":400,\"detail\":\"System supports only '200' dtxsid at one time, '202' are submitted.\"}", description = "Validation error for more then allowed number of dtxsid(s).")},
                     schema=@Schema(oneOf = {ProblemDetail.class})))
     })          
     @PostMapping(value = "chemical/property/experimental/search/by-dtxsid/", produces = MediaType.APPLICATION_JSON_VALUE)
-    List<ChemicalPropertyAll> experimentalBatchSearch(@io.swagger.v3.oas.annotations.parameters.RequestBody(required = true, description = "JSON array of DSSTox Substance Identifier",
+    List<ChemicalPropertyExperimental> experimentalBatchSearch(@io.swagger.v3.oas.annotations.parameters.RequestBody(required = true, description = "JSON array of DSSTox Substance Identifier",
             content = {@Content (array = @ArraySchema(schema = @Schema(implementation = String.class)),
             examples = {@ExampleObject("\"[\\\"DTXSID7020182\\\",\\\"DTXSID9020112\\\"]\"")})}) @RequestBody String[] dtxsids) throws HigherNumberOfIdsException;
     
@@ -235,10 +239,10 @@ public interface ChemicalPropertyApi {
             description = "Specify the dtxsid as part of the path.")
     @ApiResponses(value= {
             @ApiResponse(responseCode = "200", description = "OK",  content = @Content( mediaType = "application/json",
-                    schema=@Schema(oneOf = {ChemicalPropertyAll.class})))
+                    schema=@Schema(oneOf = {ChemicalFateAllDto.class})))
     })
     @GetMapping(value = "chemical/fate/search/by-dtxsid/{dtxsid}", produces = MediaType.APPLICATION_JSON_VALUE)
-    List<ChemicalPropertyAll> fateByDtxsid(@Parameter(required = true, description = "DSSTox Substance Identifier", example = "DTXSID7020182") @PathVariable("dtxsid") String dtxsid);
+	List<ChemicalFateAllDto> fateByDtxsid(@Parameter(required = true, description = "DSSTox Substance Identifier", example = "DTXSID7020182") @PathVariable("dtxsid") String dtxsid);
     
 	/**
 	 * {@code POST  chemical/fate/search/by-dtxsid/ : get list of chemical fates for the batch of "dtxsids".
@@ -249,14 +253,14 @@ public interface ChemicalPropertyApi {
     @Operation(summary = "Get fate by the batch of dtxsid(s) (Env. Fate/transport)", description = "Note: Maximum ${application.batch-size} DTXSIDs per request")
     @ApiResponses(value= {
             @ApiResponse(responseCode = "200", description = "Successfull",  content = @Content( mediaType = "application/json",
-                    schema=@Schema(oneOf = {ChemicalPropertyAll.class}))),
+                    schema=@Schema(oneOf = {ChemicalFateBatchDto.class}))),
             @ApiResponse(responseCode = "400", description = "When user has submitted more then allowed number (${application.batch-size}) of DTXSID(s).",
                     content = @Content( mediaType = "application/json",
                     examples = {@ExampleObject(value = "{\"title\":\"Validation Error\",\"status\":400,\"detail\":\"System supports only '200' dtxsid at one time, '202' are submitted.\"}", description = "Validation error for more then allowed number of dtxsid(s).")},
                     schema=@Schema(oneOf = {ProblemDetail.class})))
     }) 
     @PostMapping(value = "chemical/fate/search/by-dtxsid/", produces = MediaType.APPLICATION_JSON_VALUE)
-    List<ChemicalPropertyAll> fateBatchSearch(@io.swagger.v3.oas.annotations.parameters.RequestBody(required = true, description = "JSON array of DSSTox Substance Identifier",
+    List<ChemicalFateBatchDto> fateBatchSearch(@io.swagger.v3.oas.annotations.parameters.RequestBody(required = true, description = "JSON array of DSSTox Substance Identifier",
             content = {@Content (array = @ArraySchema(schema = @Schema(implementation = String.class)),
             examples = {@ExampleObject("\"[\\\"DTXSID7020182\\\",\\\"DTXSID9020112\\\"]\"")})}) @RequestBody String[] dtxsids) throws HigherNumberOfIdsException;
     
