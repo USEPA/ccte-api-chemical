@@ -48,7 +48,7 @@ public class ChemicalSynonymResourceTest {
     private static class ChemicalSynonymAllMock implements ChemicalSynonymAll {
         // Fields
     	private String dtxsid;
-        private String pcCode;
+        private String[] pcCode;
         private String[] valid;
         private String[] good;
         private String[] deletedCasrn;
@@ -56,7 +56,7 @@ public class ChemicalSynonymResourceTest {
         private String[] beilstein;
         private String[] alternateCasrn;
         // Constructor
-        public ChemicalSynonymAllMock(String dtxsid, String pcCode, String[] valid, String[] good, String[] deletedCasrn, String[] other, String[] beilstein, String[] alternateCasrn) {
+        public ChemicalSynonymAllMock(String dtxsid, String pcCode[], String[] valid, String[] good, String[] deletedCasrn, String[] other, String[] beilstein, String[] alternateCasrn) {
             this.dtxsid = dtxsid;
             this.pcCode = pcCode;
             this.valid = valid;
@@ -68,13 +68,13 @@ public class ChemicalSynonymResourceTest {
         }
         // Getters
         @Override public String getDtxsid() { return dtxsid; }
-        @Override public String getPcCode() { return pcCode; }
+        @Override public String[] getPcCode() { return pcCode; }
         @Override public String[] getValid() { return valid; }
         @Override public String[] getGood() { return good; }
-        @Override public String[] getDeletedCasrn() { return deletedCasrn; }
+        @Override public String[] getDeleted() { return deletedCasrn; }
         @Override public String[] getOther() { return other; }
         @Override public String[] getBeilstein() { return beilstein; }
-        @Override public String[] getAlternateCasrn() { return alternateCasrn; }
+        @Override public String[] getAlternate() { return alternateCasrn; }
 
     }
 
