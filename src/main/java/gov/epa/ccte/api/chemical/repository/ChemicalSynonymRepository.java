@@ -37,9 +37,12 @@ public interface ChemicalSynonymRepository extends JpaRepository<ChemicalSynonym
     	            "SELECT unnest(string_to_array(beilstein_synonym, '|')) AS synonym, 'beilstein_synonym' AS quality, 5 AS rank FROM ch.v_chemical_snonyms WHERE dtxsid = :dtxsid " +
     	            "UNION ALL " +
     	            "SELECT unnest(string_to_array(alternate_synonym, '|')) AS synonym, 'alternate_synonym' AS quality, 6 AS rank FROM ch.v_chemical_snonyms WHERE dtxsid = :dtxsid " +
+		       	    "UNION ALL " +
+    	            "SELECT unnest(string_to_array(pc_code, '|')) AS synonym, 'pc_code' AS quality, 7 AS rank FROM ch.v_chemical_snonyms WHERE dtxsid = :dtxsid " +
             		"ORDER BY rank ASC")
      List<CcdSynonymFlatProjection> getFlatSynonymsByDtxsid(@Param("dtxsid") String dtxsid);
     
 
 
 }
+
