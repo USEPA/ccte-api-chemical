@@ -186,10 +186,8 @@ public class ChemicalPropertyResource implements ChemicalPropertyApi {
 				    new TypeReference<List<ChemicalFateBatchDto.PropertyDto>>() {}
 				);
 			} catch (JsonMappingException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			} catch (JsonProcessingException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
             data.add(new ChemicalFateBatchDto(dtxsid, properties));
@@ -240,4 +238,5 @@ public class ChemicalPropertyResource implements ChemicalPropertyApi {
 
 	}
     
+
 }
