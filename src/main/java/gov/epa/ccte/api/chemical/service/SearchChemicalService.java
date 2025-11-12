@@ -448,7 +448,7 @@ public class SearchChemicalService {
     }
     
     public List<CcdChemicalSearchResult> applyRankFilterSearchResult(List<CcdChemicalSearchResult> results) {
-        if (results == null || results.isEmpty()) return results;
+    	if (results == null || results.isEmpty()) return results;
 
         int minRank = results.stream()
                 .mapToInt(CcdChemicalSearchResult::getRank)
@@ -456,16 +456,14 @@ public class SearchChemicalService {
                 .orElse(Integer.MAX_VALUE);
 
         if (minRank < 16) {
-            // Keep all verified ranks (1–15)
             return results.stream()
-                    .filter(r -> r.getRank() < 16)
-                    .collect(Collectors.toList());
-        } else {
-            // Only integrated source names exist (rank 16)
-            return results.stream()
-                    .filter(r -> r.getRank() == 16)
+                    .filter(r -> r.getRank() == minRank)
                     .collect(Collectors.toList());
         }
+
+        return results.stream()
+                .filter(r -> r.getRank() == 16)
+                .collect(Collectors.toList());
     }
 
     private List<ChemicalSearchAll> getStartWithFromDB(String searchWord, List<String> searchMatchValues, Integer top) {
