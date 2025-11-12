@@ -26,18 +26,20 @@ public interface ChemicalSynonymRepository extends JpaRepository<ChemicalSynonym
     <T> List<T> findByDtxsidInAndIsPublicOrderByDtxsidAsc(Collection<String> dtxsids, Boolean isPublic, Class<T> type);
     
     @Query(nativeQuery = true,
-            value = "SELECT unnest(string_to_array(valid_synonym, '|')) AS synonym, 'valid_synonym' AS quality FROM ch.v_chemical_snonyms WHERE dtxsid = :dtxsid " +
-                    "UNION ALL " +
-                    "SELECT unnest(string_to_array(good_synonym, '|')) AS synonym, 'good_synonym' AS quality FROM ch.v_chemical_snonyms WHERE dtxsid = :dtxsid " +
-                    "UNION ALL " +
-                    "SELECT unnest(string_to_array(deleted_synonym, '|')) AS synonym, 'deleted_synonym' AS quality FROM ch.v_chemical_snonyms WHERE dtxsid = :dtxsid " +
-                    "UNION ALL " +
-                    "SELECT unnest(string_to_array(other_synonym, '|')) AS synonym, 'other_synonym' AS quality FROM ch.v_chemical_snonyms WHERE dtxsid = :dtxsid " +
-                    "UNION ALL " +
-                    "SELECT unnest(string_to_array(beilstein_synonym, '|')) AS synonym, 'beilstein_synonym' AS quality FROM ch.v_chemical_snonyms WHERE dtxsid = :dtxsid " +
-                    "UNION ALL " +
-                    "SELECT unnest(string_to_array(alternate_synonym, '|')) AS synonym, 'alternate_synonym' AS quality FROM ch.v_chemical_snonyms WHERE dtxsid = :dtxsid")
+    	    value = "SELECT unnest(string_to_array(valid_synonym, '|')) AS synonym, 'valid_synonym' AS quality, 1 AS rank FROM ch.v_chemical_snonyms WHERE dtxsid = :dtxsid " +
+    	            "UNION ALL " +
+    	            "SELECT unnest(string_to_array(good_synonym, '|')) AS synonym, 'good_synonym' AS quality, 2 AS rank FROM ch.v_chemical_snonyms WHERE dtxsid = :dtxsid " +
+    	            "UNION ALL " +
+    	            "SELECT unnest(string_to_array(other_synonym, '|')) AS synonym, 'other_synonym' AS quality, 3 AS rank FROM ch.v_chemical_snonyms WHERE dtxsid = :dtxsid " +
+    	            "UNION ALL " +
+    	            "SELECT unnest(string_to_array(deleted_synonym, '|')) AS synonym, 'deleted_synonym' AS quality, 4 AS rank FROM ch.v_chemical_snonyms WHERE dtxsid = :dtxsid " +
+    	            "UNION ALL " +
+    	            "SELECT unnest(string_to_array(beilstein_synonym, '|')) AS synonym, 'beilstein_synonym' AS quality, 5 AS rank FROM ch.v_chemical_snonyms WHERE dtxsid = :dtxsid " +
+    	            "UNION ALL " +
+    	            "SELECT unnest(string_to_array(alternate_synonym, '|')) AS synonym, 'alternate_synonym' AS quality, 6 AS rank FROM ch.v_chemical_snonyms WHERE dtxsid = :dtxsid " +
+            		"ORDER BY rank ASC")
      List<CcdSynonymFlatProjection> getFlatSynonymsByDtxsid(@Param("dtxsid") String dtxsid);
     
+
 
 }
