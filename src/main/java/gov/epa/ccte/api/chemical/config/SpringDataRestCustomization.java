@@ -2,7 +2,6 @@ package gov.epa.ccte.api.chemical.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import gov.epa.ccte.api.chemical.config.converter.StringToImageFormatConverter;
-import gov.epa.ccte.api.chemical.config.converter.StringToPropertyTypeConverter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.convert.support.ConfigurableConversionService;
 import org.springframework.data.auditing.AuditableBeanWrapperFactory;
@@ -23,9 +22,6 @@ public class SpringDataRestCustomization implements RepositoryRestConfigurer {
     @Autowired
     StringToImageFormatConverter stringToImageFormatConverter;
 
-    @Autowired
-    StringToPropertyTypeConverter stringToPropertyTypeConverter;
-
     @Override
     public void configureRepositoryRestConfiguration(RepositoryRestConfiguration config, CorsRegistry cors) {
 
@@ -38,7 +34,6 @@ public class SpringDataRestCustomization implements RepositoryRestConfigurer {
     @Override
     public void configureConversionService(ConfigurableConversionService conversionService) {
         conversionService.addConverter(stringToImageFormatConverter);
-        conversionService.addConverter(stringToPropertyTypeConverter);
         RepositoryRestConfigurer.super.configureConversionService(conversionService);
     }
 

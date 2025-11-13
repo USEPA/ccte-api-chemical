@@ -9,8 +9,10 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.domain.Limit;
 import org.springframework.stereotype.Service;
 
+
 import java.util.*;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 import static gov.epa.ccte.api.chemical.service.ChemicalUtils.*;
 
@@ -35,16 +37,16 @@ public class SearchChemicalService {
         // Initialize values
         isThisCASRN = Arrays.asList("Alternate CAS-RN","Integrated Source CAS-RN","CASRN","FDA CAS-Like Identifier","Deleted CAS-RN");
         searchMatchWithoutInchikey = Arrays.asList("Deleted CAS-RN","PC-Code","Substance_id","Approved Name","Alternate CAS-RN",
-                "CAS-RN","Synonym","Integrated Source CAS-RN","DSSTox_Compound_Id","Systematic Name","Integrated Source Name",
-                "Expert Validated Synonym","Synonym from Valid Source","FDA CAS-Like Identifier","DSSTox_Substance_Id", "EHCA Number", "EC Number");
+                "CAS-RN","Synonym","DSSTox_Compound_Id","Systematic Name","Integrated Source Name",
+                "Expert Validated Synonym","Synonym from Valid Source","FDA CAS-Like Identifier","DSSTox_Substance_Id", "ECHA Number", "EC Number");
         searchMatchWithInchikey = Arrays.asList("Deleted CAS-RN","PC-Code","Substance_id","Approved Name","Alternate CAS-RN",
-                "CAS-RN","Synonym","Integrated Source CAS-RN","DSSTox_Compound_Id","Systematic Name","Integrated Source Name",
+                "CAS-RN","Synonym","DSSTox_Compound_Id","Systematic Name","Integrated Source Name",
                 "Expert Validated Synonym","Synonym from Valid Source","FDA CAS-Like Identifier","DSSTox_Substance_Id",
-                "InChIKey", "Indigo InChIKey", "EHCA Number", "EC Number");
-        searchNames4SingleSearch = Arrays.asList("Deleted CAS-RN","PC-Code","Approved Name","Alternate CAS-RN",
-                "CASRN","Synonym","Integrated Source CAS-RN","DSSTox_Compound_Id","Systematic Name","Integrated Source Name",
+                "InChIKey", "Indigo InChIKey", "ECHA Number", "EC Number");
+        searchNames4SingleSearch = Arrays.asList("Deleted CAS-RN","PC-Code","Approved Name","Alternate CAS-RN","CAS-RN",
+                "CASRN","Synonym","DSSTox_Compound_Id","Systematic Name","Integrated Source Name",
                 "Expert Validated Synonym","Synonym from Valid Source","FDA CAS-Like Identifier","DSSTox_Substance_Id",
-                "EHCA Number", "EC Number", "InChIKey", "Indigo InChIKey");
+                "ECHA Number", "EC Number", "InChIKey", "Indigo InChIKey");
     }
 
 
@@ -401,7 +403,54 @@ public class SearchChemicalService {
         log.debug("{} records match for {}", searchResult.size(), word);
 
         searchResult = removeDuplicates(searchResult);
+        searchResult = applyStartWithRankFilter(searchResult);
         return searchResult;
+    }
+    
+    /**
+     * Applies rank filtering for the "start-with" search.
+     * Keeps all ranks < 16 if any exist, otherwise keeps rank = 16.
+     */
+    public List<ChemicalSearchAll> applyStartWithRankFilter(List<ChemicalSearchAll> results) {
+        if (results == null || results.isEmpty()) return results;
+
+        int minRank = results.stream()
+                .mapToInt(ChemicalSearchAll::getRank)
+                .min()
+                .orElse(Integer.MAX_VALUE);
+
+        if (minRank < 16) {
+            // Keep all verified ranks (1–15)
+            return results.stream()
+                    .filter(r -> r.getRank() < 16)
+                    .collect(Collectors.toList());
+        } else {
+            // Only integrated source names exist (rank 16)
+            return results.stream()
+                    .filter(r -> r.getRank() == 16)
+                    .collect(Collectors.toList());
+        }
+    }
+    
+    public List<CcdChemicalSearchResult> applyRankFilterSearchResult(List<CcdChemicalSearchResult> results) {
+        if (results == null || results.isEmpty()) return results;
+
+        int minRank = results.stream()
+                .mapToInt(CcdChemicalSearchResult::getRank)
+                .min()
+                .orElse(Integer.MAX_VALUE);
+
+        if (minRank < 16) {
+            // Keep all verified ranks (1–15)
+            return results.stream()
+                    .filter(r -> r.getRank() < 16)
+                    .collect(Collectors.toList());
+        } else {
+            // Only integrated source names exist (rank 16)
+            return results.stream()
+                    .filter(r -> r.getRank() == 16)
+                    .collect(Collectors.toList());
+        }
     }
 
     private List<ChemicalSearchAll> getStartWithFromDB(String searchWord, List<String> searchMatchValues, Integer top) {
@@ -435,7 +484,8 @@ public class SearchChemicalService {
             case "chemicalsearchall": {
                  // ChemicalSearchAll.class
                 List result = getContainFromDB1(searchWord, top, ChemicalSearchAll.class);
-                return removeDuplicates(result);
+                List filteredResult = applyStartWithRankFilter((List<ChemicalSearchAll>)result);
+                return removeDuplicates(filteredResult);
             }
             case "dtxsidonly":{
                 // DtxsidOnly.class
@@ -454,14 +504,34 @@ public class SearchChemicalService {
         }
     }
 
-    private List getContainFromDB1(String searchWord, Integer top, Class aClass) {
-        if(top != null && top > 0 ) {
-            log.debug("picking up top {} records", top);
-            return searchRepository.findByModifiedValueContainsOrderByRankAscDtxsid(searchWord,Limit.of(top), aClass);
-        }else{
-            return searchRepository.findByModifiedValueContainsOrderByRankAscDtxsid(searchWord, Limit.unlimited(), aClass);
-        }
+//    private List getContainFromDB1(String searchWord, Integer top, Class aClass) {
+//        if(top != null && top > 0 ) {
+//            log.debug("picking up top {} records", top);
+//            return searchRepository.findByModifiedValueContainsAndSearchNameInOrderByRankAscDtxsidAsc(searchWord, searchMatchWithoutInchikey, Limit.of(top), aClass);
+//            //return searchRepository.findByModifiedValueContainsOrderByRankAscDtxsid(searchWord,Limit.of(top), aClass);
+//        }else{
+//            return searchRepository.findByModifiedValueContainsAndSearchNameInOrderByRankAscDtxsidAsc(searchWord, searchMatchWithInchikey, Limit.unlimited(), aClass);
+//            //return searchRepository.findByModifiedValueContainsOrderByRankAscDtxsid(searchWord, Limit.unlimited(), aClass);
+//        }
+//    }
 
+    private List getContainFromDB1(String searchWord, Integer top, Class aClass) {
+        // Determine if Inchikey logic should be included based on searchWord length
+        boolean useInchikey = searchWord != null && searchWord.length() >= 13;
+
+        // Determine the appropriate search match type
+        var searchMatch = useInchikey ? searchMatchWithInchikey : searchMatchWithoutInchikey;
+
+        // Determine the limit based on the 'top' parameter
+        var limit = (top != null && top > 0) ? Limit.of(top) : Limit.unlimited();
+
+        // Call the repository method with the appropriate parameters
+        return searchRepository.findByModifiedValueContainsAndSearchNameInOrderByRankAscDtxsidAsc(
+                searchWord,
+                searchMatch,
+                limit,
+                aClass
+        );
     }
 
 
@@ -481,6 +551,7 @@ public class SearchChemicalService {
         }
         return returnList;
     }*/
+    
 }
 
 

@@ -1,5 +1,7 @@
 package gov.epa.ccte.api.chemical.service;
 
+import gov.epa.ccte.api.chemical.projection.chemicaldetail.CcdAssayDetails;
+import gov.epa.ccte.api.chemical.projection.chemicaldetail.ChemicalDetailAllIds;
 import gov.epa.ccte.api.chemical.projection.chemicaldetail.ChemicalDetailStandard2;
 import gov.epa.ccte.api.chemical.repository.ChemicalDetailRepository;
 import gov.epa.ccte.api.chemical.web.rest.requests.Page;
@@ -27,24 +29,42 @@ public class ChemicalDetailService {
             return detailRepository.findByDtxcidInOrderByDtxcidAsc(ids, tClass);
     }
 
-    public Page getAllChemicals(Long nextCursor, Integer batchSize, Long totalChemicals) {
+    public Page getAllChemicals(Long nextCursor, Integer batchSize, Long totalChemicals, String projection) {
 
         log.debug("next cursor: " + nextCursor);
-
-        List<ChemicalDetailStandard2> data = detailRepository.findByIdGreaterThanAndDtxsidNotNull(nextCursor, Limit.of(batchSize));
-
-        log.debug("data size: {}", data.size());
-
-
-        return Page.builder()
+        if (projection == null || projection.isEmpty()) {
+        	List<ChemicalDetailStandard2> data = detailRepository.findByIdGreaterThanAndDtxsidNotNull(nextCursor, Limit.of(batchSize), ChemicalDetailStandard2.class);
+        	log.debug("data size: {}", data.size());        
+        	Page results = Page.builder()
                 .data(data)
                 .size(batchSize)
                 .total(totalChemicals)
                 .next(maximumId(data))
                 .build();
+        	return results;
+        }else {
+        	List<ChemicalDetailAllIds> data = detailRepository.findByIdGreaterThanAndDtxsidNotNull(nextCursor, Limit.of(batchSize), ChemicalDetailAllIds.class);
+        	log.debug("data size: {}", data.size());
+        	Page results = Page.builder()
+                .data(data)
+                .size(batchSize)
+                .total(totalChemicals)
+                .next(maximumId2(data))
+                .build();
+        	return results; 
+        	}
+
+    	}
+
+    public Long maximumId(List<ChemicalDetailStandard2> data) {
+        if(!data.isEmpty()){
+            return (data.get(data.size()-1)).getId();
+        }else{
+            return 1L;
+        }
     }
 
-    private Long maximumId(List<ChemicalDetailStandard2> data) {
+    public Long maximumId2(List<ChemicalDetailAllIds> data) {
         if(!data.isEmpty()){
             return (data.get(data.size()-1)).getId();
         }else{
@@ -54,5 +74,9 @@ public class ChemicalDetailService {
 
     public Long getTotalChemicals() {
         return detailRepository.count();
+    }
+    
+    public List<CcdAssayDetails> getCcdAssayDetails(String[] dtxsids) {
+        return detailRepository.getFullCcdAssayDetails(List.of(dtxsids));
     }
 }

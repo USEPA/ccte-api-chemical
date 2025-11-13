@@ -8,7 +8,7 @@ applications:
     memory: 2G
     instances: 2
     random-route: false
-    path: target/chemical.jar
+    path: target/chemical-2.0-SNAPSHOT.jar
     buildpacks:
     - https://github.com/cloudfoundry/java-buildpack
     env:
