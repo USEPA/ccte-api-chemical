@@ -245,7 +245,7 @@ public class ChemicalSearchResourceTest {
 		final String[] processedWords = searchService.preprocessingSearchWord(searchWords.split("\n"));
 		final List<ChemicalSearchInternal> searchResult = searchRepository.findByModifiedValueInOrderByRankAsc(List.of(processedWords), ChemicalSearchInternal.class);
 		
-		when(searchService.processBatchResult(searchResult, processedWords)).thenReturn(resultList);
+		when(searchService.processBatchResult(searchResult, processedWords, processedWords)).thenReturn(resultList);
 		
 		mockMvc.perform(post("/chemical/search/equal/")
 				.contentType(MediaType.APPLICATION_JSON)
@@ -331,3 +331,4 @@ public class ChemicalSearchResourceTest {
             .andReturn();
     }
 }
+

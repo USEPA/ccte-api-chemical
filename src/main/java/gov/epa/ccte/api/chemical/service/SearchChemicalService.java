@@ -321,36 +321,51 @@ public class SearchChemicalService {
         }
     }
 
-    public List<ChemicalBatchSearchResult> processBatchResult(List<ChemicalSearchInternal> searchResult, String[] searchWords) {
-        // create a hashmap with searchResult where use searchValue as key
-        // this will help us to find the searchResult for a given searchWord
-        HashMap<String, ChemicalSearchInternal> searchResultMap = new HashMap<>();
-
-        // create hasmap for dtxsid to check duplicates
+    public List<ChemicalBatchSearchResult> processBatchResult(List<ChemicalSearchInternal> searchResult, String[] originalWords, String[] processedWords) {
+        // Group all results by processed value
+        Map<String, List<ChemicalSearchInternal>> searchResultMap = new HashMap<>();
         HashMap<String, String> dtxsidMap = new HashMap<>();
-
-        for(ChemicalSearchInternal result : searchResult){
-            searchResultMap.put(result.getModifiedValue(), result);
+        for (ChemicalSearchInternal result : searchResult) {
+            searchResultMap.computeIfAbsent(result.getModifiedValue(), k -> new ArrayList<>()).add(result);
         }
-
-        //log.debug("searchResultMap size = {}, keys = {}", searchResultMap.size(), searchResultMap.keySet());
-
-
-        // create a new list of ChemicalBatchSearchResult to return
         List<ChemicalBatchSearchResult> returnList = new ArrayList<>();
-
-        // I need to loop through searchWords, if they are in searchResultMap, I will add them to returnList
-        for(String searchWord : searchWords){
-            String processedSearchWord = preprocessingSearchWord(searchWord);
-            if(searchResultMap.containsKey(processedSearchWord)){
-                ChemicalSearchInternal result = searchResultMap.get(processedSearchWord);
-                returnList.add(new ChemicalBatchSearchResult(result.getDtxsid(), result.getDtxcid(), result.getCasrn(), result.getSmiles(), result.getPreferredName(), result.getSearchName(), searchWord, result.getRank(), result.getHasStructureImage(), result.getIsMarkush(), null, null, dtxsidMap.containsKey(result.getDtxsid())));
-                dtxsidMap.put(result.getDtxsid(), result.getDtxsid());
-            }else{
-                returnList.add(new ChemicalBatchSearchResult(null, null, null, null, null, null, searchWord, null, null, null, getErrorMsgs(searchWord), getSuggestions(searchWord),false));
+        // Loop through both arrays in parallel
+        for (int i = 0; i < originalWords.length; i++) {
+            String originalWord = originalWords[i];
+            String processedWord = processedWords[i];
+            List<ChemicalSearchInternal> resultsForWord = searchResultMap.get(processedWord);
+            ChemicalSearchInternal bestResult = null;
+            if (resultsForWord != null && !resultsForWord.isEmpty()) {
+                // Find the result with the lowest rank < 16
+                bestResult = resultsForWord.stream()
+                        .filter(r -> r.getRank() != null && r.getRank() < 16)
+                        .min(Comparator.comparingInt(ChemicalSearchInternal::getRank))
+                        .orElse(null);
+            }
+            if (bestResult != null) {
+                returnList.add(new ChemicalBatchSearchResult(
+                        bestResult.getDtxsid(),
+                        bestResult.getDtxcid(),
+                        bestResult.getCasrn(),
+                        bestResult.getSmiles(),
+                        bestResult.getPreferredName(),
+                        bestResult.getSearchName(),
+                        originalWord,
+                        bestResult.getRank(),
+                        bestResult.getHasStructureImage(),
+                        bestResult.getIsMarkush(),
+                        null,
+                        null,
+                        dtxsidMap.containsKey(bestResult.getDtxsid())
+                ));
+                dtxsidMap.put(bestResult.getDtxsid(), bestResult.getDtxsid());
+            } else {
+                returnList.add(new ChemicalBatchSearchResult(
+                        null, null, null, null, null, null, originalWord, null, null, null,
+                        getErrorMsgs(originalWord), getSuggestions(originalWord), false
+                ));
             }
         }
-
         return returnList;
     }
 
@@ -433,7 +448,7 @@ public class SearchChemicalService {
     }
     
     public List<CcdChemicalSearchResult> applyRankFilterSearchResult(List<CcdChemicalSearchResult> results) {
-        if (results == null || results.isEmpty()) return results;
+    	if (results == null || results.isEmpty()) return results;
 
         int minRank = results.stream()
                 .mapToInt(CcdChemicalSearchResult::getRank)
@@ -441,16 +456,14 @@ public class SearchChemicalService {
                 .orElse(Integer.MAX_VALUE);
 
         if (minRank < 16) {
-            // Keep all verified ranks (1–15)
             return results.stream()
-                    .filter(r -> r.getRank() < 16)
-                    .collect(Collectors.toList());
-        } else {
-            // Only integrated source names exist (rank 16)
-            return results.stream()
-                    .filter(r -> r.getRank() == 16)
+                    .filter(r -> r.getRank() == minRank)
                     .collect(Collectors.toList());
         }
+
+        return results.stream()
+                .filter(r -> r.getRank() == 16)
+                .collect(Collectors.toList());
     }
 
     private List<ChemicalSearchAll> getStartWithFromDB(String searchWord, List<String> searchMatchValues, Integer top) {
