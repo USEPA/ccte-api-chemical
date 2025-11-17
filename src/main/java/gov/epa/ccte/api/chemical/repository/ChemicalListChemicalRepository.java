@@ -19,17 +19,17 @@ public interface ChemicalListChemicalRepository extends JpaRepository<ChemicalLi
     List<String> getListNames(String dtxsid, String visibility);
 
     @Query(nativeQuery = true,
-    value = " select distinct s.dtxsid from ms.chemical_search s join ch.v_chemical_list_chemicals l on l.dtxsid = s.dtxsid " +
+    value = " select distinct s.dtxsid from ch.v_chemical_search s join ch.v_chemical_list_chemicals l on l.dtxsid = s.dtxsid " +
             " where s.modified_value like :word% and upper(l.list_name) = upper(:list) ")
     List<String> startWith(String word, String list);
 
     @Query(nativeQuery = true,
-            value = " select distinct s.dtxsid from ms.chemical_search s join ch.v_chemical_list_chemicals l on l.dtxsid = s.dtxsid " +
+            value = " select distinct s.dtxsid from ch.v_chemical_search s join ch.v_chemical_list_chemicals l on l.dtxsid = s.dtxsid " +
                     " where s.modified_value like %:word% and upper(l.list_name) = upper(:list) ")
     List<String> contain(String word, String list);
 
     @Query(nativeQuery = true,
-            value = " select distinct s.dtxsid from ms.chemical_search s join ch.v_chemical_list_chemicals l on l.dtxsid = s.dtxsid " +
+            value = " select distinct s.dtxsid from ch.v_chemical_search s join ch.v_chemical_list_chemicals l on l.dtxsid = s.dtxsid " +
                     " where s.modified_value = :word and upper(l.list_name) = upper(:list) ")
     List<String> exact(String word, String list);
 
