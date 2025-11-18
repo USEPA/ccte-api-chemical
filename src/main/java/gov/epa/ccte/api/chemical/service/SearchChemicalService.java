@@ -337,7 +337,7 @@ public class SearchChemicalService {
 
             // If originalWord is an InChIKey skeleton, use starts-with search
             if (isInchiKeySkeleton(originalWord)) {
-                List<ChemicalSearchAll> skeletonResults = searchByInchiKeySkeletonStartsWith(originalWord, 1); // Only get top result
+                List<ChemicalSearchAll> skeletonResults = searchByInchiKeySkeletonStartsWith(originalWord, 1);
                 if (!skeletonResults.isEmpty()) {
                     ChemicalSearchAll result = skeletonResults.get(0);
                     returnList.add(ChemicalBatchSearchResult.builder()
