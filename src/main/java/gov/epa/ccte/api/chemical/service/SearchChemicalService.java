@@ -64,7 +64,7 @@ public class SearchChemicalService {
         } else if(isInchiKey(notFoundWord)){
             errors.add("Searched by InChI Key: Found 0 results for '" + notFoundWord + "'.");
         } else if(isInchiKeySkeleton(notFoundWord)) {
-            errors.add("Searched by InChI String: Found 0 results for '" + notFoundWord + "'.");
+            errors.add("Searched by InChI Skeleton: Found 0 results for '" + notFoundWord + "'.");
         } else if(isCasrn(notFoundWord)) {
             errors.add("Searched by CASRN: Found 0 results for '" + notFoundWord + "'.");
             if (!checkCasrnChecksum(notFoundWord))
@@ -171,8 +171,7 @@ public class SearchChemicalService {
     }
 
     public boolean isInchiKeySkeleton(String inchikeyskeleton) {
-        inchikeyskeleton = inchikeyskeleton.toUpperCase();
-        return inchikeyskeleton.matches("[A-Z]{14}");
+        return inchikeyskeleton.length() == 14 && inchikeyskeleton.matches("[A-Z]{14}");
     }
 
     public boolean isChemicalSynonym(String word){
@@ -335,6 +334,30 @@ public class SearchChemicalService {
             String processedWord = processedWords[i];
             List<ChemicalSearchInternal> resultsForWord = searchResultMap.get(processedWord);
             ChemicalSearchInternal bestResult = null;
+
+            // If originalWord is an InChIKey skeleton, use starts-with search
+            if (isInchiKeySkeleton(originalWord)) {
+                List<ChemicalSearchAll> skeletonResults = searchByInchiKeySkeletonStartsWith(originalWord, 1); // Only get top result
+                if (!skeletonResults.isEmpty()) {
+                    ChemicalSearchAll result = skeletonResults.get(0);
+                    returnList.add(ChemicalBatchSearchResult.builder()
+                        .dtxsid(result.getDtxsid())
+                        .dtxcid(result.getDtxcid())
+                        .casrn(result.getCasrn())
+                        .smiles(result.getSmiles())
+                        .preferredName(result.getPreferredName())
+                        .searchName("InChIKey Skeleton")
+                        .searchValue(originalWord)
+                        .rank(result.getRank())
+                        .hasStructureImage(result.getHasStructureImage())
+                        .isMarkush(result.getIsMarkush())
+                        .isDuplicate(dtxsidMap.containsKey(result.getDtxsid()))
+                        .build());
+                    dtxsidMap.put(result.getDtxsid(), result.getDtxsid());
+                    continue;
+                }
+            }
+
             if (resultsForWord != null && !resultsForWord.isEmpty()) {
                 // Find the result with the lowest rank < 16
                 bestResult = resultsForWord.stream()
@@ -565,6 +588,32 @@ public class SearchChemicalService {
         return returnList;
     }*/
     
+    /**
+     * Performs a "starts with" search for InChIKey skeletons on the modified value column.
+     * @param inchikeySkeleton The 14-character InChIKey skeleton (all uppercase letters)
+     * @param top The maximum number of results to return (if null or <=0, returns all)
+     * @return List of ChemicalSearchAll results matching the skeleton
+     */
+    public List<ChemicalSearchAll> searchByInchiKeySkeletonStartsWith(String inchikeySkeleton, Integer top) {
+        if (!isInchiKeySkeleton(inchikeySkeleton)) {
+            return Collections.emptyList();
+        }
+        List<ChemicalSearchAll> results;
+        if (top != null && top > 0) {
+            results = searchRepository.findByModifiedValueStartingWithAndSearchNameInOrderByRankAscSearchValue(
+                inchikeySkeleton,
+                searchMatchWithInchikey,
+                Limit.of(top),
+                ChemicalSearchAll.class
+            );
+        } else {
+            results = searchRepository.findByModifiedValueStartingWithAndSearchNameInOrderByRankAscSearchValue(
+                inchikeySkeleton,
+                searchMatchWithInchikey,
+                Limit.unlimited(),
+                ChemicalSearchAll.class
+            );
+        }
+        return applyStartWithRankFilter(results);
+    }
 }
-
-
