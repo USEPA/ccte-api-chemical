@@ -62,9 +62,9 @@ public class SearchChemicalService {
         } else if(isDtxsid(notFoundWord)){
             errors.add("Searched by DTX Substance Id: Found 0 results for '" + notFoundWord + "'.");
         } else if(isInchiKey(notFoundWord)){
-            errors.add("Searched by InChI Key: Found 0 results for '" + notFoundWord + "'.");
+            errors.add("Searched by InChIKey: Found 0 results for '" + notFoundWord + "'.");
         } else if(isInchiKeySkeleton(notFoundWord)) {
-            errors.add("Searched by InChI Skeleton: Found 0 results for '" + notFoundWord + "'.");
+            errors.add("Searched by InChIKey Skeleton: Found 0 results for '" + notFoundWord + "'.");
         } else if(isCasrn(notFoundWord)) {
             errors.add("Searched by CASRN: Found 0 results for '" + notFoundWord + "'.");
             if (!checkCasrnChecksum(notFoundWord))
