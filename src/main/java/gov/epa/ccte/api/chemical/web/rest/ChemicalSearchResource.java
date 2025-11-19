@@ -14,6 +14,7 @@ import gov.epa.ccte.api.chemical.projection.search.ChemicalSearchInternal;
 import gov.epa.ccte.api.chemical.projection.search.DtxsidOnly;
 import gov.epa.ccte.api.chemical.repository.ChemicalSearchRepository;
 import gov.epa.ccte.api.chemical.service.SearchChemicalService;
+import gov.epa.ccte.api.chemical.service.SearchFormulaService;
 import gov.epa.ccte.api.chemical.web.rest.errors.ChemicalSearchNotFoundException;
 import gov.epa.ccte.api.chemical.web.rest.errors.HigherNumberOfIdsException;
 
@@ -27,10 +28,13 @@ public class ChemicalSearchResource implements ChemicalSearchApi {
     
     private final ChemicalSearchRepository searchRepository;
     private final SearchChemicalService chemicalService;
+    private final SearchFormulaService formulaService;
 
-    public ChemicalSearchResource(ChemicalSearchRepository searchRepository, SearchChemicalService chemicalService) {
+
+    public ChemicalSearchResource(ChemicalSearchRepository searchRepository, SearchChemicalService chemicalService, SearchFormulaService formulaService) {
         this.searchRepository = searchRepository;
         this.chemicalService = chemicalService;
+        this.formulaService = formulaService;
     }
     
     @Override
@@ -101,6 +105,7 @@ public class ChemicalSearchResource implements ChemicalSearchApi {
         return searchRepository.searchMsReadyFormula(formula);
     }
     
+    
     @Override
     public List<String> msReadyByDtxcid(String dtxcid) {
         log.debug("input dtxcid = {} ", dtxcid);
@@ -136,7 +141,16 @@ public class ChemicalSearchResource implements ChemicalSearchApi {
     @Override
     public List<String> getChemicalsForExactFormula(String formula) {
         log.debug("exact formula search for {} ", formula);
-        return searchRepository.getExactFormula(formula);
+        
+        // check if formula has range defined, it that case get the formula list
+        if(formula.contains("(")){
+            List<String> formulas = formulaService.getValidFormulas(formula);
+            log.debug("formula search for {}", formulas.toString());
+            return searchRepository.getExactFormulaBatch(formulas);
+        }
+        else {
+        	return searchRepository.getExactFormula(formula);
+        }
     }
     
     @Override
@@ -148,7 +162,26 @@ public class ChemicalSearchResource implements ChemicalSearchApi {
     @Override
     public List<String> getChemicalsForMsreadyFormula(String formula) {
         log.debug("input formula {} ", formula);
-        return searchRepository.searchAllMsReadyFormula(formula);
+        // check if formula has range defined, it that case get the formula list
+        if(formula.contains("(")){
+            List<String> formulas = formulaService.getValidFormulas(formula);
+            log.debug("formula search for {}", formulas.toString());
+            return searchRepository.searchAllByBatchMsReadyFormula(formulas);
+        }
+        else {
+        	return searchRepository.searchAllMsReadyFormula(formula);
+        }
+    }
+    
+    @Override
+    public List<String> getChemicalsForBatchMsreadyFormula(String[] formulas) {
+        log.info("formula count = {}", formulas.length);
+
+        if (formulas.length > batchSize) {
+            throw new HigherNumberOfIdsException(formulas.length, batchSize, "formula");
+        }
+        List<String> formulaList = List.of(formulas);
+        return searchRepository.searchAllByBatchMsReadyFormula(formulaList);
     }
     
     @Override
