@@ -104,6 +104,10 @@ public interface ChemicalSearchApi{
     @GetMapping(value = "chemical/search/by-msready-formula/{formula}", produces = MediaType.APPLICATION_JSON_VALUE)
     List<String> getChemicalsForMsreadyFormula(@Parameter(required = true, description = "Chemical formula", example = "C15H16O2") @PathVariable("formula") String formula);
     
+    @Operation(summary = "Search chemicals by batch of  ms ready formulas")
+    @PostMapping(value = "chemical/search/by-msready-formula/", produces = MediaType.APPLICATION_JSON_VALUE)
+    List<String> getChemicalsForBatchMsreadyFormula(@RequestBody String[] formulas);
+    
     @Operation(summary = "Search chemicals Count by ms ready formula")
     @GetMapping(value = "chemical/count/by-msready-formula/{formula}")
     Long getChemicalsCountForMsreadyFormula(@Parameter(required = true, description = "Chemical formula", example = "C15H16O2") @PathVariable("formula") String formula,
