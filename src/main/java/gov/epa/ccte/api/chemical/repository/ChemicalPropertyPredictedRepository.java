@@ -34,58 +34,84 @@ public interface ChemicalPropertyPredictedRepository extends JpaRepository<Chemi
     // *********************** Summary - start *************************************
 
     @Query(value = """
+    		WITH combined AS (
+    			SELECT
+    				prop_name,
+    				prop_value,
+    				prop_unit,
+    				prop_category,
+    				dtxsid,
+    				'predicted' AS source
+    			FROM chemprop.mv_predicted_data
+    			WHERE dtxsid = :dtxsid AND prop_category = :propCategory AND prop_value IS NOT NULL
+    			UNION ALL
+    			SELECT
+    				prop_name,
+    				prop_value,
+    				prop_unit,
+    				prop_category,
+    				dtxsid,
+    				'experimental' AS source
+    			FROM chemprop.mv_experimental_data
+    			WHERE dtxsid = :dtxsid AND prop_category = :propCategory AND prop_value IS NOT NULL
+    		)
     		SELECT
-    			pd.prop_name AS propName,
-    			PERCENTILE_CONT(0.5) WITHIN GROUP (ORDER BY d.prop_value) AS experimentalMedian,
-    			PERCENTILE_CONT(0.5) WITHIN GROUP (ORDER BY pd.prop_value) AS predictedMedian,
-    			AVG(d.prop_value) AS experimentalAverage,
-    			COUNT(distinct d.prop_value) AS experimentalCount,
-    			AVG(pd.prop_value) AS predictedAverage,
-    			COUNT(distinct pd.prop_value) AS predictedCount,
-    			MIN(d.prop_value) AS experimentalMin,
-    			MAX(d.prop_value) AS experimentalMax,
-    			MIN(pd.prop_value) AS predictedMin,
-    			MAX(pd.prop_value) AS predictedMax,
-    			pd.prop_unit AS unit
-    		FROM
-    			chemprop.mv_predicted_data pd
-    		LEFT JOIN
-    			chemprop.mv_experimental_data d
-    		ON
-    			d.dtxsid = pd.dtxsid AND d.prop_name = pd.prop_name
-    		WHERE
-    			pd.dtxsid = :dtxsid AND pd.prop_category = :propCategory AND pd.prop_value IS NOT NULL
-    		GROUP BY
-    			pd.prop_name, pd.prop_unit
-    				""", nativeQuery = true)
-    List<ChemicalPropertySummary> findSummaryByDtxsid(@Param("dtxsid")String dtxsid, @Param("propCategory")String propCategory);
+    			prop_name AS propName,
+    			PERCENTILE_CONT(0.5) WITHIN GROUP (ORDER BY CASE WHEN source = 'experimental' THEN prop_value END) AS experimentalMedian,
+    			PERCENTILE_CONT(0.5) WITHIN GROUP (ORDER BY CASE WHEN source = 'predicted' THEN prop_value END) AS predictedMedian,
+    			AVG(CASE WHEN source = 'experimental' THEN prop_value END) AS experimentalAverage,
+    			COUNT(DISTINCT CASE WHEN source = 'experimental' THEN prop_value END) AS experimentalCount,
+    			AVG(CASE WHEN source = 'predicted' THEN prop_value END) AS predictedAverage,
+    			COUNT(DISTINCT CASE WHEN source = 'predicted' THEN prop_value END) AS predictedCount,
+    			MIN(CASE WHEN source = 'experimental' THEN prop_value END) AS experimentalMin,
+    			MAX(CASE WHEN source = 'experimental' THEN prop_value END) AS experimentalMax,
+    			MIN(CASE WHEN source = 'predicted' THEN prop_value END) AS predictedMin,
+    			MAX(CASE WHEN source = 'predicted' THEN prop_value END) AS predictedMax,
+    			prop_unit AS unit
+    		FROM combined
+    		GROUP BY prop_name, prop_unit
+    	    """, nativeQuery = true)
+    	List<ChemicalPropertySummary> findSummaryByDtxsid(@Param("dtxsid")String dtxsid, @Param("propCategory")String propCategory);
     
     @Query(value = """
-    		SELECT
-    			pd.prop_name AS propName,
-    			PERCENTILE_CONT(0.5) WITHIN GROUP (ORDER BY d.prop_value) AS experimentalMedian,
-    			PERCENTILE_CONT(0.5) WITHIN GROUP (ORDER BY pd.prop_value) AS predictedMedian,
-    			AVG(d.prop_value) AS experimentalAverage,
-    			COUNT(distinct d.prop_value) AS experimentalCount,
-    			AVG(pd.prop_value) AS predictedAverage,
-    			COUNT(distinct pd.prop_value) AS predictedCount,
-    			MIN(d.prop_value) AS experimentalMin,
-    			MAX(d.prop_value) AS experimentalMax,
-    			MIN(pd.prop_value) AS predictedMin,
-    			MAX(pd.prop_value) AS predictedMax,
-    			pd.prop_unit AS unit
-    		FROM
-    			chemprop.mv_predicted_data pd
-    		LEFT JOIN
-    			chemprop.mv_experimental_data d
-    		ON
-    			d.dtxsid = pd.dtxsid AND d.prop_name = pd.prop_name
-    		WHERE
-    			pd.dtxsid = :dtxsid AND pd.prop_name = :propName AND  pd.prop_category = :propCategory AND pd.prop_value IS NOT NULL
-    		GROUP BY
-    			pd.prop_name, pd.prop_unit
-    				""", nativeQuery = true)
-    List<ChemicalPropertySummary> findSummaryByDtxsidAndPropName(@Param("dtxsid")String dtxsid, @Param("propName")String propName, @Param("propCategory")String propCategory);
+    	    WITH combined AS (
+    	        SELECT
+    	            prop_name,
+    	            prop_value,
+    	            prop_unit,
+    	            prop_category,
+    	            dtxsid,
+    	            'predicted' AS source
+    	        FROM chemprop.mv_predicted_data
+    	        WHERE dtxsid = :dtxsid AND prop_category = :propCategory AND prop_value IS NOT NULL AND prop_name = :propName
+    	        UNION ALL
+    	        SELECT
+    	            prop_name,
+    	            prop_value,
+    	            prop_unit,
+    	            prop_category,
+    	            dtxsid,
+    	            'experimental' AS source
+    	        FROM chemprop.mv_experimental_data
+    	        WHERE dtxsid = :dtxsid AND prop_category = :propCategory AND prop_value IS NOT NULL AND prop_name = :propName
+    	    )
+    	    SELECT
+    	        prop_name AS propName,
+    	        PERCENTILE_CONT(0.5) WITHIN GROUP (ORDER BY CASE WHEN source = 'experimental' THEN prop_value END) AS experimentalMedian,
+    	        PERCENTILE_CONT(0.5) WITHIN GROUP (ORDER BY CASE WHEN source = 'predicted' THEN prop_value END) AS predictedMedian,
+    	        AVG(CASE WHEN source = 'experimental' THEN prop_value END) AS experimentalAverage,
+    	        COUNT(DISTINCT CASE WHEN source = 'experimental' THEN prop_value END) AS experimentalCount,
+    	        AVG(CASE WHEN source = 'predicted' THEN prop_value END) AS predictedAverage,
+    	        COUNT(DISTINCT CASE WHEN source = 'predicted' THEN prop_value END) AS predictedCount,
+    	        MIN(CASE WHEN source = 'experimental' THEN prop_value END) AS experimentalMin,
+    	        MAX(CASE WHEN source = 'experimental' THEN prop_value END) AS experimentalMax,
+    	        MIN(CASE WHEN source = 'predicted' THEN prop_value END) AS predictedMin,
+    	        MAX(CASE WHEN source = 'predicted' THEN prop_value END) AS predictedMax,
+    	        prop_unit AS unit
+    	    FROM combined
+    	    GROUP BY prop_name, prop_unit
+    	    """, nativeQuery = true)
+    	List<ChemicalPropertySummary> findSummaryByDtxsidAndPropName(@Param("dtxsid")String dtxsid, @Param("propName")String propName, @Param("propCategory")String propCategory);
     
     @Query(value = """
     		SELECT
