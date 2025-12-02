@@ -8,7 +8,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @Entity
-@Table(name = "v_chemical_list_chemicals", schema = "ch")
+@Table(name = "v_chemical_list_chemicals_new", schema = "ch")
 public class ChemicalListChemical {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -26,7 +26,5 @@ public class ChemicalListChemical {
     @Column(name = "dtxsid")
     private String dtxsid;
 
-    @Column(name = "is_public")
-    private Boolean isPublic;
 
 }
