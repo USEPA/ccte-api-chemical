@@ -137,6 +137,7 @@ public interface ChemicalPropertyPredictedRepository extends JpaRepository<Chemi
     			chemprop.mv_experimental_data d
     		WHERE
     			d.dtxsid = :dtxsid AND d.prop_name = :propName AND  d.prop_category = :propCategory AND d.prop_value IS NOT NULL
+    		ORDER BY d.source_name ASC
     				""", nativeQuery = true)
     List<ChemicalPropertySummaryExperimental> findExpermentalSummaryByDtxsidAndPropName(@Param("dtxsid")String dtxsid, @Param("propName")String propName, @Param("propCategory")String propCategory);
     
@@ -172,8 +173,7 @@ public interface ChemicalPropertyPredictedRepository extends JpaRepository<Chemi
     			pd.dtxsid = r.dtxsid AND pd.model_id = r.model_id
     		WHERE
     			pd.dtxsid = :dtxsid AND pd.prop_name = :propName AND  pd.prop_category = :propCategory AND pd.prop_value IS NOT NULL
+            ORDER BY pd.source_name ASC
     				""", nativeQuery = true)
     List<ChemicalPropertySummaryPredicted> findPredictedSummaryByDtxsidAndPropName(@Param("dtxsid")String dtxsid, @Param("propName")String propName, @Param("propCategory")String propCategory);
 }
-
-
