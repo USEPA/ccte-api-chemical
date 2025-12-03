@@ -42,6 +42,7 @@ public interface ChemicalListRepository extends JpaRepository<ChemicalList, Inte
     @Query( nativeQuery = true, value = """
     				SELECT 
     					l.list_name as listName, 
+    					l.label,
 					    l.type, 
 					    l.short_description as shortDescription, 
 					    l.long_description as longDescription, 
@@ -58,7 +59,7 @@ public interface ChemicalListRepository extends JpaRepository<ChemicalList, Inte
 					WHERE 
 					    upper(l.list_name) = upper(:listName)
                     GROUP BY 
-    		            l.list_name, l.type, l.short_description, l.long_description, l.chemical_count, l.updated_at, l.id
+    		            l.list_name, l.type, l.label, l.short_description, l.long_description, l.chemical_count, l.updated_at, l.id
                     
     		    """)
     List<ChemicalListWithDtxsids> getListWithDtxsidsByListName(String listName);
@@ -66,7 +67,8 @@ public interface ChemicalListRepository extends JpaRepository<ChemicalList, Inte
     @Transactional(readOnly = true)
     @Query( nativeQuery = true, value = """
     				SELECT 
-    					l.list_name as listName, 
+    					l.list_name as listName,
+    					l.label, 
 					    l.type, 
 					    l.short_description as shortDescription, 
 					    l.long_description as longDescription, 
@@ -83,7 +85,7 @@ public interface ChemicalListRepository extends JpaRepository<ChemicalList, Inte
 					WHERE 
 						l.type = :type 
 					GROUP BY 
-						l.list_name, l.type, l.short_description, l.long_description, l.chemical_count, l.updated_at, l.id
+						l.list_name, l.type, l.label, l.short_description, l.long_description, l.chemical_count, l.updated_at, l.id
 					Order BY 
 					   l.list_name
 				""")
@@ -92,7 +94,8 @@ public interface ChemicalListRepository extends JpaRepository<ChemicalList, Inte
     @Transactional(readOnly = true)
     @Query( nativeQuery = true, value = """
             		SELECT 
-            		    l.list_name as listName, 
+            		    l.list_name as listName,
+            		    l.label, 
             		    l.type, l.short_description as shortDescription, 
             		    l.long_description as longDescription, 
             		    l.chemical_count as chemicalCount,
@@ -106,7 +109,7 @@ public interface ChemicalListRepository extends JpaRepository<ChemicalList, Inte
                     ON
                        l.id = c.list_id
                     GROUP BY 
-                       l.list_name, l.type, l.short_description, l.long_description, l.chemical_count,l.updated_at, l.id
+                       l.list_name, l.type, l.label, l.short_description, l.long_description, l.chemical_count,l.updated_at, l.id
                     Order BY 
 					   l.type, l.list_name
                 """)
@@ -119,6 +122,7 @@ public interface ChemicalListRepository extends JpaRepository<ChemicalList, Inte
 			        SELECT DISTINCT ON (l.list_name)
 			        	l.id,
 			            l.list_name,
+			            l.label,
 			            l.type,
 			            l.short_description,
 			            l.long_description,
@@ -163,6 +167,7 @@ public interface ChemicalListRepository extends JpaRepository<ChemicalList, Inte
 		    FROM (
 		        SELECT DISTINCT ON (l.list_name)
 		            l.list_name,
+		            l.label,
 		            l.type,
 		            l.short_description,
 		            l.long_description,

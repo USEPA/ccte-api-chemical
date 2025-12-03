@@ -28,6 +28,10 @@ public class ChemicalList {
     private String listName;
 
     @Size(max = 50)
+    @Column(name = "label", length = 50)
+    private String label;
+    
+    @Size(max = 50)
     @Column(name = "type", length = 50)
     private String type;
     

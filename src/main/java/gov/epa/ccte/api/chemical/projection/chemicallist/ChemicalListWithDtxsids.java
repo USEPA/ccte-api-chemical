@@ -12,6 +12,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 @JsonPropertyOrder({
     "id",
 	"listName",
+	"label",
 	"type",
 	"shortDescription",
 	"longDescription",
@@ -23,6 +24,7 @@ public interface ChemicalListWithDtxsids {
 	
     Integer getId();
     String getListName();
+    String getLabel();
     String getType();
     String getShortDescription();
     String getLongDescription();
@@ -32,6 +34,7 @@ public interface ChemicalListWithDtxsids {
     
     Void setid(Integer id);
     Void setListName(String listName);
+    Void setLabel(String label);
     Void setType(String type);
     Void setShortDescription(String shortDescription);
     Void setLongDescription(String longDescription);
