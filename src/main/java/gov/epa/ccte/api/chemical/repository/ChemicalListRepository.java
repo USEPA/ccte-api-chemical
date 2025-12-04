@@ -10,6 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 
 @RepositoryRestResource(exported = false)
 public interface ChemicalListRepository extends JpaRepository<ChemicalList, Integer> {
@@ -27,7 +28,7 @@ public interface ChemicalListRepository extends JpaRepository<ChemicalList, Inte
 
 
     @Transactional(readOnly = true)
-    <T>List<T> findByListNameIgnoreCase(String listName, Class<T> type);
+    Optional<ChemicalList> findByListNameIgnoreCase(String listName);
 
     @Transactional(readOnly = true)
     <T>List<T> findByListNameInIgnoreCaseOrderByListNameAsc(Collection<String> listNames, Class<T> type);
@@ -62,7 +63,7 @@ public interface ChemicalListRepository extends JpaRepository<ChemicalList, Inte
     		            l.list_name, l.type, l.label, l.short_description, l.long_description, l.chemical_count, l.updated_at, l.id
                     
     		    """)
-    List<ChemicalListWithDtxsids> getListWithDtxsidsByListName(String listName);
+    Optional<ChemicalListWithDtxsids> getListWithDtxsidsByListName(String listName);
 
     @Transactional(readOnly = true)
     @Query( nativeQuery = true, value = """

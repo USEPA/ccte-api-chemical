@@ -20,7 +20,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 	"updatedAt",
 	"dtxsids"
 })
-public interface ChemicalListWithDtxsids {
+public interface ChemicalListWithDtxsids extends ChemicalListBase {
 	
     Integer getId();
     String getListName();

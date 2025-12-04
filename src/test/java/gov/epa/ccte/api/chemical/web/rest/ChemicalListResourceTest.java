@@ -203,9 +203,9 @@ public class ChemicalListResourceTest {
     
     @Test
     void testGetChemicalListsByName() throws Exception {
-		final List<Object> lists = Collections.singletonList(chemicalList);
+		final Optional<ChemicalList> lists = Optional.of(chemicalList);
 		
-		when(listRepository.findByListNameIgnoreCase(eq("BIOSOLIDS"), any())).thenReturn(lists);
+		when(listRepository.findByListNameIgnoreCase(eq("BIOSOLIDS"))).thenReturn(lists);
 		
 		mockMvc.perform(get("/chemical/list/search/by-name/{name}", "BIOSOLIDS"))
 				.andDo(MockMvcResultHandlers.print())
@@ -216,9 +216,9 @@ public class ChemicalListResourceTest {
    
     @Test
     void testGetChemicalListsByNameProjection() throws Exception {
-		final List<ChemicalList> lists = Collections.singletonList(chemicalList);
+		final Optional<ChemicalList> lists = Optional.of(chemicalList);
 		
-		when(listRepository.findByListNameIgnoreCase("BIOSOLIDS", ChemicalList.class)).thenReturn(lists);
+		when(listRepository.findByListNameIgnoreCase("BIOSOLIDS")).thenReturn(lists);
 		
 		mockMvc.perform(get("/chemical/list/search/by-name/{name}", "BIOSOLIDS")
 				.param("projection", "chemicallistall"))
@@ -230,7 +230,7 @@ public class ChemicalListResourceTest {
    
     @Test
     void testGetChemicalListsWithDtxsidsByName() throws Exception {
-		final List<ChemicalListWithDtxsids> lists = Collections.singletonList(listWithDtxsids);
+		final Optional<ChemicalListWithDtxsids> lists = Optional.of(listWithDtxsids);
 		
 		when(listRepository.getListWithDtxsidsByListName("ACSREAG")).thenReturn(lists);
 		
