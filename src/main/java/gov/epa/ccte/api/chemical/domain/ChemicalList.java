@@ -1,5 +1,6 @@
 package gov.epa.ccte.api.chemical.domain;
 
+import gov.epa.ccte.api.chemical.projection.chemicallist.ChemicalListBase;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Size;
 import lombok.Builder;
@@ -17,7 +18,7 @@ import java.time.Instant;
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "v_chemical_lists_new", schema = "ch")
-public class ChemicalList {
+public class ChemicalList implements ChemicalListBase {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)

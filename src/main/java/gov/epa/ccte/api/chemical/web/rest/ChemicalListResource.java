@@ -2,6 +2,7 @@ package gov.epa.ccte.api.chemical.web.rest;
 
 import gov.epa.ccte.api.chemical.domain.ChemicalList;
 import gov.epa.ccte.api.chemical.projection.chemicallist.*;
+import gov.epa.ccte.api.chemical.web.rest.errors.IdentifierNotFoundException;
 import gov.epa.ccte.api.chemical.repository.ChemicalListRepository;
 import gov.epa.ccte.api.chemical.repository.ChemicalListChemicalRepository;
 import gov.epa.ccte.api.chemical.service.SearchChemicalService;
@@ -53,11 +54,11 @@ public class ChemicalListResource implements ChemicalListApi {
     }
 
     @Override
-    public List<?> listByName(String listName, ChemicalListProjection projection) {
+    public ChemicalListBase listByName(String listName, ChemicalListProjection projection) {
         log.debug("list name={}", listName);
         return switch (projection) {
-            case chemicallistall -> listRepository.findByListNameIgnoreCase(listName, ChemicalList.class);
-            case chemicallistwithdtxsids -> listRepository.getListWithDtxsidsByListName(listName);
+            case chemicallistall -> listRepository.findByListNameIgnoreCase(listName).orElseThrow(() -> new IdentifierNotFoundException("List name", listName));
+            case chemicallistwithdtxsids -> listRepository.getListWithDtxsidsByListName(listName).orElseThrow(() -> new IdentifierNotFoundException("List name", listName));
             default -> null;
         };
     }

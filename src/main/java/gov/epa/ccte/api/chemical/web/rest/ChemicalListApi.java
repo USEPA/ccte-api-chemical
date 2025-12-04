@@ -52,7 +52,7 @@ public interface ChemicalListApi {
                     schema=@Schema(oneOf = {ChemicalList.class, ChemicalListWithDtxsids.class})))
     })
     @GetMapping(value = "/search/by-name/{listName}")
-    List<?> listByName(@Parameter(required = true, description = "Chemical List Name", example = "40CFR1164") @PathVariable String listName,
+    ChemicalListBase listByName(@Parameter(required = true, description = "Chemical List Name", example = "40CFR1164") @PathVariable String listName,
                                 @RequestParam(value = "projection", required = false, defaultValue = "chemicallistall") ChemicalListProjection projection);
 
     @Operation(summary = "Get public lists by dtxsid")
