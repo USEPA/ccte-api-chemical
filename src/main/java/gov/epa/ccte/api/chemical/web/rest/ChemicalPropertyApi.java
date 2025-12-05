@@ -20,7 +20,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @Tag(name = "Chemical Property Resource", 
-description = "Collection of endpoints for experimental and/or predictive chemical properties. This curated data is sourced from the US EPA's Distributed Structure-Searchable Toxicity (DSSTox) database and the Toxicity Estimation Software Tool (TEST) suite of QSAR models.")
+description = "Collection of endpoints for experimental and predictive chemical properties. This curated data is sourced from the US EPA's Distributed Structure-Searchable Toxicity (DSSTox) database and the Toxicity Estimation Software Tool (TEST) suite of QSAR models.")
 @SecurityRequirement(name = "api_key")
 public interface ChemicalPropertyApi {
 
@@ -75,13 +75,13 @@ public interface ChemicalPropertyApi {
 	 * @param BatchRequest the matching dtxsid of the experimental properties (Physchem) to retrieve.
 	 * @return the {@link ResponseEntity} with status {@code 200 (OK)} and with body the list of experimental properties (Physchem)}.
 	 */
-    @Operation(summary = "Get experimental properties for a batch of dtxsid(s)", description = "Note: Maximum ${application.batch-size} DTXSIDs per request")
+    @Operation(summary = "Get experimental properties for a batch of DTXSIDs", description = "Note: Maximum ${application.batch-size} DTXSIDs per request")
     @ApiResponses(value= {
             @ApiResponse(responseCode = "200", description = "OK",  content = @Content( mediaType = "application/json",
                     schema=@Schema(oneOf = {ChemicalPropertyExperimental.class}))),
             @ApiResponse(responseCode = "400", description = "User has submitted more than allowed number (${application.batch-size}) of DTXSID(s).",
                     content = @Content( mediaType = "application/json",
-                    examples = {@ExampleObject(value = "{\"title\":\"Validation Error\",\"status\":400,\"detail\":\"System supports requests of '200' DTXSID at one time, '202' are submitted.\"}", description = "Validation error for more then allowed number of dtxsid(s).")},
+                    examples = {@ExampleObject(value = "{\"title\":\"Validation Error\",\"status\":400,\"detail\":\"System supports requests of '200' DTXSIDs at one time, '202' are submitted.\"}", description = "Validation error for more then allowed number of dtxsid(s).")},
                     schema=@Schema(oneOf = {ProblemDetail.class})))
     })          
     @PostMapping(value = "chemical/property/experimental/search/by-dtxsid/", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -291,7 +291,7 @@ public interface ChemicalPropertyApi {
 	 * 
 	 * @return the {@link ResponseEntity} with status {@code 200 (OK)} and with body the list of fate summaries}.
 	 */
-	@Operation(summary = "Get fate summary by DTXSID and property name",
+	@Operation(summary = "Get fate summary by DTXSID and property",
            description = "return environmental fate and transport data for given DTXSID and property")
    @ApiResponses(value= {
            @ApiResponse(responseCode = "200", description = "OK",  content = @Content( mediaType = "application/json",
