@@ -20,14 +20,14 @@ import java.util.List;
 /**
  * API interface for retrieving extra chemical data.
  */
-@Tag(name = "Extra Data Resource",
-        description = "API endpoints for returning extra data relating to chemical(s) identified by DTXSID(s)")
+@Tag(name = "Lit Search Data Resource",
+        description = "Collection of endpoints containing extra chemical data pertaining to literature and patents.")
 @SecurityRequirement(name = "api_key")
 @RequestMapping(value = "chemical/extra-data", produces = MediaType.APPLICATION_JSON_VALUE)
 public interface ExtraDataApi {
 
-    @Operation(summary = "Get data by dtxsid",
-            description = "Specify the dtxsid as part of the path.")
+    @Operation(summary = "Get data by DTXSID",
+            description = "return data for given DTXSID")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "OK", content = @Content(mediaType = "application/json",
                     schema = @Schema(oneOf = {ExtraData.class}))),
@@ -39,14 +39,14 @@ public interface ExtraDataApi {
     @GetMapping(value = "/search/by-dtxsid/{dtxsid}", produces = MediaType.APPLICATION_JSON_VALUE)
     List<ExtraData> extraDataByDtxsid(@Parameter(required = true, description = "DSSTox Substance Identifier", example = "DTXSID101296374") @PathVariable("dtxsid") String dtxsid);
 
-    @Operation(summary = "Get data by batch of dtxsids",
-            description = "Specify the dtxsids as an array in the request body.")
+    @Operation(summary = "Get data for a batch of DTXSIDs",
+            description = "return data for given DTXSID")
     @ApiResponses(value= {
             @ApiResponse(responseCode = "200", description = "OK", content = @Content(mediaType = "application/json",
                     schema = @Schema(oneOf = {ExtraData.class})))
     })
     @PostMapping(value = "/search/by-dtxsid/", produces = MediaType.APPLICATION_JSON_VALUE)
-    List<ExtraData> batchSearchExtraData(@io.swagger.v3.oas.annotations.parameters.RequestBody(required = true, description = "JSON array of DSSTox Substance Identifier",
+    List<ExtraData> batchSearchExtraData(@io.swagger.v3.oas.annotations.parameters.RequestBody(required = true, description = "JSON array of DSSTox Substance Identifiers",
             content = {@Content(array = @ArraySchema(schema = @Schema(implementation = String.class)),
                     examples = {@ExampleObject("\"[\\\"DTXSID101296374\\\",\\\"DTXSID10612113\\\",\\\"DTXSID20635878\\\"]\"")})})
                                         @RequestBody String[] dtxsids);
