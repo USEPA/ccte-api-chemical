@@ -23,8 +23,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
-@Tag(name = "Chemical Search Resource", \
-description = "Collection of endpoints for searching for chemicals across chemical names and synonyms. Search string options include starts-with, exact, or contains.")
+@Tag(name = "Chemical Search Resource", description = "Collection of endpoints for searching for chemicals across chemical names and synonyms. Search string options include starts-with, exact, or contains.")
 @SecurityRequirement(name = "api_key")
 public interface ChemicalSearchApi{
 	
