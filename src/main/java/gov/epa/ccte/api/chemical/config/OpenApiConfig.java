@@ -13,13 +13,13 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 @OpenAPIDefinition(
         info = @Info(
-                title = "Computational Toxicology and Exposure Data APIs - Chemical",
-                description = "The Chemical APIs are part of a set of public computational toxicology and exposure APIs and provide a variety of chemical information through a set of API endpoints. These APIs allow users to easily access and utilize a wide range of chemical information, including the ability to: search for chemicals, retrieve chemical structure files in various formats, access both experimental and predictive chemical properties, obtain fate data, and access other chemical-related data.",
+                title = "Computational Toxicology and Exposure (CTX) APIs - CTX Chemical API",
+                description = "The CTX Chemical API is part of US EPA's Computational Toxicology and Exposure APIs. The CTX Chemical API provides programmtic access to chemical data through a set of endpoints.",
                 contact = @Contact(
                         name = "",
                         url = "",
                         email = ""),
-                version = "1.0.0"
+                version = "1.1.1"
                 ),
         servers = { @Server(url = "${application.api-url}", description = "${application.api-env}")}
 )
@@ -27,7 +27,7 @@ import org.springframework.context.annotation.Configuration;
         type = SecuritySchemeType.APIKEY,
         name = "api_key",
         in = SecuritySchemeIn.HEADER,
-        description = "Each API call should have api_key, Contact author for getting the new api_key. ",
+        description = "Each API request requires an api_key. Contact the CTX API Admin to request an API Key.",
         paramName = "x-api-key"
 )
 public class OpenApiConfig {

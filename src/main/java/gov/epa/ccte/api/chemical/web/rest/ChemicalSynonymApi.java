@@ -22,13 +22,13 @@ import java.util.List;
  * API interface for retrieving chemical synonym data.
  */
 @Tag(name = "Chemical Synonym Resource",
-        description = "API endpoints for getting chemical synonym for given DTXSID (Chemical Identifier).")
+        description = "Collection of endpoints containing chemical synonyms. This curated data is sourced from the US EPA's Distributed Structure-Searchable Toxicity (DSSTox) database.")
 @SecurityRequirement(name = "api_key")
 @RequestMapping(value = "chemical/synonym", produces = MediaType.APPLICATION_JSON_VALUE)
 public interface ChemicalSynonymApi {
 
-	@Operation(summary = "Get synonyms by dtxsid with projections",
-	        description = "Fetches synonyms based on the specified projection. Available projections: ccd-synonyms (flat list), chemical-synonym-all (default structured view).")
+	@Operation(summary = "Get synonyms by DTXSID",
+	        description = "return synonyms by DTXSID. Projections available include: ccd-synonyms (flat list) and chemical-synonym-all (default structured view).")
 	@ApiResponses(value = {
 	        @ApiResponse(responseCode = "200", description = "OK", content = @Content(mediaType = "application/json", schema = @Schema(oneOf = {ChemicalSynonymAll.class, CcdSynonymFlatProjection.class})))
 	})
@@ -36,16 +36,16 @@ public interface ChemicalSynonymApi {
 	@ResponseBody
 	Object getSynonymsByDtxsid(@Parameter(required = true, description = "DSSTox Substance Identifier", example = "DTXSID7020182")
 	                          @PathVariable("dtxsid") String dtxsid,
-	                          @Parameter(description = "Projection type: ccd-synonyms or default")
+	                          @Parameter(description = "Projections available include: ccd-synonyms and chemical-synonym-all. By default, chemical-synonym-all will be returned.")
 	                          @RequestParam(value = "projection", required = false) String projection);
 
-    @Operation(summary = "Get synonyms by the batch of dtxsids")
+    @Operation(summary = "Get synonyms for a batch of DTXSIDs")
     @PostMapping(value = "/search/by-dtxsid/", produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiResponses(value= {
             @ApiResponse(responseCode = "200", description = "OK",  content = @Content( mediaType = "application/json",
                     schema=@Schema(oneOf = {ChemicalSynonymAll.class})))
     })
-    List<ChemicalSynonymAll> synoymsByBatchDtxsid(@io.swagger.v3.oas.annotations.parameters.RequestBody(required = true, description = "JSON array of DSSTox Substance Identifier",
+    List<ChemicalSynonymAll> synoymsByBatchDtxsid(@io.swagger.v3.oas.annotations.parameters.RequestBody(required = true, description = "JSON array of DSSTox Substance Identifiers",
             content = {@Content (array = @ArraySchema(schema = @Schema(implementation = String.class)),
                     examples = {@ExampleObject("\"[\\\"DTXSID7020182\\\",\\\"DTXSID9020112\\\"]\"")})})
                                             @RequestBody String[] dtxsids);

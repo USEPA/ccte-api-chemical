@@ -19,7 +19,7 @@ import java.io.IOException;
  * API interface for getting chemical structure data through Systematic IUPAC name using OPSIN.
  */
 @Tag(name = "OPSIN Resource",
-        description = "API endpoints for getting chemical structure data through Systematic IUPAC name using OPSIN. ")
+        description = "Collection of endpoints to return chemical data by Systematic IUPAC Name from EMBL-EBI's Open Parser for Systematic IUPAC Nomenclature (OPSIN).")
 @SecurityRequirement(name = "api_key")
 @RequestMapping(value = "chemical/opsin")
 public interface OpsinApi {
@@ -30,7 +30,7 @@ public interface OpsinApi {
 	 * @param n/a.
 	 * @return the {@link ResponseEntity} with status {@code 200 (OK)} and with body InchI}.
 	 */
-    @Operation(summary = "Get InChI", description = "return InChI for given Systematic IUPAC Name.")
+    @Operation(summary = "Get InChI by name", description = "return InChI for given Systematic IUPAC Name.")
     @ApiResponses(value= {
             @ApiResponse(responseCode = "200", description = "OK",  content = @Content( mediaType = "application/json",
             		examples = {@ExampleObject(name = "InChI", value = "InChI=1/C2H5NO/c1-2(3)4/h1H3,(H2,3,4)/f/h3H2")})),
@@ -44,7 +44,7 @@ public interface OpsinApi {
 	 * @param n/a.
 	 * @return the {@link ResponseEntity} with status {@code 200 (OK)} and with body InChIKey}.
 	 */
-    @Operation(summary = "Get InChIKey", description = "return InChIKey for given Systematic IUPAC Name.")
+    @Operation(summary = "Get InChIKey by name", description = "return InChIKey for given Systematic IUPAC Name.")
     @ApiResponses(value= {
             @ApiResponse(responseCode = "200", description = "OK",  content = @Content( mediaType = "application/json",
             		examples = {@ExampleObject(name = "InChIKey", value =  "DLFVBJFMPXGRIB-UHFFFAOYSA-N")})),
@@ -58,10 +58,10 @@ public interface OpsinApi {
 	 * @param n/a.
 	 * @return the {@link ResponseEntity} with status {@code 200 (OK)} and with body Smiles}.
 	 */
-    @Operation(summary = "Get Smiles", description = "return Smiles for given Systematic IUPAC Name.")
+    @Operation(summary = "Get SMILES by name", description = "return SMILES for given Systematic IUPAC Name.")
     @ApiResponses(value= {
             @ApiResponse(responseCode = "200", description = "OK",  content = @Content( mediaType = "application/json",
-                    examples = {@ExampleObject(name = "Smiles", value = "C(C)(=O)N")})),
+                    examples = {@ExampleObject(name = "SMILES String", value = "C(C)(=O)N")})),
     })
     @GetMapping(value = "/to-smiles/{name}", produces = MediaType.APPLICATION_JSON_VALUE)
     String toSmiles(@Parameter(required = true, description = "Systematic IUPAC Name", example = "acetamide") @PathVariable("name") String name) throws IOException;
