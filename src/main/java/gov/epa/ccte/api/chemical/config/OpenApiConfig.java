@@ -19,7 +19,7 @@ import org.springframework.context.annotation.Configuration;
                         name = "",
                         url = "",
                         email = ""),
-                version = "1.1.0"
+                version = "1.1.1"
                 ),
         servers = { @Server(url = "${application.api-url}", description = "${application.api-env}")}
 )
