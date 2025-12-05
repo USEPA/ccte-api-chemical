@@ -37,7 +37,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
  * REST controller for getting the {@link ChemicalDetail}s.
  */
 @Tag(name = "Chemical Details Resource",
-        description = "API endpoints for collecting data for given chemical(s).")
+        description = "Collection of endpoints with chemical details. This curated data is sourced from the US EPA's Distributed Structure-Searchable Toxicity (DSSTox) database.")
 @SecurityRequirement(name = "api_key")
 @RequestMapping( value = "chemical")
 public interface ChemicalDetailApi {
@@ -48,7 +48,7 @@ public interface ChemicalDetailApi {
 	 * @param n/a.
 	 * @return the {@link ResponseEntity} with status {@code 200 (OK)} and with body the list of chemicalDetail}.
 	 */
-    @Operation(summary = "Find all chemical details", description = "return all chemical details.")
+    @Operation(summary = "Get all data", description = "return all chemical details. The next parameter allows pagination for retrieval, but retrieval is limited to batches of 1000 per request. Please consider downloading the DSSTOX database instead accessing this information via API.")
     @ApiResponses(value= {
             @ApiResponse(responseCode = "200", description = "OK",  content = @Content( mediaType = "application/json",
                     schema=@Schema(oneOf = {ChemicalDetailStandard2.class, ChemicalDetailAllIds.class}))),
@@ -65,8 +65,8 @@ public interface ChemicalDetailApi {
 	 * @param dtxsid the matching dtxsid of the chemicalDetail to retrieve.
 	 * @return the {@link ResponseEntity} with status {@code 200 (OK)} and with body the list of chemicalDetail}.
 	 */
-	@Operation(summary = "Get data by dtxsid",
-            description = "Specify the dtxsid as part of the path, and optionally user can also define projection (set of attributes to return).")
+	@Operation(summary = "Get data by DTXSID",
+            description = "return chemical details for given DTXSID. Optionally, user can specify a projection (set of attributes) to return.")
     @ApiResponses(value= {
             @ApiResponse(responseCode = "200", description = "OK",  content = @Content( mediaType = "application/json",
                     schema=@Schema(oneOf = {ChemicalDetailStandard.class, ChemicalIdentifier.class, ChemicalStructure.class})))
@@ -82,13 +82,13 @@ public interface ChemicalDetailApi {
 	 * @return the {@link ResponseEntity} with status {@code 200 (OK)} and with body the list of compact chemicalDetail}.
 	 */
 	@Operation(summary = "Get data by SMILES",
-            description = "Specify the SMILES as a parameter, and available projection is Compact.")
+            description = "return chemical details for given SMILES. Available projection is Compact.")
     @ApiResponses(value= {
             @ApiResponse(responseCode = "200", description = "OK",  content = @Content( mediaType = "application/json",
                     schema=@Schema(oneOf = {Compact.class})))
     })
     @RequestMapping(value = "/detail/search/by-smiles/", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-	List<Compact> detailBySmiles(@Parameter(required = true, description = "Simplified Molecular Input Line Entry System", example = "CC(C)(C1=CC=C(O)C=C1)C1=CC=C(O)C=C1") 
+	List<Compact> detailBySmiles(@Parameter(required = true, description = "SMILES String", example = "CC(C)(C1=CC=C(O)C=C1)C1=CC=C(O)C=C1") 
 							@RequestParam(value = "smiles", required = true) String smiles);
  
 
@@ -99,8 +99,8 @@ public interface ChemicalDetailApi {
 	 * @return the {@link ResponseEntity} with status {@code 200 (OK)} and with body the list of chemicalDetail}.
 	 * chemicaldetailall, chemicaldetailstandard, chemicalidentifier, chemicalstructure, ntatoolkit
 	 */
-	@Operation(summary = "Get data by dtxcid",
-            description = "Specify the dtxcid as part of the path, and optionally user can also define projection (set of attributes to return).")
+	@Operation(summary = "Get data by DTXCID",
+            description = "return chemical details for given DTXCID. Optionally, user can specify a projection (set of attributes) to return.")
     @ApiResponses(value= {
             @ApiResponse(responseCode = "200", description = "OK",  content = @Content( mediaType = "application/json",
                     schema=@Schema(oneOf = {ChemicalDetailStandard.class, ChemicalIdentifier.class, ChemicalStructure.class, ChemicalDetailAll.class, NtaToolkit.class})))
@@ -114,18 +114,18 @@ public interface ChemicalDetailApi {
 	 * @param BatchRequest the matching dtxsid of the chemicalDetail to retrieve.
 	 * @return the {@link ResponseEntity} with status {@code 200 (OK)} and with body the list of chemicalDetail}.
 	 */
-	@Operation(summary = "Get data by the batch of dtxsids",
-            description = "Besides batch of the values, the user can also define projection (set of attributes to return). Note: Maximum ${application.batch-size} DTXSIDs per request")
+	@Operation(summary = "Get data for a batch of DTXSIDs",
+            description = "return chemical details for given DTXSIDs. Optionally, user can specify a projection (set of attributes) to return. Note: Maximum ${application.batch-size} DTXSIDs per request")
     @ApiResponses(value= {
             @ApiResponse(responseCode = "200", description = "OK",  content = @Content( mediaType = "application/json",
                     schema=@Schema(oneOf = {ChemicalDetailStandard.class, ChemicalIdentifier.class, ChemicalStructure.class}))),
-            @ApiResponse(responseCode = "400", description = "When user has submitted more then allowed number (${application.batch-size}) of DTXSID(s).",
+            @ApiResponse(responseCode = "400", description = "User submitted more than allowed number (${application.batch-size}) of DTXSID(s).",
                     content = @Content( mediaType = "application/problem+json",
-                            examples = {@ExampleObject(value = "{\"title\":\"Validation Error\",\"status\":400,\"detail\":\"System supports only '200' dtxsid at one time, '202' are submitted.\"}", description = "Validation error for more then allowed number of dtxsid(s).")},
+                            examples = {@ExampleObject(value = "{\"title\":\"Validation Error\",\"status\":400,\"detail\":\"System supports requests of '200' DTXSIDs at one time, '202' are submitted.\"}", description = "Validation error for more then allowed number of dtxsid(s).")},
                             schema=@Schema(oneOf = {ProblemDetail.class})))
     })
     @RequestMapping(value = "/detail/search/by-dtxsid/", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
-	List<?> batchDtxsidSearch(@io.swagger.v3.oas.annotations.parameters.RequestBody(required = true, description = "JSON array of DSSTox Substance Identifier",
+	List<?> batchDtxsidSearch(@io.swagger.v3.oas.annotations.parameters.RequestBody(required = true, description = "JSON array of DSSTox Substance Identifiers",
             content = {@Content (array = @ArraySchema(schema = @Schema(implementation = String.class)),
             examples = {@ExampleObject("\"[\\\"DTXSID7020182\\\",\\\"DTXSID9020112\\\"]\"")})})
                     @RequestBody String[] dtxsids,
@@ -137,18 +137,18 @@ public interface ChemicalDetailApi {
 	 * @param BatchRequest the matching dtxcid of the chemicalDetail to retrieve.
 	 * @return the {@link ResponseEntity} with status {@code 200 (OK)} and with body the list of chemicalDetail}.
 	 */
-	@Operation(summary = "Get data by the batch of dtxcids",
-            description = "Besides batch of the values, the user can also define projection (set of attributes to return). Note: Maximum ${application.batch-size} DTXCIDs per request")
+	@Operation(summary = "Get data for a batch of DTXCIDs",
+            description = "return chemical details for given DTXCIDs. Optionally, user can specify a projection (set of attributes) to return. Note: Maximum ${application.batch-size} DTXCIDs per request")
     @ApiResponses(value= {
             @ApiResponse(responseCode = "200", description = "OK",  content = @Content( mediaType = "application/json",
                     schema=@Schema(oneOf = {ChemicalDetailStandard.class, ChemicalIdentifier.class, ChemicalStructure.class}))),
-            @ApiResponse(responseCode = "400", description = "When user has submitted more then allowed number (${application.batch-size}) of DTXCID(s).",
+            @ApiResponse(responseCode = "400", description = "User has submitted more than allowed number (${application.batch-size}) of DTXCID(s).",
                     content = @Content( mediaType = "application/problem+json",
-                            examples = {@ExampleObject(value = "{\"title\":\"Validation Error\",\"status\":400,\"detail\":\"System supports only '${application.batch-size}' dtxsid at one time, '${application.batch-size+1}' are submitted.\"}", description = "Validation error for more then allowed number of dtxsid(s).")},
+                            examples = {@ExampleObject(value = "{\"title\":\"Validation Error\",\"status\":400,\"detail\":\"System supports requests of '${application.batch-size}' DTXSIDs at one time, '${application.batch-size+1}' are submitted.\"}", description = "Validation error for more then allowed number of dtxsid(s).")},
                             schema=@Schema(oneOf = {ProblemDetail.class})))
     })
     @RequestMapping(value = "/detail/search/by-dtxcid/", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
-	List<?> batchDtxcidSearch( @io.swagger.v3.oas.annotations.parameters.RequestBody(required = true, description = "JSON array of DSSTox Compound Identifier",
+	List<?> batchDtxcidSearch( @io.swagger.v3.oas.annotations.parameters.RequestBody(required = true, description = "JSON array of DSSTox Compound Identifiers",
             content = {@Content (array = @ArraySchema(schema = @Schema(implementation = String.class)),
             examples = {@ExampleObject("\"[\\\"DTXCID505\\\",\\\"DTXSID9020112\\\"]\"")})})
                     @RequestBody String[] dtxcids,
