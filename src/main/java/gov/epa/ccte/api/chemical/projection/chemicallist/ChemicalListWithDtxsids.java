@@ -2,8 +2,10 @@ package gov.epa.ccte.api.chemical.projection.chemicallist;
 
 import gov.epa.ccte.api.chemical.domain.ChemicalList;
 
-import java.time.Instant;
+import java.sql.Timestamp;
+import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 /**
@@ -29,8 +31,9 @@ public interface ChemicalListWithDtxsids extends ChemicalListBase {
     String getShortDescription();
     String getLongDescription();
     Long getChemicalCount();
-    Instant getUpdatedAt();
-    String getDtxsids();
+    Timestamp getUpdatedAt();
+    @JsonProperty("dtxsids")
+    List<String> getDtxsids();
     
     Void setid(Integer id);
     Void setListName(String listName);
@@ -39,7 +42,7 @@ public interface ChemicalListWithDtxsids extends ChemicalListBase {
     Void setShortDescription(String shortDescription);
     Void setLongDescription(String longDescription);
     Void setChemicalCount(Long chemicalCount);
-    Void setUpdatedAt(Instant updatedAt);
-    Void setDtxsids(String dtxsids);
+    Void setUpdatedAt(Timestamp updatedAt);
+    Void setDtxsids(List<String> dtxsids);
     
 }

@@ -1,6 +1,7 @@
 package gov.epa.ccte.api.chemical.repository;
 
 import gov.epa.ccte.api.chemical.domain.ChemicalList;
+import gov.epa.ccte.api.chemical.dto.ChemicalListWithDtxsidsDTO;
 import gov.epa.ccte.api.chemical.projection.chemicallist.*;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -50,7 +51,7 @@ public interface ChemicalListRepository extends JpaRepository<ChemicalList, Inte
 					    l.chemical_count as chemicalCount, 
 					    l.updated_at as updatedAt, 
 					    l.id, 
-					    string_agg(c.dtxsid,',') as dtxsids
+					    string_agg(distinct c.dtxsid,',') as dtxsids
 					FROM
                         ch.v_chemical_lists_new l 
                     JOIN 
@@ -63,7 +64,7 @@ public interface ChemicalListRepository extends JpaRepository<ChemicalList, Inte
     		            l.list_name, l.type, l.label, l.short_description, l.long_description, l.chemical_count, l.updated_at, l.id
                     
     		    """)
-    Optional<ChemicalListWithDtxsids> getListWithDtxsidsByListName(String listName);
+    Optional<ChemicalListWithDtxsidsDTO> getListWithDtxsidsByListName(String listName);
 
     @Transactional(readOnly = true)
     @Query( nativeQuery = true, value = """
@@ -76,7 +77,7 @@ public interface ChemicalListRepository extends JpaRepository<ChemicalList, Inte
 					    l.chemical_count as chemicalCount, 
 					    l.updated_at as updatedAt, 
 					    l.id, 
-					    string_agg(c.dtxsid,',') as dtxsids 
+					    string_agg(distinct c.dtxsid,',') as dtxsids 
 					FROM 
 						ch.v_chemical_lists_new l 
 					JOIN 
@@ -90,7 +91,7 @@ public interface ChemicalListRepository extends JpaRepository<ChemicalList, Inte
 					Order BY 
 					   l.list_name
 				""")
-    List<ChemicalListWithDtxsids> getListsWithDtxsidsByType(String type);
+    List<ChemicalListWithDtxsidsDTO> getListsWithDtxsidsByType(String type);
 
     @Transactional(readOnly = true)
     @Query( nativeQuery = true, value = """
@@ -102,7 +103,7 @@ public interface ChemicalListRepository extends JpaRepository<ChemicalList, Inte
             		    l.chemical_count as chemicalCount,
             		    l.updated_at as updatedAt, 
             		    l.id, 
-            		    string_agg(c.dtxsid,',') as dtxsids
+            		    string_agg(distinct c.dtxsid,',') as dtxsids
                     FROM
                         ch.v_chemical_lists_new l 
                     JOIN 
@@ -114,7 +115,7 @@ public interface ChemicalListRepository extends JpaRepository<ChemicalList, Inte
                     Order BY 
 					   l.type, l.list_name
                 """)
-    List<ChemicalListWithDtxsids> getListsWithDtxsids();
+    List<ChemicalListWithDtxsidsDTO> getListsWithDtxsids();
 
 	@Transactional(readOnly = true)
 	@Query(nativeQuery = true, value = """
