@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.*;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 import static gov.epa.ccte.api.chemical.service.ChemicalUtils.*;
 
@@ -36,16 +37,16 @@ public class SearchChemicalService {
         // Initialize values
         isThisCASRN = Arrays.asList("Alternate CAS-RN","Integrated Source CAS-RN","CASRN","FDA CAS-Like Identifier","Deleted CAS-RN");
         searchMatchWithoutInchikey = Arrays.asList("Deleted CAS-RN","PC-Code","Substance_id","Approved Name","Alternate CAS-RN",
-                "CAS-RN","Synonym","Integrated Source CAS-RN","DSSTox_Compound_Id","Systematic Name","Integrated Source Name",
-                "Expert Validated Synonym","Synonym from Valid Source","FDA CAS-Like Identifier","DSSTox_Substance_Id", "EHCA Number", "EC Number");
+                "CAS-RN","Synonym","DSSTox_Compound_Id","Systematic Name","Integrated Source Name",
+                "Expert Validated Synonym","Synonym from Valid Source","FDA CAS-Like Identifier","DSSTox_Substance_Id", "ECHA Number", "EC Number");
         searchMatchWithInchikey = Arrays.asList("Deleted CAS-RN","PC-Code","Substance_id","Approved Name","Alternate CAS-RN",
-                "CAS-RN","Synonym","Integrated Source CAS-RN","DSSTox_Compound_Id","Systematic Name","Integrated Source Name",
+                "CAS-RN","Synonym","DSSTox_Compound_Id","Systematic Name","Integrated Source Name",
                 "Expert Validated Synonym","Synonym from Valid Source","FDA CAS-Like Identifier","DSSTox_Substance_Id",
-                "InChIKey", "Indigo InChIKey", "EHCA Number", "EC Number");
+                "InChIKey", "Indigo InChIKey", "ECHA Number", "EC Number");
         searchNames4SingleSearch = Arrays.asList("Deleted CAS-RN","PC-Code","Approved Name","Alternate CAS-RN","CAS-RN",
-                "CASRN","Synonym","Integrated Source CAS-RN","DSSTox_Compound_Id","Systematic Name","Integrated Source Name",
+                "CASRN","Synonym","DSSTox_Compound_Id","Systematic Name","Integrated Source Name",
                 "Expert Validated Synonym","Synonym from Valid Source","FDA CAS-Like Identifier","DSSTox_Substance_Id",
-                "EHCA Number", "EC Number", "InChIKey", "Indigo InChIKey");
+                "ECHA Number", "EC Number", "InChIKey", "Indigo InChIKey");
     }
 
 
@@ -61,9 +62,9 @@ public class SearchChemicalService {
         } else if(isDtxsid(notFoundWord)){
             errors.add("Searched by DTX Substance Id: Found 0 results for '" + notFoundWord + "'.");
         } else if(isInchiKey(notFoundWord)){
-            errors.add("Searched by InChI Key: Found 0 results for '" + notFoundWord + "'.");
+            errors.add("Searched by InChIKey: Found 0 results for '" + notFoundWord + "'.");
         } else if(isInchiKeySkeleton(notFoundWord)) {
-            errors.add("Searched by InChI String: Found 0 results for '" + notFoundWord + "'.");
+            errors.add("Searched by InChIKey Skeleton: Found 0 results for '" + notFoundWord + "'.");
         } else if(isCasrn(notFoundWord)) {
             errors.add("Searched by CASRN: Found 0 results for '" + notFoundWord + "'.");
             if (!checkCasrnChecksum(notFoundWord))
@@ -170,8 +171,7 @@ public class SearchChemicalService {
     }
 
     public boolean isInchiKeySkeleton(String inchikeyskeleton) {
-        inchikeyskeleton = inchikeyskeleton.toUpperCase();
-        return inchikeyskeleton.matches("[A-Z]{14}");
+        return inchikeyskeleton.length() == 14 && inchikeyskeleton.matches("[A-Z]{14}");
     }
 
     public boolean isChemicalSynonym(String word){
@@ -320,36 +320,75 @@ public class SearchChemicalService {
         }
     }
 
-    public List<ChemicalBatchSearchResult> processBatchResult(List<ChemicalSearchInternal> searchResult, String[] searchWords) {
-        // create a hashmap with searchResult where use searchValue as key
-        // this will help us to find the searchResult for a given searchWord
-        HashMap<String, ChemicalSearchInternal> searchResultMap = new HashMap<>();
-
-        // create hasmap for dtxsid to check duplicates
+    public List<ChemicalBatchSearchResult> processBatchResult(List<ChemicalSearchInternal> searchResult, String[] originalWords, String[] processedWords) {
+        // Group all results by processed value
+        Map<String, List<ChemicalSearchInternal>> searchResultMap = new HashMap<>();
         HashMap<String, String> dtxsidMap = new HashMap<>();
-
-        for(ChemicalSearchInternal result : searchResult){
-            searchResultMap.put(result.getModifiedValue(), result);
+        for (ChemicalSearchInternal result : searchResult) {
+            searchResultMap.computeIfAbsent(result.getModifiedValue(), k -> new ArrayList<>()).add(result);
         }
-
-        //log.debug("searchResultMap size = {}, keys = {}", searchResultMap.size(), searchResultMap.keySet());
-
-
-        // create a new list of ChemicalBatchSearchResult to return
         List<ChemicalBatchSearchResult> returnList = new ArrayList<>();
+        // Loop through both arrays in parallel
+        for (int i = 0; i < originalWords.length; i++) {
+            String originalWord = originalWords[i];
+            String processedWord = processedWords[i];
+            List<ChemicalSearchInternal> resultsForWord = searchResultMap.get(processedWord);
+            ChemicalSearchInternal bestResult = null;
 
-        // I need to loop through searchWords, if they are in searchResultMap, I will add them to returnList
-        for(String searchWord : searchWords){
-            String processedSearchWord = preprocessingSearchWord(searchWord);
-            if(searchResultMap.containsKey(processedSearchWord)){
-                ChemicalSearchInternal result = searchResultMap.get(processedSearchWord);
-                returnList.add(new ChemicalBatchSearchResult(result.getDtxsid(), result.getDtxcid(), result.getCasrn(), result.getSmiles(), result.getPreferredName(), result.getSearchName(), searchWord, result.getRank(), result.getHasStructureImage(), result.getIsMarkush(), null, null, dtxsidMap.containsKey(result.getDtxsid())));
-                dtxsidMap.put(result.getDtxsid(), result.getDtxsid());
-            }else{
-                returnList.add(new ChemicalBatchSearchResult(null, null, null, null, null, null, searchWord, null, null, null, getErrorMsgs(searchWord), getSuggestions(searchWord),false));
+            // If originalWord is an InChIKey skeleton, use starts-with search
+            if (isInchiKeySkeleton(originalWord)) {
+                List<ChemicalSearchAll> skeletonResults = searchByInchiKeySkeletonStartsWith(originalWord, 1);
+                if (!skeletonResults.isEmpty()) {
+                    ChemicalSearchAll result = skeletonResults.get(0);
+                    returnList.add(ChemicalBatchSearchResult.builder()
+                        .dtxsid(result.getDtxsid())
+                        .dtxcid(result.getDtxcid())
+                        .casrn(result.getCasrn())
+                        .smiles(result.getSmiles())
+                        .preferredName(result.getPreferredName())
+                        .searchName("InChIKey Skeleton")
+                        .searchValue(originalWord)
+                        .rank(result.getRank())
+                        .hasStructureImage(result.getHasStructureImage())
+                        .isMarkush(result.getIsMarkush())
+                        .isDuplicate(dtxsidMap.containsKey(result.getDtxsid()))
+                        .build());
+                    dtxsidMap.put(result.getDtxsid(), result.getDtxsid());
+                    continue;
+                }
+            }
+
+            if (resultsForWord != null && !resultsForWord.isEmpty()) {
+                // Find the result with the lowest rank < 16
+                bestResult = resultsForWord.stream()
+                        .filter(r -> r.getRank() != null && r.getRank() < 16)
+                        .min(Comparator.comparingInt(ChemicalSearchInternal::getRank))
+                        .orElse(null);
+            }
+            if (bestResult != null) {
+                returnList.add(new ChemicalBatchSearchResult(
+                        bestResult.getDtxsid(),
+                        bestResult.getDtxcid(),
+                        bestResult.getCasrn(),
+                        bestResult.getSmiles(),
+                        bestResult.getPreferredName(),
+                        bestResult.getSearchName(),
+                        originalWord,
+                        bestResult.getRank(),
+                        bestResult.getHasStructureImage(),
+                        bestResult.getIsMarkush(),
+                        null,
+                        null,
+                        dtxsidMap.containsKey(bestResult.getDtxsid())
+                ));
+                dtxsidMap.put(bestResult.getDtxsid(), bestResult.getDtxsid());
+            } else {
+                returnList.add(new ChemicalBatchSearchResult(
+                        null, null, null, null, null, null, originalWord, null, null, null,
+                        getErrorMsgs(originalWord), getSuggestions(originalWord), false
+                ));
             }
         }
-
         return returnList;
     }
 
@@ -402,7 +441,52 @@ public class SearchChemicalService {
         log.debug("{} records match for {}", searchResult.size(), word);
 
         searchResult = removeDuplicates(searchResult);
+        searchResult = applyStartWithRankFilter(searchResult);
         return searchResult;
+    }
+    
+    /**
+     * Applies rank filtering for the "start-with" search.
+     * Keeps all ranks < 16 if any exist, otherwise keeps rank = 16.
+     */
+    public List<ChemicalSearchAll> applyStartWithRankFilter(List<ChemicalSearchAll> results) {
+        if (results == null || results.isEmpty()) return results;
+
+        int minRank = results.stream()
+                .mapToInt(ChemicalSearchAll::getRank)
+                .min()
+                .orElse(Integer.MAX_VALUE);
+
+        if (minRank < 16) {
+            // Keep all verified ranks (1–15)
+            return results.stream()
+                    .filter(r -> r.getRank() < 16)
+                    .collect(Collectors.toList());
+        } else {
+            // Only integrated source names exist (rank 16)
+            return results.stream()
+                    .filter(r -> r.getRank() == 16)
+                    .collect(Collectors.toList());
+        }
+    }
+    
+    public List<CcdChemicalSearchResult> applyRankFilterSearchResult(List<CcdChemicalSearchResult> results) {
+    	if (results == null || results.isEmpty()) return results;
+
+        int minRank = results.stream()
+                .mapToInt(CcdChemicalSearchResult::getRank)
+                .min()
+                .orElse(Integer.MAX_VALUE);
+
+        if (minRank < 16) {
+            return results.stream()
+                    .filter(r -> r.getRank() == minRank)
+                    .collect(Collectors.toList());
+        }
+
+        return results.stream()
+                .filter(r -> r.getRank() == 16)
+                .collect(Collectors.toList());
     }
 
     private List<ChemicalSearchAll> getStartWithFromDB(String searchWord, List<String> searchMatchValues, Integer top) {
@@ -436,7 +520,8 @@ public class SearchChemicalService {
             case "chemicalsearchall": {
                  // ChemicalSearchAll.class
                 List result = getContainFromDB1(searchWord, top, ChemicalSearchAll.class);
-                return removeDuplicates(result);
+                List filteredResult = applyStartWithRankFilter((List<ChemicalSearchAll>)result);
+                return removeDuplicates(filteredResult);
             }
             case "dtxsidonly":{
                 // DtxsidOnly.class
@@ -503,6 +588,32 @@ public class SearchChemicalService {
         return returnList;
     }*/
     
+    /**
+     * Performs a "starts with" search for InChIKey skeletons on the modified value column.
+     * @param inchikeySkeleton The 14-character InChIKey skeleton (all uppercase letters)
+     * @param top The maximum number of results to return (if null or <=0, returns all)
+     * @return List of ChemicalSearchAll results matching the skeleton
+     */
+    public List<ChemicalSearchAll> searchByInchiKeySkeletonStartsWith(String inchikeySkeleton, Integer top) {
+        if (!isInchiKeySkeleton(inchikeySkeleton)) {
+            return Collections.emptyList();
+        }
+        List<ChemicalSearchAll> results;
+        if (top != null && top > 0) {
+            results = searchRepository.findByModifiedValueStartingWithAndSearchNameInOrderByRankAscSearchValue(
+                inchikeySkeleton,
+                searchMatchWithInchikey,
+                Limit.of(top),
+                ChemicalSearchAll.class
+            );
+        } else {
+            results = searchRepository.findByModifiedValueStartingWithAndSearchNameInOrderByRankAscSearchValue(
+                inchikeySkeleton,
+                searchMatchWithInchikey,
+                Limit.unlimited(),
+                ChemicalSearchAll.class
+            );
+        }
+        return applyStartWithRankFilter(results);
+    }
 }
-
-

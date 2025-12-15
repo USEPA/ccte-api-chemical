@@ -1,21 +1,20 @@
-# CTX Chemical APIs (ccte-api-chemistry)
+# Computational Toxicology and Exposure (CTX) APIs - CTX Chemical API
 
-## Overview
-This project is a RESTful API for retrieving chemical structure data and related information.
+<!-- badges: start -->
+[![Active](http://img.shields.io/badge/Status-Active-green.svg)](https://comptox.epa.gov/ctx-api/chemical/health) 
+<!-- badges: end -->
 
-## Available Data 
-Data underlying the Chemical API include:
-- Chemical structures, 
-- nomenclature, 
-- synonyms, 
-- IDs, 
-- list associations, 
-- physicochemical property, 
-- environmental fate, and 
-- transport data from the Distributed Structure-Searchable Toxicity (DSSTox) database 
-- Predictions from Toxicity Estimation Software Tool (TEST) suite of QSAR models
+## Welcome to the GitHub repository for the CTX Chemical API
 
-## Technologies Used
+Originating from the US EPA's Center of Computational Toxicology and Exposure (CCTE), the CTX Chemical API is a RESTful API designed to manage and provide chemical data. It interacts with a PostgreSQL database and offers various endpoints for hazard information. More information on the CTX API development and utility, as well as guidance on how to technically access and use them, is available here: https://www.epa.gov/comptox-tools/computational-toxicology-and-exposure-apis
+
+- If you would like to report a bug or have other questions related to the CTX APIs, please contact the [CTX API Admins](mailto:ccte_api@epa.gov).
+- If you are interested in contributing, please submit a issue or start a discussion. See [CONTRIBUTING](https://github.com/USEPA/ccte-api-chemical/blob/dev/CONTRIBUTING.md) for more information.
+
+### Available Data
+Data accessible via the CTX Chemical API includes chemical structures, nomenclature, synonyms, IDs, list associations, physicochemical property, environmental fate, and transport data from the [Distributed Structure-Searchable Toxicity (DSSTox) Database](https://www.epa.gov/comptox-tools/distributed-structure-searchable-toxicity-dsstox-database) as well as predictions from the [Toxicity Estimation Software Tool (TEST)](https://www.epa.gov/comptox-tools/toxicity-estimation-software-tool-test) suite of Quantitative Structure-Activity Relationship (QSAR) models.
+
+### Technologies Used
 - **Java**: Programming language used for the development of the application.
 - **Spring Boot**: Framework used to create stand-alone, production-grade Spring-based applications.
 - **Spring Data JPA**: Part of the Spring Data family, used to simplify data access and persistence.
@@ -29,13 +28,13 @@ Data underlying the Chemical API include:
 - **OPSIN**: Library used for converting chemical names to structures.
 - **Swagger**: Used for API documentation and testing.
 
-## Configuration
+### Configuration
 The application configuration is managed through YAML files. The main configuration file is `application.yml`, and environment-specific configurations are in files like `application-local.yml`.
 
-## Build and Deployment
+### Build and Deployment
 The project uses GitHub Actions for continuous integration and deployment. The build and deployment process is defined in the `.github/workflows/gh-packages-deployment.yml` file.
 
-## Getting Started
+### Getting Started
 To build and run the project locally, use the following Maven commands:
 
 ```sh
@@ -60,7 +59,7 @@ src/
 └── test/
 ```
 
-## Dependencies
+### Dependencies
 - `spring-boot-starter-web`
 - `spring-boot-starter-data-rest`
 - `spring-boot-starter-data-jpa`
@@ -72,12 +71,6 @@ src/
 - `spring-boot-testcontainers`
 - `testcontainers`
 - `jackson-datatype-hibernate6`
-
-## Contributing
-Contributions are welcome! Please read the `CONTRIBUTING.md` file for guidelines.
-
-## Contact
- For any inquiries, please contact the project maintainer. **[Rashid, Asif](https://github.com/asif-rashid)** , **[Dirks, Brianna](https://github.com/bridirks)**, **[Feshuk, Madison](https://github.com/madison-feshuk)**
 
 ## Disclaimer
 The United States Environmental Protection Agency (EPA) GitHub project code is provided on an "as is" basis and the user assumes responsibility for its use. EPA has relinquished control of the information and no longer has responsibility to protect the integrity, confidentiality, or availability of the information. Any reference to specific commercial products, processes, or services by service mark, trademark, manufacturer, or otherwise, does not constitute or imply their endorsement, recommendation or favoring by EPA. The EPA seal and logo shall not be used in any manner to imply endorsement of any commercial product or activity by EPA or the United States Government. 

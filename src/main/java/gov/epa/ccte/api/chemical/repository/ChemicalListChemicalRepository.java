@@ -15,26 +15,26 @@ public interface ChemicalListChemicalRepository extends JpaRepository<ChemicalLi
 
 
 
-    @Query("select distinct c.listName from ChemicalListChemical c join ChemicalList l on c.listId = l.id and c.dtxsid = :dtxsid and l.visibility = :visibility ")
+    @Query("select distinct c.listName from ChemicalListChemical c join ChemicalList l on c.listId = l.id and c.dtxsid = :dtxsid")
     List<String> getListNames(String dtxsid, String visibility);
 
     @Query(nativeQuery = true,
-    value = " select distinct s.dtxsid from ms.chemical_search s join ch.v_chemical_list_chemicals l on l.dtxsid = s.dtxsid " +
+    value = " select distinct s.dtxsid from ch.v_chemical_search s join ch.v_chemical_list_chemicals_new l on l.dtxsid = s.dtxsid " +
             " where s.modified_value like :word% and upper(l.list_name) = upper(:list) ")
     List<String> startWith(String word, String list);
 
     @Query(nativeQuery = true,
-            value = " select distinct s.dtxsid from ms.chemical_search s join ch.v_chemical_list_chemicals l on l.dtxsid = s.dtxsid " +
+            value = " select distinct s.dtxsid from ch.v_chemical_search s join ch.v_chemical_list_chemicals_new  l on l.dtxsid = s.dtxsid " +
                     " where s.modified_value like %:word% and upper(l.list_name) = upper(:list) ")
     List<String> contain(String word, String list);
 
     @Query(nativeQuery = true,
-            value = " select distinct s.dtxsid from ms.chemical_search s join ch.v_chemical_list_chemicals l on l.dtxsid = s.dtxsid " +
+            value = " select distinct s.dtxsid from ch.v_chemical_search s join ch.v_chemical_list_chemicals_new  l on l.dtxsid = s.dtxsid " +
                     " where s.modified_value = :word and upper(l.list_name) = upper(:list) ")
     List<String> exact(String word, String list);
 
     @Query(nativeQuery = true,
-    value = " select dtxsid || '-' || list_name from ch.v_chemical_list_chemicals where dtxsid in (:dtxsids) and list_name in (:chemicalLists) ")
+    value = " select dtxsid || '-' || list_name from ch.v_chemical_list_chemicals_new  where dtxsid in (:dtxsids) and list_name in (:chemicalLists) ")
     List<String> chemicalListsAndDtxsids( List<String> chemicalLists, List<String> dtxsids);
 
 
@@ -44,7 +44,7 @@ public interface ChemicalListChemicalRepository extends JpaRepository<ChemicalLi
             "from  ChemicalDetail d left join ChemicalListChemical l on l.dtxsid = d.dtxsid and l.listName = 'LCSSPUBCHEM' where d.dtxsid in (?1)")
     List<GhsLinkResponse> isGhsLinkExists(String[] dtxsid);
 
-    @Query("select l.dtxsid from ChemicalListChemical l where upper(l.listName) = upper(:list) and l.isPublic = true ")
+    @Query("select l.dtxsid from ChemicalListChemical l where upper(l.listName) = upper(:list)")
     List<String> getDtxsids(String list);
 
     @Query("select new gov.epa.ccte.api.chemical.web.rest.WikipediaLinkResponse(d.dtxsid, " +

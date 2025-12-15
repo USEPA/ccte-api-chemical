@@ -1,7 +1,7 @@
 package gov.epa.ccte.api.chemical.repository;
 
 import gov.epa.ccte.api.chemical.domain.ChemicalList;
-import gov.epa.ccte.api.chemical.projection.chemicallist.ChemicalListWithDtxsids;
+import gov.epa.ccte.api.chemical.projection.chemicallist.*;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -16,19 +16,22 @@ import java.util.Optional;
 public interface ChemicalListRepository extends JpaRepository<ChemicalList, Integer> {
 
     @Transactional(readOnly = true)
-    <T> List<T> findByVisibilityAndIsVisibleOrderByTypeAscListNameAsc(String visibility, Boolean isVisible, Class<T> type);
+    @Query("SELECT c FROM ChemicalList c ORDER BY c.type ASC, c.listName ASC")
+    <T>List<T> findAllOrderByTypeAscAndListNameAsc(Class<T> type);
 
     @Transactional(readOnly = true)
-    <T> List<T> findByTypeAndVisibilityAndIsVisibleOrderByListNameAsc(String listType, String visibility, Boolean isVisible, Class<T> type);
+    @Query("SELECT c FROM ChemicalList c ORDER BY c.listName ASC")
+    <T>List<T> findAllOrderByListNameAsc(Class<T> type);
+    
+    @Transactional(readOnly = true)
+    <T>List<T> findByTypeIgnoreCaseOrderByListNameAsc(String listType, Class<T> type);
 
 
     @Transactional(readOnly = true)
-    <T>
-    Optional<T> findByListNameIgnoreCaseAndVisibilityAndIsVisible(String listName, String visibility, Boolean isVisible, Class<T> type);
+    Optional<ChemicalList> findByListNameIgnoreCase(String listName);
 
     @Transactional(readOnly = true)
-    <T>
-    List<T> findByListNameInIgnoreCaseAndVisibilityAndIsVisibleOrderByListNameAsc(Collection<String> listNames, String visibility, Boolean isVisible, Class<T> type);
+    <T>List<T> findByListNameInIgnoreCaseOrderByListNameAsc(Collection<String> listNames, Class<T> type);
 
 
     @Transactional(readOnly = true)
@@ -37,70 +40,151 @@ public interface ChemicalListRepository extends JpaRepository<ChemicalList, Inte
     List<String> getAllTypes();
 
     @Transactional(readOnly = true)
-    @Query( nativeQuery = true,
-            value = "select l.list_name as listName, l.label, l.type, l.visibility, l.short_description as shortDescription, l.long_description as longDescription, l.chemical_count as chemicalCount, " +
-                    " l.created_at as createdAt, l.updated_at as updatedAt, l.id, string_agg(c.dtxsid,',') as dtxsids " +
-                    " from ch.v_chemical_lists l join ch.v_chemical_list_chemicals c on " +
-                    " l.id = c.list_id and upper(l.list_name) = upper(:listName) and l.visibility = :visibility and l.is_visible = true and c.is_public = true " +
-                    " group by l.list_name, l.label, l.type, l.visibility, l.short_description, l.long_description, l.chemical_count, " +
-                    " l.created_at, l.updated_at, l.id")
-    Optional<ChemicalListWithDtxsids> getListWithDtxsidsByListName(String listName, String visibility);
+    @Query( nativeQuery = true, value = """
+    				SELECT 
+    					l.list_name as listName, 
+    					l.label,
+					    l.type, 
+					    l.short_description as shortDescription, 
+					    l.long_description as longDescription, 
+					    l.chemical_count as chemicalCount, 
+					    l.updated_at as updatedAt, 
+					    l.id, 
+					    string_agg(c.dtxsid,',') as dtxsids
+					FROM
+                        ch.v_chemical_lists_new l 
+                    JOIN 
+                        ch.v_chemical_list_chemicals_new c 
+                    ON
+					    l.id = c.list_id 
+					WHERE 
+					    upper(l.list_name) = upper(:listName)
+                    GROUP BY 
+    		            l.list_name, l.type, l.label, l.short_description, l.long_description, l.chemical_count, l.updated_at, l.id
+                    
+    		    """)
+    Optional<ChemicalListWithDtxsids> getListWithDtxsidsByListName(String listName);
 
     @Transactional(readOnly = true)
-    @Query( nativeQuery = true,
-            value = "select l.list_name as listName, l.label, l.type, l.visibility, l.short_description as shortDescription, l.long_description as longDescription, l.chemical_count as chemicalCount, " +
-                    " l.created_at as createdAt, l.updated_at as updatedAt, l.id, string_agg(c.dtxsid,',') as dtxsids " +
-                    " from ch.v_chemical_lists l join ch.v_chemical_list_chemicals c on " +
-                    " l.id = c.list_id and l.type = :type and l.visibility = :visibility and l.is_visible = true and c.is_public = true "+
-                    " group by l.list_name, l.label, l.type, l.visibility, l.short_description, l.long_description, l.chemical_count, " +
-                    " l.created_at, l.updated_at, l.id")
-    List<ChemicalListWithDtxsids> getListsWithDtxsidsByType(String type, String visibility);
+    @Query( nativeQuery = true, value = """
+    				SELECT 
+    					l.list_name as listName,
+    					l.label, 
+					    l.type, 
+					    l.short_description as shortDescription, 
+					    l.long_description as longDescription, 
+					    l.chemical_count as chemicalCount, 
+					    l.updated_at as updatedAt, 
+					    l.id, 
+					    string_agg(c.dtxsid,',') as dtxsids 
+					FROM 
+						ch.v_chemical_lists_new l 
+					JOIN 
+						ch.v_chemical_list_chemicals_new c 
+					ON 
+						l.id = c.list_id 
+					WHERE 
+						l.type = :type 
+					GROUP BY 
+						l.list_name, l.type, l.label, l.short_description, l.long_description, l.chemical_count, l.updated_at, l.id
+					Order BY 
+					   l.list_name
+				""")
+    List<ChemicalListWithDtxsids> getListsWithDtxsidsByType(String type);
 
     @Transactional(readOnly = true)
-    @Query( nativeQuery = true,
-            value = "select l.list_name as listName, l.label, l.type, l.visibility, l.short_description as shortDescription, l.long_description as longDescription, l.chemical_count as chemicalCount, " +
-                    " l.created_at as createdAt, l.updated_at as updatedAt, l.id, string_agg(c.dtxsid,',') as dtxsids " +
-                    " from ch.v_chemical_lists l join ch.v_chemical_list_chemicals c on " +
-                    " l.id = c.list_id and l.visibility = :visibility and l.is_visible = true and c.is_public = true " +
-                    " group by l.list_name, l.label, l.type, l.visibility, l.short_description, l.long_description, l.chemical_count, " +
-                    " l.created_at, l.updated_at, l.id")
-    List<ChemicalListWithDtxsids> getListsWithDtxsids(String visibility);
+    @Query( nativeQuery = true, value = """
+            		SELECT 
+            		    l.list_name as listName,
+            		    l.label, 
+            		    l.type, l.short_description as shortDescription, 
+            		    l.long_description as longDescription, 
+            		    l.chemical_count as chemicalCount,
+            		    l.updated_at as updatedAt, 
+            		    l.id, 
+            		    string_agg(c.dtxsid,',') as dtxsids
+                    FROM
+                        ch.v_chemical_lists_new l 
+                    JOIN 
+                        ch.v_chemical_list_chemicals_new c 
+                    ON
+                       l.id = c.list_id
+                    GROUP BY 
+                       l.list_name, l.type, l.label, l.short_description, l.long_description, l.chemical_count,l.updated_at, l.id
+                    Order BY 
+					   l.type, l.list_name
+                """)
+    List<ChemicalListWithDtxsids> getListsWithDtxsids();
 
 	@Transactional(readOnly = true)
 	@Query(nativeQuery = true, value = """
 			    SELECT *
 			    FROM (
 			        SELECT DISTINCT ON (l.list_name)
+			        	l.id,
 			            l.list_name,
 			            l.label,
 			            l.type,
-			            l.visibility,
 			            l.short_description,
 			            l.long_description,
 			            l.chemical_count,
-			            l.created_at,
 			            l.updated_at
-			        FROM ch.v_chemical_lists l
-			        JOIN ch.v_chemical_list_chemicals c ON
-			            l.id = c.list_id
-			            AND c.dtxsid = :dtxsid
-			            AND l.visibility = :visibility
-			            AND l.is_visible = true
-			            AND c.is_public = true
-			        ORDER BY l.list_name, l.updated_at DESC
-			    ) latest_lists
-			    ORDER BY latest_lists.type, latest_lists.list_name, latest_lists.label
+			        FROM 
+			        	ch.v_chemical_lists_new l
+			        JOIN 
+			        	ch.v_chemical_list_chemicals_new c 
+			        ON
+			            l.id = c.list_id AND c.dtxsid = :dtxsid
+			        ORDER BY 
+			        	l.list_name, l.updated_at DESC) latest_lists
+			    ORDER BY 
+			    	latest_lists.type, latest_lists.list_name
 			""")
-    List getListsByDtxsid(String dtxsid,String visibility);
+    List<ChemicalList> getListsByDtxsid(String dtxsid);
+	
+	@Transactional(readOnly = true)
+	@Query(nativeQuery = true, value = """
+			    SELECT *
+			    FROM (
+			        SELECT DISTINCT ON (l.list_name)
+			            l.list_name
+			        FROM 
+			        	ch.v_chemical_lists_new l
+			        JOIN 
+			        	ch.v_chemical_list_chemicals_new c 
+			        ON
+			            l.id = c.list_id AND c.dtxsid = :dtxsid
+			        ORDER BY 
+			        	l.list_name, l.updated_at DESC) latest_lists
+			    ORDER BY 
+			    	latest_lists.list_name
+			""")
+    List<ChemicalListName> getListNamesByDtxsid(String dtxsid);
+
 
     @Transactional(readOnly = true)
-    @Query( nativeQuery = true,
-            value = "select l.list_name, l.label, l.type, l.visibility, l.short_description, l.long_description, l.chemical_count, " +
-                    " l.created_at, l.updated_at, l.id, string_agg(c.dtxsid,',') as dtxsids " +
-                    " from ch.v_chemical_lists l join ch.v_chemical_list_chemicals c on " +
-                    " l.id = c.list_id and c.dtxsid = :dtxsid and l.visibility = :visibility and l.is_visible = true and c.is_public = true" +
-                    " group by l.list_name, l.label, l.type, l.visibility, l.short_description, l.long_description, l.chemical_count, " +
-                    " l.created_at, l.updated_at, l.id")
-    List getListsByDtxsidWithDtxsids(String dtxsid,String visibility);
+    @Query( nativeQuery = true, value = """
+		    SELECT *
+		    FROM (
+		        SELECT DISTINCT ON (l.list_name)
+		            l.list_name,
+		            l.label,
+		            l.type,
+		            l.short_description,
+		            l.long_description,
+		            l.chemical_count,
+		            l.updated_at
+		        FROM 
+    		        ch.v_chemical_lists_new l
+		        JOIN 
+    		        ch.v_chemical_list_chemicals_new c 
+    		    ON
+		            l.id = c.list_id AND c.dtxsid = :dtxsid
+		        ORDER BY 
+    		        l.list_name, l.updated_at DESC) latest_lists
+		    ORDER BY 
+    		    latest_lists.type, latest_lists.list_name
+		""")
+    List<?> getListsByDtxsidCcd(String dtxsid);
 
 }

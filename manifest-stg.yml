@@ -2,10 +2,9 @@
 applications:
   - name: ccte-chemical-stg
     routes:
-#      - route: ccte-api-p.app.cloud.gov
-      #- route: ccte-bioactivity-p.app.cloud.gov
-      - route: api-ccte-stg.epa.gov/chemical
-      #- route: ccte-api.app.cloud.gov/bioactivity
+#      - route: ccte-chemical-p.app.cloud.gov
+      - route: ctx-api-stg.ccte.epa.gov/chemical
+      #- route: ccte-api-s.app.cloud.gov/chemical
     memory: 2G
     instances: 1
 #    health-check-type: http
@@ -17,5 +16,5 @@ applications:
 #    services:
 #      - ccte-db-prod2
     env:
-      SPRING_PROFILES_ACTIVE: cloud,apikey
+      SPRING_PROFILES_ACTIVE: cloud,apikey,stg
       JBP_CONFIG_OPEN_JDK_JRE: '{ jre: { version: 17.+}}'

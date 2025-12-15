@@ -7,12 +7,14 @@ import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.RestController;
 
+import gov.epa.ccte.api.chemical.projection.search.CcdChemicalSearchResult;
 import gov.epa.ccte.api.chemical.projection.search.ChemicalBatchSearchResult;
 import gov.epa.ccte.api.chemical.projection.search.ChemicalSearchAll;
 import gov.epa.ccte.api.chemical.projection.search.ChemicalSearchInternal;
 import gov.epa.ccte.api.chemical.projection.search.DtxsidOnly;
 import gov.epa.ccte.api.chemical.repository.ChemicalSearchRepository;
 import gov.epa.ccte.api.chemical.service.SearchChemicalService;
+import gov.epa.ccte.api.chemical.service.SearchFormulaService;
 import gov.epa.ccte.api.chemical.web.rest.errors.ChemicalSearchNotFoundException;
 import gov.epa.ccte.api.chemical.web.rest.errors.HigherNumberOfIdsException;
 
@@ -26,10 +28,13 @@ public class ChemicalSearchResource implements ChemicalSearchApi {
     
     private final ChemicalSearchRepository searchRepository;
     private final SearchChemicalService chemicalService;
+    private final SearchFormulaService formulaService;
 
-    public ChemicalSearchResource(ChemicalSearchRepository searchRepository, SearchChemicalService chemicalService) {
+
+    public ChemicalSearchResource(ChemicalSearchRepository searchRepository, SearchChemicalService chemicalService, SearchFormulaService formulaService) {
         this.searchRepository = searchRepository;
         this.chemicalService = chemicalService;
+        this.formulaService = formulaService;
     }
     
     @Override
@@ -48,14 +53,15 @@ public class ChemicalSearchResource implements ChemicalSearchApi {
     }
     
     @Override
-    public List chemicalEqual(String word, String projection) {
+    public List<?> chemicalEqual(String word, String projection) {
         String searchWord = chemicalService.preprocessingSearchWord(word);
         log.debug("input search word = {} and process search word = {}. ", word, searchWord);
-        List searchResult = null;
+        List<?> searchResult = null;
         switch (projection) {
             case "chemicalsearchall":
                 searchResult = searchRepository.findByModifiedValueOrderByRankAsc(searchWord, ChemicalSearchAll.class);
                 searchResult = chemicalService.removeDuplicates(searchResult);
+                searchResult = chemicalService.applyStartWithRankFilter((List<ChemicalSearchAll>)searchResult);
                 break;
             case "dtxsidonly":
                 searchResult = searchRepository.findByModifiedValueOrderByRankAsc(searchWord, DtxsidOnly.class);
@@ -64,6 +70,7 @@ public class ChemicalSearchResource implements ChemicalSearchApi {
             case "ccdsearchresult":
                 searchResult = searchRepository.equalCcd(searchWord);
                 searchResult = chemicalService.removeDuplicates(searchResult);
+                searchResult = chemicalService.applyRankFilterSearchResult((List<CcdChemicalSearchResult>)searchResult);
                 break;
         }
         if (searchResult == null || searchResult.isEmpty())
@@ -72,10 +79,10 @@ public class ChemicalSearchResource implements ChemicalSearchApi {
             return searchResult;
     }
     @Override
-    public List chemicalContain(String word, Integer top, String projection) {
+    public List<?> chemicalContain(String word, Integer top, String projection) {
         String searchWord = chemicalService.preprocessingSearchWord(word);
         log.debug("input search word = {} and process search word = {}. projection = {}", word, searchWord, projection);
-        List searchResult = chemicalService.getContain(projection, searchWord, top);
+        List<?> searchResult = chemicalService.getContain(projection, searchWord, top);
         searchResult = chemicalService.removeDuplicates(searchResult);
         if (searchResult == null || searchResult.isEmpty())
             throw new ChemicalSearchNotFoundException(chemicalService.getErrorMsgs(word), chemicalService.getSuggestions(word));
@@ -85,10 +92,11 @@ public class ChemicalSearchResource implements ChemicalSearchApi {
     
     @Override
     public List<ChemicalBatchSearchResult> chemicalBatchEqual(String words) {
-        String[] searchWords = chemicalService.preprocessingSearchWord(words.split("\n"));
-        log.debug("input search words = {} and process search word count = {}. ", words, searchWords.length);
-        List<ChemicalSearchInternal> searchResult = searchRepository.findByModifiedValueInOrderByRankAsc(List.of(searchWords), ChemicalSearchInternal.class);
-        return chemicalService.processBatchResult(searchResult, searchWords);
+        String[] originalWords = words.split("\n");
+        String[] processedWords = chemicalService.preprocessingSearchWord(originalWords);
+        log.debug("input search words = {} and process search word count = {}. ", words, processedWords.length);
+        List<ChemicalSearchInternal> searchResult = searchRepository.findByModifiedValueInOrderByRankAsc(List.of(processedWords), ChemicalSearchInternal.class);
+        return chemicalService.processBatchResult(searchResult, originalWords, processedWords);
     }
     
     @Override
@@ -97,6 +105,7 @@ public class ChemicalSearchResource implements ChemicalSearchApi {
         return searchRepository.searchMsReadyFormula(formula);
     }
     
+    
     @Override
     public List<String> msReadyByDtxcid(String dtxcid) {
         log.debug("input dtxcid = {} ", dtxcid);
@@ -104,7 +113,7 @@ public class ChemicalSearchResource implements ChemicalSearchApi {
     }
     
     @Override
-    public List msReadyByBatchDtxcid(String[] dtxcids) {
+    public List<?> msReadyByBatchDtxcid(String[] dtxcids) {
         log.info("dtxcid size = {}", dtxcids.length);
 
         if (dtxcids.length > batchSize) {
@@ -132,7 +141,16 @@ public class ChemicalSearchResource implements ChemicalSearchApi {
     @Override
     public List<String> getChemicalsForExactFormula(String formula) {
         log.debug("exact formula search for {} ", formula);
-        return searchRepository.getExactFormula(formula);
+        
+        // check if formula has range defined, it that case get the formula list
+        if(formula.contains("(")){
+            List<String> formulas = formulaService.getValidFormulas(formula);
+            log.debug("formula search for {}", formulas.toString());
+            return searchRepository.getExactFormulaBatch(formulas);
+        }
+        else {
+        	return searchRepository.getExactFormula(formula);
+        }
     }
     
     @Override
@@ -144,7 +162,26 @@ public class ChemicalSearchResource implements ChemicalSearchApi {
     @Override
     public List<String> getChemicalsForMsreadyFormula(String formula) {
         log.debug("input formula {} ", formula);
-        return searchRepository.searchAllMsReadyFormula(formula);
+        // check if formula has range defined, it that case get the formula list
+        if(formula.contains("(")){
+            List<String> formulas = formulaService.getValidFormulas(formula);
+            log.debug("formula search for {}", formulas.toString());
+            return searchRepository.searchAllByBatchMsReadyFormula(formulas);
+        }
+        else {
+        	return searchRepository.searchAllMsReadyFormula(formula);
+        }
+    }
+    
+    @Override
+    public List<String> getChemicalsForBatchMsreadyFormula(String[] formulas) {
+        log.info("formula count = {}", formulas.length);
+
+        if (formulas.length > batchSize) {
+            throw new HigherNumberOfIdsException(formulas.length, batchSize, "formula");
+        }
+        List<String> formulaList = List.of(formulas);
+        return searchRepository.searchAllByBatchMsReadyFormula(formulaList);
     }
     
     @Override
@@ -154,4 +191,5 @@ public class ChemicalSearchResource implements ChemicalSearchApi {
     }
     
 }
+
 

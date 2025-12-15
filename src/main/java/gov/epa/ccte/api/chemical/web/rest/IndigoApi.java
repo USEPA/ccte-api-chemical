@@ -16,8 +16,8 @@ import java.io.IOException;
 /**
  * API interface for getting chemical info from Indigo Toolkit.
  */
-@Tag(name = "Indigo Service",
-        description = "API endpoints for getting chemical info from Indigo Toolkit.")
+@Tag(name = "Indigo Service Resource",
+        description = "Collection of endpoints for chemical information from Indigo Toolkit to support molecular fingerprinting and substructure search.")
 @SecurityRequirement(name = "api_key")
 @RequestMapping(value = "chemical/indigo")
 public interface IndigoApi {
@@ -28,7 +28,7 @@ public interface IndigoApi {
 	 * @param n/a.
 	 * @return the {@link ResponseEntity} with status {@code 200 (OK)} and with body InchI}.
 	 */
-    @Operation(summary = "Get InChI from mol", description = "return InChI for given mol file.")
+    @Operation(summary = "Get InChI from mol", description = "return InChI for given mol file")
     @ApiResponses(value= {
             @ApiResponse(responseCode = "200", description = "OK",  content = @Content( mediaType = "application/json",
             		examples = {@ExampleObject(name = "InChI", value = "InChI=1/C2H5NO/c1-2(3)4/h1H3,(H2,3,4)/f/h3H2")})),
@@ -56,10 +56,10 @@ public interface IndigoApi {
 	 * @param n/a.
 	 * @return the {@link ResponseEntity} with status {@code 200 (OK)} and with body smiles}.
 	 */
-    @Operation(summary = "Get Smiles from mol", description = "return Smiles for given mol file.")
+    @Operation(summary = "Get SMILES from mol", description = "return SMILES string for given mol file.")
     @ApiResponses(value= {
             @ApiResponse(responseCode = "200", description = "OK",  content = @Content( mediaType = "application/json",
-            		examples = {@ExampleObject(name = "Smiles", value = "C(C)(C)(C1C=CC(O)=CC=1)C1C=CC(O)=CC=1")})),
+            		examples = {@ExampleObject(name = "SMILES String", value = "C(C)(C)(C1C=CC(O)=CC=1)C1C=CC(O)=CC=1")})),
     })
     @PostMapping(value = "/to-smiles", produces = MediaType.APPLICATION_JSON_VALUE)
     String toSmiles(@Parameter(required = true, description = "mol file") @RequestBody String mol) throws IOException;
@@ -70,7 +70,7 @@ public interface IndigoApi {
 	 * @param n/a.
 	 * @return the {@link ResponseEntity} with status {@code 200 (OK)} and with body canonical smiles}.
 	 */
-    @Operation(summary = "Get Canonical Smiles from mol", description = "return Canonical Smiles for given mol file.")
+    @Operation(summary = "Get Canonical SMILES from mol", description = "return canonical SMILES for given mol file.")
     @ApiResponses(value= {
             @ApiResponse(responseCode = "200", description = "OK",  content = @Content( mediaType = "application/json",
             		examples = {@ExampleObject(name = "Canonical Smiles")})),

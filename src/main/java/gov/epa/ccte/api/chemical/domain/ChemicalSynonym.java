@@ -5,7 +5,10 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.Size;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
@@ -14,6 +17,9 @@ import java.time.OffsetDateTime;
 
 @Getter
 @Setter
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 @Entity
 @Table(name = "v_chemical_snonyms", schema = "ch")
 public class ChemicalSynonym {
@@ -36,7 +42,7 @@ public class ChemicalSynonym {
 
     @Column(name = "deleted_synonym")
     @JdbcTypeCode(SqlTypes.LONGVARCHAR)
-    private String deleteSynonyms;
+    private String deletedSynonyms;
 
     @Column(name = "other_synonym")
     @JdbcTypeCode(SqlTypes.LONGVARCHAR)
