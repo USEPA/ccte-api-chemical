@@ -135,8 +135,8 @@ public class ApiKeyRequestFilter extends GenericFilterBean {
 
         log.debug("method = {}, origin = {}, x-forwarded-server = {}, host = {}, referer ={}, refererdHost = {}, path={} ",method, origin, server, host, referer, refererdHost, path);
 
-        // if chemical/file path - allow access to images without any api key
-        if(path.contains("/chemical/file/") || path.contains("/chemical/health")){
+        // if path contains exceptions - allow access to images, api health check, model reports html, model files - without any api key
+        if(path.contains("/chemical/file/") || path.contains("/chemical/health") || path.contains("/chemical/property/model/reports/html/") || path.contains("/chemical/property/model/file/")){
             log.debug("skipping api-key check");
             return false;
         }
