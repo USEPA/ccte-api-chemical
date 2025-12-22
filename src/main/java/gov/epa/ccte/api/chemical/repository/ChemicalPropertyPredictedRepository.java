@@ -148,7 +148,7 @@ public interface ChemicalPropertyPredictedRepository extends JpaRepository<Chemi
     		    pd.prop_value AS propValue,
     		    CASE
     		    	WHEN r.report_html IS NULL THEN NULL
-			    	ELSE CAST('https://ctx-api-dev.ccte.epa.gov/chemical/property/model/reports/html/search/?dtxsid=' || :dtxsid || '&modelId=' || CAST(pd.model_id AS VARCHAR) AS VARCHAR)
+			    	ELSE CAST('https://comptox.epa.gov/ctx-api/chemical/property/model/reports/html/search/?dtxsid=' || :dtxsid || '&modelId=' || CAST(pd.model_id AS VARCHAR) AS VARCHAR)
     		    END AS link,
     		    CASE 
     		    	WHEN r.report_html IS NULL THEN 'Not Available'
@@ -176,4 +176,5 @@ public interface ChemicalPropertyPredictedRepository extends JpaRepository<Chemi
             ORDER BY pd.source_name ASC
     				""", nativeQuery = true)
     List<ChemicalPropertySummaryPredicted> findPredictedSummaryByDtxsidAndPropName(@Param("dtxsid")String dtxsid, @Param("propName")String propName, @Param("propCategory")String propCategory);
+
 }
