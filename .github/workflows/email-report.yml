@@ -3,15 +3,25 @@ name: email
 on:
   schedule:
     - cron: '00 9 * * 1,4'
+  workflow_dispatch:
     
+env:
+    REPORT_DIR: /data/watchtower/ctx-API/container-results/api-chemical
+
 jobs:
-  send-email:
-    runs-on: "th878" 
-    steps:  
-    - name: Checkout repository
-      uses: actions/checkout@v4
-    - name:  send email every monday and thursday
-      run: |
-           cd /data/watchtower/ctx-API/container-results/api-chemical
-           ls -la
-           python3 email.py 
+    send-email:
+        runs-on: "th878"
+        steps:
+        - name: Email latest report
+          uses: USEPA/email-report@main
+          with:
+                report_path: ${{ env.REPORT_DIR }}/chemical-report.html
+                recipients: ${{ vars.REPORT_RECIPIENTS }}
+                sender: ${{ vars.REPORT_SENDER }}
+                subject: "CTX Chemical API Scan Report"
+                body: |
+                    Hello,
+
+                    Please find attached the CTX Chemical API scan report.
+
+                    Best regards.
