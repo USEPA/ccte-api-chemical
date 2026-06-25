@@ -18,10 +18,10 @@ jobs:
                 report_path: ${{ env.REPORT_DIR }}/chemical-report.html
                 recipients: ${{ vars.REPORT_RECIPIENTS }}
                 sender: ${{ vars.REPORT_SENDER }}
-                subject: "CTX Chemical API Scan Report"
+                subject: "CTX-chemical-API container scanning results"
                 body: |
                     Hello,
 
-                    Please find attached the CTX Chemical API scan report.
+                    Please find attached the CTX-chemical-API container scan report.
 
                     Best regards.
