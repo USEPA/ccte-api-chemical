@@ -180,16 +180,16 @@ public class ChemicalPropertyResource implements ChemicalPropertyApi {
             String dtxsid = (String) row[0];
             String propertiesJson = (String) row[1];
             List<ChemicalFateBatchDto.PropertyDto> properties = null;
-			try {
-				properties = mapper.readValue(
-				    propertiesJson,
-				    new TypeReference<List<ChemicalFateBatchDto.PropertyDto>>() {}
-				);
-			} catch (JsonMappingException e) {
-				e.printStackTrace();
-			} catch (JsonProcessingException e) {
-				e.printStackTrace();
-			}
+            try {
+                properties = mapper.readValue(
+                    propertiesJson,
+                    new TypeReference<List<ChemicalFateBatchDto.PropertyDto>>() {}
+                );
+            } catch (JsonMappingException e) {
+                log.error("Failed to map fate properties JSON for dtxsid {}: {}", dtxsid, e.getMessage(), e);
+            } catch (JsonProcessingException e) {
+                log.error("Failed to process fate properties JSON for dtxsid {}: {}", dtxsid, e.getMessage(), e);
+            }
             data.add(new ChemicalFateBatchDto(dtxsid, properties));
         }
         return data;
