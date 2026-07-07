@@ -28,6 +28,7 @@ import static org.mockito.Mockito.when;
 import gov.epa.ccte.api.chemical.projection.chemicaldetail.*;
 import gov.epa.ccte.api.chemical.repository.ChemicalDetailRepository;
 import gov.epa.ccte.api.chemical.service.ChemicalDetailService;
+import gov.epa.ccte.api.chemical.service.SimilarSearchService;
 import gov.epa.ccte.api.chemical.web.rest.requests.Page;
 
 import java.util.*;
@@ -43,6 +44,9 @@ public class ChemicalDetailResourceTest {
     private ChemicalDetailRepository detailRepository;
     @MockitoBean 
     private ChemicalDetailService detailService;
+    
+    @MockitoBean  
+    private SimilarSearchService similarSearchService;
 
     private CcdAssayDetails ccdAssayDetails;
     private CcdChemicalDetails ccdChemicalDetails;

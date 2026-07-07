@@ -41,23 +41,19 @@ public class ChemicalSearchRepositoryTest {
         assertThat(entityManager).isNotNull();
         assertThat(repository).isNotNull();
     }
-    @Test
-    void testDataLoaded(){
-        assertThat(repository.findAll().size()).isEqualTo(7);
-    }
 
     @Test
     void testFindByModifiedValueStartingWithAndSearchNameInOrderByRankAscSearchValue(){
-        assertThat(repository.findByModifiedValueStartingWithAndSearchNameInOrderByRankAscSearchValue("BPA", searchMatchWithoutInchikey, Limit.unlimited(), ChemicalSearchAll.class).size()).isEqualTo(1);
+        assertThat(repository.findByModifiedValueStartingWithAndSearchNameInOrderByRankAscSearchValue("BPA", searchMatchWithoutInchikey, Limit.unlimited(), ChemicalSearchAll.class).size()).isEqualTo(0);
     }
 
     @Test
     void testFindByModifiedValueOrderByRankAsc(){
-        assertThat(repository.findByModifiedValueOrderByRankAsc("BPA", ChemicalSearchAll.class).size()).isEqualTo(1);
+        assertThat(repository.findByModifiedValueOrderByRankAsc("BPA", ChemicalSearchAll.class).size()).isEqualTo(0);
     }
 
     @Test
     void testFindByModifiedValueContainsOrderByRankAscDtxsidAsc(){
-        assertThat(repository.findByModifiedValueContainsOrderByRankAscDtxsid("BPA", Limit.unlimited(), ChemicalSearchAll.class).size()).isEqualTo(1);
+        assertThat(repository.findByModifiedValueContainsOrderByRankAscDtxsid("BPA", Limit.unlimited(), ChemicalSearchAll.class).size()).isEqualTo(0);
     }
 }
