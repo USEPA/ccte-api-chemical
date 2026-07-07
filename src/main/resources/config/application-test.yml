@@ -1,6 +1,6 @@
 spring:
   application:
-    name: hazard
+    name: chemical
   jackson:
     serialization:
       indent-output: true
