@@ -36,7 +36,7 @@ public interface ChemicalDetailRepository extends JpaRepository<ChemicalDetail, 
     
     // Query for SimilarSearchService
     @Query(value = "select smiles from ChemicalDetail where smiles is not null")
-    String[] getAllSmiles();
+    List<String> getAllSmiles();
     
     // Batch search
     @Transactional(readOnly = true)

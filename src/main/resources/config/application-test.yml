@@ -6,7 +6,7 @@ spring:
       indent-output: true
   sql:
     init:
-      mode: always
+      mode: ALWAYS
   datasource:
     type: com.zaxxer.hikari.HikariDataSource
     #url: jdbc:h2:mem:db;DB_CLOSE_DELAY=-1;MODE=PostgreSQL;NON_KEYWORDS=YEAR;INIT=CREATE SCHEMA IF NOT EXISTS MS\;SET SCHEMA MS
@@ -21,8 +21,8 @@ spring:
       hibernate.cache.use_query_cache: false
       hibernate.generate_statistics: false
       hibernate.default_schema: ms
-      hibernate.hbm2ddl.auto: none
-    defer-datasource-initialization: true
+    defer-datasource-initialization: false
+    hibernate.ddl-auto: none
 
 #logging
 logging:
