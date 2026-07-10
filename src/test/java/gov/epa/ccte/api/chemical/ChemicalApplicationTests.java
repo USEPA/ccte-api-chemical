@@ -9,6 +9,7 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
 import gov.epa.ccte.api.chemical.repository.ChemicalDetailRepository;
 import gov.epa.ccte.api.chemical.service.ChemicalDetailService;
+import gov.epa.ccte.api.chemical.service.SimilarSearchService;
 
 
 @SpringBootTest
@@ -17,6 +18,9 @@ class ChemicalApplicationTests {
 	
 	@MockitoBean
 	ChemicalDetailService ChemicalDetailService;
+	
+	@MockitoBean
+	SimilarSearchService similarSearchService;
 	
 	@MockitoBean
 	ChemicalDetailRepository chemicalDetailRepository;
