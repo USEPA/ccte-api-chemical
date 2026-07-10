@@ -33,10 +33,10 @@ public class SimilarSearchService {
     private void populateCache() {
         Map<String, String> newCanonicalToOriginal = new ConcurrentHashMap<>();
         Map<String, IndigoObject> newCanonicalToIndigo = new ConcurrentHashMap<>();
-        String[] smilesList = detailRepository.getAllSmiles();
+        var smilesList = detailRepository.getAllSmiles();
         // Use ThreadLocal Indigo for thread safety in parallel
         ThreadLocal<Indigo> threadLocalIndigo = ThreadLocal.withInitial(Indigo::new);
-        java.util.Arrays.stream(smilesList)
+        smilesList.stream()
             .parallel()
             .filter(smiles -> smiles != null)
             .forEach(smiles -> {

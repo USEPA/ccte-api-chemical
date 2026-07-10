@@ -16,7 +16,6 @@
 	<properties>
 		<java.version>17</java.version>
 		<testcontainers.version>1.17.6</testcontainers.version>
-		<lombok.version>1.18.32</lombok.version>
 		<mapstruct.version>1.5.3.Final</mapstruct.version>
 		<sentry.version>8.18.0</sentry.version>
         
@@ -46,7 +45,6 @@
 		<dependency>
 			<groupId>org.postgresql</groupId>
 			<artifactId>postgresql</artifactId>
-			<version>42.7.7</version>
 			<scope>runtime</scope>
 		</dependency>
 		<dependency>
@@ -132,7 +130,6 @@
 		<dependency>
 			<groupId>com.fasterxml.jackson.datatype</groupId>
 			<artifactId>jackson-datatype-hibernate6</artifactId>
-			<version>2.15.2</version>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
