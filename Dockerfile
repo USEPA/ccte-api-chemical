@@ -8,7 +8,7 @@ ARG APP_SERVER_ENVIRONMENT
 ## Copy over the app files
 COPY . /build/
 
-RUN mvn -Denvironment=${APP_SERVER_ENVIRONMENT} -f pom.xml clean package -DskipTests
+RUN --mount=type=cache,target=/root/.m2 mvn -Denvironment=${APP_SERVER_ENVIRONMENT} -f pom.xml clean package -DskipTests
 
 ##################
 # Deploy

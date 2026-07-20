@@ -51,9 +51,10 @@ public class ChemicalDetailResource implements ChemicalDetailApi {
     }
     
     public List<Compact> detailBySmiles(String smiles) {
-        log.debug("SMILES = {}", java.net.URLDecoder.decode(smiles, java.nio.charset.StandardCharsets.UTF_8));
+        final String decodedSmiles = java.net.URLDecoder.decode(smiles, java.nio.charset.StandardCharsets.UTF_8);
+        log.debug("SMILES raw= {}, urldecoded= {}", smiles, decodedSmiles);
 
-        List<Compact> data = similarSearchService.similarSearch(smiles);
+        List<Compact> data = similarSearchService.searchBySmiles(smiles);
         
         return data;
 
