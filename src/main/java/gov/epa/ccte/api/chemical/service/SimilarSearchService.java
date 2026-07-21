@@ -6,6 +6,8 @@ import com.epam.indigo.IndigoInchi;
 
 import gov.epa.ccte.api.chemical.projection.chemicaldetail.Compact;
 import gov.epa.ccte.api.chemical.repository.ChemicalDetailRepository;
+import gov.epa.ccte.api.chemical.web.rest.errors.UnparseableSmilesException;
+import java.util.Collections;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.List;
@@ -18,7 +20,6 @@ public class SimilarSearchService {
 
     private final ChemicalDetailRepository detailRepository;
 
-    // Caches for canonical SMILES and IndigoObjects
     public SimilarSearchService(ChemicalDetailRepository detailRepository) {
         this.detailRepository = detailRepository;
     }
@@ -37,8 +38,7 @@ public class SimilarSearchService {
 
             return detailRepository.findByInchikey(inchiKey);
         } catch (IndigoException e) {
-            log.error("Error parsing SMILES: " + e.getMessage());
-            return null;
+            throw new UnparseableSmilesException(smiles, e);
         }
 
     }
