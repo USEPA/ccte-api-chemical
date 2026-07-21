@@ -28,6 +28,7 @@ import gov.epa.ccte.api.chemical.projection.chemicaldetail.*;
 import gov.epa.ccte.api.chemical.repository.ChemicalDetailRepository;
 import gov.epa.ccte.api.chemical.service.ChemicalDetailService;
 import gov.epa.ccte.api.chemical.service.SimilarSearchService;
+import gov.epa.ccte.api.chemical.web.rest.errors.UnparseableSmilesException;
 import gov.epa.ccte.api.chemical.web.rest.requests.Page;
 
 import java.util.*;
@@ -1017,8 +1018,8 @@ public class ChemicalDetailResourceTest {
 
     @Test
     public void findDetailsBySmilesWithBPA_shouldReturnProperResults() throws Exception {
-        final String smiles = "CC(C)(C1=CC=C(O)C=C1)C1=CC=C(O)C=C1";
-        final List<Compact> serviceResult = Collections.singletonList(compact);
+        final var smiles = "CC(C)(C1=CC=C(O)C=C1)C1=CC=C(O)C=C1";
+        final var serviceResult = Collections.singletonList(compact);
 
         when(similarSearchService.searchBySmiles(smiles)).thenReturn(serviceResult);
 
@@ -1034,8 +1035,8 @@ public class ChemicalDetailResourceTest {
 
     @Test
     public void findDetailsWithMessySmiles_shouldReturnEmptyList() throws Exception {
-        final String smiles = "[O+]#[C-][Fe]([C-]#[O+])[C-]#[O+].Cc1ccc(C(C)=O)cc1";
-        final List<Compact> serviceResult = Collections.emptyList();
+        final var smiles = "[O+]#[C-][Fe]([C-]#[O+])[C-]#[O+].Cc1ccc(C(C)=O)cc1";
+        final var serviceResult = Collections.<Compact>emptyList();
 
         when(similarSearchService.searchBySmiles(smiles)).thenReturn(serviceResult);
 
@@ -1047,6 +1048,23 @@ public class ChemicalDetailResourceTest {
         result.andDo(MockMvcResultHandlers.print())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$", hasSize(0)));
+    }
+
+    @Test
+    public void findDetailsWithBadSmiles_shouldReturnBadRequest() throws Exception {
+        final var smiles = "OU812";
+        final var serviceResult = new UnparseableSmilesException(smiles, new RuntimeException("reason"));
+
+        when(similarSearchService.searchBySmiles(smiles))
+                .thenThrow(serviceResult);
+
+        var result = mockMvc.perform(get("/chemical/detail/search/by-smiles/")
+                .param("smiles", smiles)
+                .accept(MediaType.APPLICATION_JSON_VALUE)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+        );
+        result.andDo(MockMvcResultHandlers.print())
+                .andExpect(status().isBadRequest());
     }
 
 }
