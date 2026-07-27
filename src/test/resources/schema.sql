@@ -17,7 +17,7 @@ create table if not exists ms.chemical_details
     cpdata_count                       bigint,
     mol_formula                        varchar(255),
     monoisotopic_mass                  double precision,
-    percent_assays                     numeric,
+    percent_assays                     numeric(10,2),
     pubchem_count                      integer,
     pubmed_count                       double precision,
     sources_count                      bigint,
