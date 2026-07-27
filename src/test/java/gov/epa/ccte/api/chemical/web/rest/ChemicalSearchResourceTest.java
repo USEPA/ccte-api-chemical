@@ -29,13 +29,9 @@ import gov.epa.ccte.api.chemical.projection.search.*;
 import gov.epa.ccte.api.chemical.repository.ChemicalSearchRepository;
 import gov.epa.ccte.api.chemical.service.SearchChemicalService;
 import gov.epa.ccte.api.chemical.service.SearchFormulaService;
-import jakarta.persistence.EntityManager;
 
 import java.math.BigDecimal;
 import java.util.*;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatCode;
-import org.springframework.jdbc.core.JdbcTemplate;
 
 @ActiveProfiles("test")
 @WebMvcTest(ChemicalSearchResource.class)
