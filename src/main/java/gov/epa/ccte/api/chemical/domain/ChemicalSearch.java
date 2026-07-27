@@ -4,10 +4,10 @@ import gov.epa.ccte.api.chemical.projection.search.CcdChemicalSearchResult;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
+import java.math.BigDecimal;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 
-import java.math.BigInteger;
 import java.time.Instant;
 
 @Entity
@@ -32,7 +32,7 @@ import java.time.Instant;
                         @ColumnResult(name="cpdata_count", type = Long.class),
                         @ColumnResult(name="active_assays", type = Integer.class),
                         @ColumnResult(name="total_assays", type = Integer.class),
-                        @ColumnResult(name="percent_assays", type = BigInteger.class),
+                        @ColumnResult(name="percent_assays", type = BigDecimal.class),
                         @ColumnResult(name="toxcast_select"),
                         @ColumnResult(name="monoisotopic_mass", type = Double.class),
                         @ColumnResult(name="mol_formula"),

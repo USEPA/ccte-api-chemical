@@ -3,13 +3,13 @@ package gov.epa.ccte.api.chemical.projection.search;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import jakarta.persistence.Transient;
+import java.math.BigDecimal;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.math.BigInteger;
 
 @Setter
 @Getter
@@ -69,7 +69,7 @@ public class CcdChemicalSearchResult {
     private Integer totalAssays;
 
     @JsonProperty("percentAssays")
-    private BigInteger percentAssays;
+    private BigDecimal percentAssays;
 
     @JsonProperty("toxcastSelect")
     private String toxcastSelect;
@@ -122,7 +122,7 @@ public class CcdChemicalSearchResult {
     @JsonProperty("searchWord")
     private String searchWord;
 
-    public CcdChemicalSearchResult(String dtxsid, String dtxcid, Integer genericSubstanceId, String casrn, String preferredName, Integer compoundId, Integer stereo, Integer isotope, Integer multicomponent, Integer pubchemCount, Integer pubmedCount, Integer sourcesCount, Long cpdataCount, Integer activeAssays, Integer totalAssays, BigInteger percentAssays, String toxcastSelect, Double monoisotopicMass, String molFormula, Integer qcLevel, String qcLevelDesc, Integer pubchemCid, Boolean hasStructureImage, Integer relatedSubstanceCount, Integer relatedStructureCount, String iupacName, String smiles, String inchiString, String inchikey, Double averageMass, Integer rank, String searchMatch, String searchWord) {
+    public CcdChemicalSearchResult(String dtxsid, String dtxcid, Integer genericSubstanceId, String casrn, String preferredName, Integer compoundId, Integer stereo, Integer isotope, Integer multicomponent, Integer pubchemCount, Integer pubmedCount, Integer sourcesCount, Long cpdataCount, Integer activeAssays, Integer totalAssays, BigDecimal percentAssays, String toxcastSelect, Double monoisotopicMass, String molFormula, Integer qcLevel, String qcLevelDesc, Integer pubchemCid, Boolean hasStructureImage, Integer relatedSubstanceCount, Integer relatedStructureCount, String iupacName, String smiles, String inchiString, String inchikey, Double averageMass, Integer rank, String searchMatch, String searchWord) {
         this.dtxsid = dtxsid;
         this.selected = false;
         this.dtxcid = dtxcid;
