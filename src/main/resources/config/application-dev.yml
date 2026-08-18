@@ -49,6 +49,8 @@ logging:
     org.apache.catalina: debug
     org.apache.coyote: debug
     org.apache.tomcat: debug
+	
+#test commit
 
 # server
 server:
