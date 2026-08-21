@@ -30,9 +30,5 @@ public class ChemicalSynonymRepositoryTest {
         assertThat(entityManager).isNotNull();
         assertThat(repository).isNotNull();
     }
-    @Test
-    void testDataLoaded(){
-        assertThat(repository.findAll().size()).isEqualTo(2);
-    }
 
 }

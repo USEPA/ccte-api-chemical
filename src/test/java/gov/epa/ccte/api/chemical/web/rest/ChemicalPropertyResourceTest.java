@@ -123,37 +123,11 @@ public class ChemicalPropertyResourceTest {
 				.publicSourceOriginalUrl(null)
 				.build();
 		
-//		propertyFate = projectionFactory.createProjection(ChemicalFateAll.class);
-//		propertyFate.setDtxsid("DTXSID7020182");
-//		propertyFate.setDtxcid("DTXCID30182");
-//		propertyFate.setSmiles("CC(C)(C1=CC=C(O)C=C1)C1=CC=C(O)C=C1");
-//		propertyFate.setPropName("Bioconcentration Factor");
-//		propertyFate.setDataset("exp_prop_BCF_v2.0");
-//		propertyFate.setPropValue(38.39999999999999);
-//		propertyFate.setPropUnit("L/kg");
-//		propertyFate.setPropValueId(5254636L);
-//		propertyFate.setPropValueOriginal("38.4 L/kg");
-//		propertyFate.setPropValueText(null);
-//		propertyFate.setExpDetailsTemperatureC(null);
-//		propertyFate.setExpDetailsPressureMmhg(null);
-//		propertyFate.setExpDetailsPh(null);
-//		propertyFate.setExpDetailsResponseSite("Liver");
-//		propertyFate.setExpDetailsSpeciesLatin("Oncorhynchus mykiss");
-//		propertyFate.setExpDetailsSpeciesCommon("Rainbow Trout");
-//		propertyFate.setExpDetailsSpeciesSupercategory("Fish");
-//		propertyFate.setSourceName("ECOTOX_2024_12_12");
-//		propertyFate.setSourceDescription("ECOTOX is a comprehensive Knowledgebase providing single chemical environmental toxicity data on aquatic and terrestrial species.");
-//		propertyFate.setPublicSourceName("ECOTOX_2024_12_12");
-//		propertyFate.setPublicSourceDescription("ECOTOX is a comprehensive Knowledgebase providing single chemical environmental toxicity data on aquatic and terrestrial species.");
-//		propertyFate.setPublicSourceUrl("https://cfpub.epa.gov/ecotox/index.cfm");
-//		propertyFate.setDirectUrl(null);
-//		propertyFate.setLsName("Lindholst,C., K.L. Pedersen, and S.N. Pedersen (2000)");
-//		propertyFate.setLsCitation("Lindholst,C., K.L. Pedersen, and S.N. Pedersen (2000). Estrogenic Response of Bisphenol A in Rainbow Trout (Oncorhynchus mykiss).Aquat. Toxicol.48(2/3): 87-94");
-//		propertyFate.setLsDoi(null);
-//		propertyFate.setBriefCitation(null);
-//		propertyFate.setPublicSourceOriginalName(null);
-//		propertyFate.setPublicSourceOriginalDescription(null);
-//		propertyFate.setPublicSourceOriginalUrl(null);
+		propertyFate = new ChemicalFateAllDto(
+			"Bioconcentration Factor", 
+			"{\"Value\":\"38.4 L/kg\",\"ResponseSite\":\"Liver\"}", 
+			"{\"Value\":\"43.651585 L/kg\"}"
+		);
 		
 		propertyNames = projectionFactory.createProjection(ChemicalPropertyNames.class);
 		propertyNames.setPropertyName("Androgen Receptor Agonist");
@@ -313,24 +287,27 @@ public class ChemicalPropertyResourceTest {
 	  			.andExpect(jsonPath("$[0].propName").value(propertyFate.getPropName()));
 	}
     
-//    @Test
-//	void testGetFateByBatchDtxsid() throws Exception {
-//    	final List<ChemicalFateBatchDto> properties = Collections.singletonList(propertyFate);
-//        String[] jsonArray = {"DTXSID7020182"};
-//        String jsonBody = new ObjectMapper().writeValueAsString(jsonArray);
-//        
-//    		when(experimentalRepository.findFateByDtxsidInOrderByDtxsidAsc(jsonArray)).thenReturn(properties);
-//    
-//		mockMvc.perform(post("/chemical/fate/search/by-dtxsid/")
-//				.accept(MediaType.APPLICATION_JSON)
-//				.contentType(MediaType.APPLICATION_JSON)
-//				.content(jsonBody))
-//				.andDo(MockMvcResultHandlers.print())
-//				.andExpect(status().isOk())
-//	  			.andExpect(jsonPath("$[0].propName").value(propertyFate.getPropName()))
-//               .andReturn();;
-	
-//    }
+    
+    @Test
+	void testFateBatchSearchWithInvalidJsonLogging() throws Exception {
+    	// Test that malformed JSON triggers error logging
+        String[] jsonArray = {"DTXSID7020182"};
+        // This truly invalid JSON will cause JsonProcessingException
+        String malformedJson = "[{invalid json here}]";
+        Object[] mockRow = {"DTXSID7020182", malformedJson};
+        
+        when(experimentalRepository.findFateByDtxsidInOrderByDtxsidAsc(jsonArray))
+            .thenReturn(Collections.singletonList(mockRow));
+    
+		mockMvc.perform(post("/chemical/fate/search/by-dtxsid/")
+				.accept(MediaType.APPLICATION_JSON)
+				.contentType(MediaType.APPLICATION_JSON)
+				.content(new ObjectMapper().writeValueAsString(jsonArray)))
+				.andDo(MockMvcResultHandlers.print())
+				.andExpect(status().isOk())
+	  			.andExpect(jsonPath("$[0].dtxsid").value("DTXSID7020182"))
+	  			.andExpect(jsonPath("$[0].properties").doesNotExist());
+	}
     
     // These summaries contain values from both experimental and predicted Env. Fate/transport properties
     @Test

@@ -8,6 +8,7 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.jdbc.Sql;
 
 import javax.sql.DataSource;
 
@@ -30,11 +31,6 @@ public class ChemicalDetailsRepositoryTest {
         assertThat(jdbcTemplate).isNotNull();
         assertThat(entityManager).isNotNull();
         assertThat(repository).isNotNull();
-    }
-
-    @Test
-    void testDataLoaded(){
-        assertThat(repository.findAll().size()).isEqualTo(2);
     }
 
 

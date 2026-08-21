@@ -5,7 +5,7 @@
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>3.4.8</version>
+		<version>3.5.16</version>
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>gov.epa.ccte.api</groupId>
@@ -16,8 +16,8 @@
 	<properties>
 		<java.version>17</java.version>
 		<testcontainers.version>1.17.6</testcontainers.version>
-		<lombok.version>1.18.32</lombok.version>
 		<mapstruct.version>1.5.3.Final</mapstruct.version>
+		<sentry.version>8.18.0</sentry.version>
         
 	</properties>
 	
@@ -45,7 +45,6 @@
 		<dependency>
 			<groupId>org.postgresql</groupId>
 			<artifactId>postgresql</artifactId>
-			<version>42.7.7</version>
 			<scope>runtime</scope>
 		</dependency>
 		<dependency>
@@ -131,7 +130,6 @@
 		<dependency>
 			<groupId>com.fasterxml.jackson.datatype</groupId>
 			<artifactId>jackson-datatype-hibernate6</artifactId>
-			<version>2.15.2</version>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
@@ -149,6 +147,13 @@
 			<artifactId>opsin-inchi</artifactId>
 			<version>2.8.0</version>
 		</dependency>
+		
+		<dependency>
+    		<groupId>io.sentry</groupId>
+    		<artifactId>sentry-spring-boot-starter-jakarta</artifactId>
+    	<version>${sentry.version}</version>
+		</dependency>
+		
 <!--		<dependency>-->
 <!--			<groupId>gov.epa.ccte.api</groupId>-->
 <!--			<artifactId>ccte-api-core-spring-boot-starter</artifactId>-->

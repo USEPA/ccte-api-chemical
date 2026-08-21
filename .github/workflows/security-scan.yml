@@ -1,23 +1,27 @@
-name: Application-security-scan
+name: ZAP API Scan
 
 on:
   push:
-   branches: [ "dev", "staging", "zap-scan-modification"  ]
+    branches: [ "dev", "staging", "zap-scan-modification"  ]
+  workflow_dispatch:
     
 jobs:
   security-scan:
-    runs-on: ubuntu-latest
+    runs-on: "th878"
     steps:
-     - name: Set up "x-api-key" as an environment variable
-       run: |
-        echo "x-api-key=${{ secrets.X_API_KEY }}" >> $GITHUB_ENV
-     - name: perform passive scan
-       uses: zaproxy/action-api-scan@v0.6.0
-       with:
-         token: ${{ secrets.GITHUB_TOKEN }}
-         format: openapi
-         target: 'https://ctx-api-stg.ccte.epa.gov/docs/chemical.json'
-         cmd_options: '-a'
-       env:
-         ZAP_AUTH_HEADER_VALUE: "x-api-key=${{ secrets.X_API_KEY }}"
-         
+      - name: Checkout code
+        uses: actions/checkout@v4
+        
+      - name: Set up "x-api-key" as an environment variable
+        run: |
+          echo "x-api-key=${{ secrets.X_API_KEY }}" >> $GITHUB_ENV
+          
+      - name: Perform ZAP API scan
+        uses: zaproxy/action-api-scan@v0.10.0
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          format: openapi
+          target: 'https://ctx-api-stg.ccte.epa.gov/docs/chemical.json'
+          cmd_options: '-a'
+        env:
+          ZAP_AUTH_HEADER_VALUE: "x-api-key=${{ secrets.X_API_KEY }}"

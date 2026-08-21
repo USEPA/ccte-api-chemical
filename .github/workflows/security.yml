@@ -4,8 +4,8 @@ on:
   push:
     branches: [ dev, staging ]
     tags: [ 'v*.*.*' ]
-  #schedule:
-  # - cron: '00 9 * * 1,3,5' 
+  schedule:
+    - cron: '00 9 * * 1,3,5' 
 
 jobs:
   container-scan:
@@ -27,7 +27,7 @@ jobs:
           dockerfile: Dockerfile
           output_path: ./output/chemical-report.html
           cleanup_path: /data/watchtower/ctx-API/container-results/api-chemical/chemical-report.html
-          watchtower_path: /data/watchtower/ctx-API/container-results/api-chemical/chemical-report.html
+          watchtower_path: /data/watchtower/ctx-API/container-results/api-chemical
 
   trufflehog:
     runs-on: ubuntu-latest
