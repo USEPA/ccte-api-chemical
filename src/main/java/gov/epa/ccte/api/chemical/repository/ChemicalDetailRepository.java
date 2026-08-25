@@ -7,6 +7,7 @@ import gov.epa.ccte.api.chemical.projection.chemicaldetail.Compact;
 
 import org.springframework.data.domain.Limit;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.NativeQuery;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.data.rest.core.annotation.RepositoryRestResource;
@@ -96,7 +97,7 @@ public interface ChemicalDetailRepository extends JpaRepository<ChemicalDetail, 
     @Transactional(readOnly = true)
     <T> List<T> findByIdGreaterThanAndDtxsidNotNull(Long id, Limit limit, Class<T> type);
 
-    @Query(value = """
+    @NativeQuery("""
     	    SELECT
     	        -- CcdChemicalDetails fields
     	        cd.id AS id,
@@ -183,7 +184,7 @@ public interface ChemicalDetailRepository extends JpaRepository<ChemicalDetail, 
     	         json_array_elements(json_build_array(bio.mc5_param)) AS bio_elem
     	    WHERE cd.dtxsid IN (:dtxsids)
     	    ORDER BY cd.dtxsid
-    	""", nativeQuery = true)
+    	""")
     List<CcdAssayDetails> getFullCcdAssayDetails(@Param("dtxsids") List<String> dtxsids);
 
 }

@@ -77,7 +77,7 @@ public interface ChemicalFileApi {
     @ApiResponses(value= {
             @ApiResponse(responseCode = "200", description = "OK",  content = @Content( mediaType = "application/json"))
     })
-    @RequestMapping(value = "/mol/search/by-dtxsid/{dtxsid}", method = RequestMethod.GET)
+    @GetMapping("/mol/search/by-dtxsid/{dtxsid}")
     public @ResponseBody
     ResponseEntity<String> molByDtxsid(@Parameter(required = true, description = "DSSTox Substance Identifier", example = "DTXSID7020182") @PathVariable("dtxsid") String dtxsid);
     
@@ -92,7 +92,7 @@ public interface ChemicalFileApi {
     @ApiResponses(value= {
             @ApiResponse(responseCode = "200", description = "OK",  content = @Content( mediaType = "application/json"))
     })
-    @RequestMapping(value = "/mol/search/by-dtxcid/{dtxcid}", method = RequestMethod.GET)
+    @GetMapping("/mol/search/by-dtxcid/{dtxcid}")
     public @ResponseBody
     ResponseEntity<String> molByDtxcid(@Parameter(required = true, description = "DSSTox Compound Identifier", example = "DTXCID505") @PathVariable("dtxcid") String dtxcid);
     
@@ -105,7 +105,7 @@ public interface ChemicalFileApi {
     @ApiResponses(value= {
             @ApiResponse(responseCode = "200", description = "OK",  content = @Content( mediaType = "application/json"))
     })
-    @RequestMapping(value = "/mrv/search/by-dtxsid/{dtxsid}", method = RequestMethod.GET)
+    @GetMapping("/mrv/search/by-dtxsid/{dtxsid}")
     public @ResponseBody
     ResponseEntity<String> mrvByDtxsid(@Parameter(required = true, description = "DSSTox Substance Identifier", example = "DTXSID7020182") @PathVariable("dtxsid") String dtxsid);
     
@@ -118,7 +118,7 @@ public interface ChemicalFileApi {
     @ApiResponses(value= {
             @ApiResponse(responseCode = "200", description = "OK",  content = @Content( mediaType = "application/json"))
     })
-    @RequestMapping(value = "/mrv/search/by-dtxcid/{dtxcid}", method = RequestMethod.GET)
+    @GetMapping("/mrv/search/by-dtxcid/{dtxcid}")
     public @ResponseBody
     ResponseEntity<String> mrvByDtxcid(@Parameter(required = true, description = "DSSTox Compound Identifier", example = "DTXCID505") @PathVariable("dtxcid") String dtxcid);
     
@@ -131,7 +131,7 @@ public interface ChemicalFileApi {
     @ApiResponses(value= {
             @ApiResponse(responseCode = "200", description = "OK",  content = @Content( mediaType = "application/json"))
     })
-    @RequestMapping(value = "/image/generate", method = RequestMethod.GET)
+    @GetMapping("/image/generate")
     public @ResponseBody
     ResponseEntity<byte[]> generateImageBySmiles(@Parameter(required = true, description = "SMILES String", example = "CC(C)(C1=CC=C(O)C=C1)C1=CC=C(O)C=C1")
                                                  @RequestParam(required = true, value = "smiles") String smiles,

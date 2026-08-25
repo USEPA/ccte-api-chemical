@@ -5,10 +5,11 @@ import java.util.List;
 import org.springframework.http.MediaType;
 import org.springframework.http.ProblemDetail;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import gov.epa.ccte.api.chemical.domain.ChemicalDetail;
 import gov.epa.ccte.api.chemical.projection.chemicaldetail.ChemicalDetailAll;
@@ -53,7 +54,7 @@ public interface ChemicalDetailApi {
             @ApiResponse(responseCode = "200", description = "OK",  content = @Content( mediaType = "application/json",
                     schema=@Schema(oneOf = {ChemicalDetailStandard2.class, ChemicalDetailAllIds.class}))),
     })
-	@RequestMapping(value = "/all", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	@GetMapping(value = "/all", produces = MediaType.APPLICATION_JSON_VALUE)
 	Page getAllChemicalDetails(@RequestParam(value = "next", required = false, defaultValue = "1")Long next,
      				        @Parameter(description = "Specifies if projection is used. Option: all-ids. " +
      				        "If omitted, the default ChemicalDetailStandard2 data is returned.")
@@ -71,7 +72,7 @@ public interface ChemicalDetailApi {
             @ApiResponse(responseCode = "200", description = "OK",  content = @Content( mediaType = "application/json",
                     schema=@Schema(oneOf = {ChemicalDetailStandard.class, ChemicalIdentifier.class, ChemicalStructure.class})))
     })
-    @RequestMapping(value = "/detail/search/by-dtxsid/{dtxsid}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(value = "/detail/search/by-dtxsid/{dtxsid}", produces = MediaType.APPLICATION_JSON_VALUE)
 	ChemicalDetailBase detailByDtxsid(@Parameter(required = true, description = "DSSTox Substance Identifier", example = "DTXSID7020182") @PathVariable("dtxsid") String dtxsid,
             @RequestParam(value = "projection", required = false, defaultValue = "chemicaldetailall") ChemicalDetailProjection projection);
 
@@ -87,7 +88,7 @@ public interface ChemicalDetailApi {
             @ApiResponse(responseCode = "200", description = "OK",  content = @Content( mediaType = "application/json",
                     schema=@Schema(oneOf = {Compact.class})))
     })
-    @RequestMapping(value = "/detail/search/by-smiles/", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(value = "/detail/search/by-smiles/", produces = MediaType.APPLICATION_JSON_VALUE)
 	List<Compact> detailBySmiles(@Parameter(required = true, description = "SMILES String", example = "CC(C)(C1=CC=C(O)C=C1)C1=CC=C(O)C=C1") 
 							@RequestParam(value = "smiles", required = true) String smiles);
  
@@ -105,7 +106,7 @@ public interface ChemicalDetailApi {
             @ApiResponse(responseCode = "200", description = "OK",  content = @Content( mediaType = "application/json",
                     schema=@Schema(oneOf = {ChemicalDetailStandard.class, ChemicalIdentifier.class, ChemicalStructure.class, ChemicalDetailAll.class, NtaToolkit.class})))
     })
-    @RequestMapping(value = "/detail/search/by-dtxcid/{dtxcid}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(value = "/detail/search/by-dtxcid/{dtxcid}", produces = MediaType.APPLICATION_JSON_VALUE)
 	ChemicalDetailBase detailsByDtxcid(@Parameter(required = true, description = "DSSTox Compound Identifier", example = "DTXCID505")  @PathVariable("dtxcid") String dtxcid,
             @RequestParam(value = "projection", required = false, defaultValue = "chemicaldetailall") ChemicalDetailProjection projection);
 
@@ -124,7 +125,7 @@ public interface ChemicalDetailApi {
                             examples = {@ExampleObject(value = "{\"title\":\"Validation Error\",\"status\":400,\"detail\":\"System supports requests of '200' DTXSIDs at one time, '202' are submitted.\"}", description = "Validation error for more then allowed number of dtxsid(s).")},
                             schema=@Schema(oneOf = {ProblemDetail.class})))
     })
-    @RequestMapping(value = "/detail/search/by-dtxsid/", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(value = "/detail/search/by-dtxsid/", produces = MediaType.APPLICATION_JSON_VALUE)
 	List<?> batchDtxsidSearch(@io.swagger.v3.oas.annotations.parameters.RequestBody(required = true, description = "JSON array of DSSTox Substance Identifiers",
             content = {@Content (array = @ArraySchema(schema = @Schema(implementation = String.class)),
             examples = {@ExampleObject("\"[\\\"DTXSID7020182\\\",\\\"DTXSID9020112\\\"]\"")})})
@@ -147,7 +148,7 @@ public interface ChemicalDetailApi {
                             examples = {@ExampleObject(value = "{\"title\":\"Validation Error\",\"status\":400,\"detail\":\"System supports requests of '${application.batch-size}' DTXSIDs at one time, '${application.batch-size+1}' are submitted.\"}", description = "Validation error for more then allowed number of dtxsid(s).")},
                             schema=@Schema(oneOf = {ProblemDetail.class})))
     })
-    @RequestMapping(value = "/detail/search/by-dtxcid/", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(value = "/detail/search/by-dtxcid/", produces = MediaType.APPLICATION_JSON_VALUE)
 	List<?> batchDtxcidSearch( @io.swagger.v3.oas.annotations.parameters.RequestBody(required = true, description = "JSON array of DSSTox Compound Identifiers",
             content = {@Content (array = @ArraySchema(schema = @Schema(implementation = String.class)),
             examples = {@ExampleObject("\"[\\\"DTXCID505\\\",\\\"DTXSID9020112\\\"]\"")})})

@@ -11,11 +11,12 @@ import gov.epa.ccte.api.chemical.web.rest.errors.HigherNumberOfIdsException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.*;
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.DatabindException;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.JsonMappingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.core.type.TypeReference;
+import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.json.JsonMapper;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -174,7 +175,7 @@ public class ChemicalPropertyResource implements ChemicalPropertyApi {
         if (dtxsids.length > batchSize)
             throw new HigherNumberOfIdsException(dtxsids.length, batchSize, "dtxsid");
         List<Object[]> results = experimentalRepository.findFateByDtxsidInOrderByDtxsidAsc(dtxsids);
-        ObjectMapper mapper = new ObjectMapper();
+        ObjectMapper mapper = new JsonMapper();
         List<ChemicalFateBatchDto> data = new ArrayList<>();
         for (Object[] row : results) {
             String dtxsid = (String) row[0];
@@ -185,9 +186,9 @@ public class ChemicalPropertyResource implements ChemicalPropertyApi {
                     propertiesJson,
                     new TypeReference<List<ChemicalFateBatchDto.PropertyDto>>() {}
                 );
-            } catch (JsonMappingException e) {
+            } catch (DatabindException e) {
                 log.error("Failed to map fate properties JSON for dtxsid {}: {}", dtxsid, e.getMessage(), e);
-            } catch (JsonProcessingException e) {
+            } catch (JacksonException e) {
                 log.error("Failed to process fate properties JSON for dtxsid {}: {}", dtxsid, e.getMessage(), e);
             }
             data.add(new ChemicalFateBatchDto(dtxsid, properties));

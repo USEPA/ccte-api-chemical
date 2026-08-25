@@ -27,8 +27,7 @@ public class AsyncTaskExecutorException implements AsyncTaskExecutor,
     /** {@inheritDoc} */
     @Override
     public void afterPropertiesSet() throws Exception {
-        if (executor instanceof InitializingBean) {
-            InitializingBean bean = (InitializingBean) executor;
+        if (executor instanceof InitializingBean bean) {
             bean.afterPropertiesSet();
         }
     }
@@ -36,8 +35,7 @@ public class AsyncTaskExecutorException implements AsyncTaskExecutor,
     /** {@inheritDoc} */
     @Override
     public void destroy() throws Exception {
-        if (executor instanceof DisposableBean) {
-            DisposableBean bean = (DisposableBean) executor;
+        if (executor instanceof DisposableBean bean) {
             bean.destroy();
         }
     }

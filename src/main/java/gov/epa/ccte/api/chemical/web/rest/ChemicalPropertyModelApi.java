@@ -13,7 +13,10 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 
 
@@ -34,7 +37,7 @@ public interface ChemicalPropertyModelApi {
             @ApiResponse(responseCode = "200", description = "OK",  content = @Content( mediaType = "application/json",
                     schema=@Schema(oneOf = {ModelReports.class}))),
     })
-    @RequestMapping(value = "/reports/search/by-dtxsid/{dtxsid}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(value = "/reports/search/by-dtxsid/{dtxsid}", produces = MediaType.APPLICATION_JSON_VALUE)
     List getModelReportByDtxsid(@Parameter(required = true, description = "DSSTox Substance Identifier", example = "DTXSID7020005") @PathVariable("dtxsid") String dtxsid);
 
     @Operation(summary = "Find chemical property model files by model and type ID", description = "return model files for requested model and type ID")
@@ -43,18 +46,18 @@ public interface ChemicalPropertyModelApi {
                     schema=@Schema(oneOf = {ModelFiles.class}))),
     })
 
-    @RequestMapping(value = "/file/search/", method = RequestMethod.GET)
+    @GetMapping("/file/search/")
     ResponseEntity<byte[]> getModelFileByModelIdAndTypeId(@RequestParam(value = "modelId") Integer modelId,
     														@RequestParam(value = "typeId") Integer typeId);
 
     @Operation(summary = "Find chemical property model HTML by dtxsid and model id", description = "return model html for requested dtxsid and model id")
-    @RequestMapping(value = "/reports/html/search/", method = RequestMethod.GET)
+    @GetMapping("/reports/html/search/")
     String getModelHTMLByDtxsid(@Parameter(required = true, description = "DSSTox Substance Identifier", example = "DTXSID7020005") String dtxsid,
     								  @Parameter(required = true, description = "model id", example = "1163") Long modelId);
 
     @Operation(summary = "Find chemical property model reports by dtxsid", description = "return model reports for requested dtxsid")
 
-    @RequestMapping(value = "/reports/json/search/", method = RequestMethod.GET)
+    @GetMapping("/reports/json/search/")
     String getModelJSONByDtxsid(@Parameter(required = true, description = "DSSTox Substance Identifier", example = "DTXSID7020005") String dtxsid,
 									  @Parameter(required = true, description = "model id", example = "1163") Long modelId);
 

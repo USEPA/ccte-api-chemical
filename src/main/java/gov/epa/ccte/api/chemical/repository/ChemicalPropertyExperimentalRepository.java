@@ -5,7 +5,7 @@ import gov.epa.ccte.api.chemical.dto.ChemicalFateAllDto;
 import gov.epa.ccte.api.chemical.projection.chemicalproperty.*;
 
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.jpa.repository.NativeQuery;
 import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -25,17 +25,17 @@ public interface ChemicalPropertyExperimentalRepository extends JpaRepository<Ch
     <T> List<T> findByPropNameAndPropValueBetweenOrderByDtxsidAsc(String propertyId, Double valueStart, Double valueEnd, Class<T> type);
 
 
-    @Query(value = """
+    @NativeQuery("""
 			SELECT prop_name as propertyName
 			FROM chemprop.mv_experimental_data
 			GROUP BY prop_name
-			""", nativeQuery = true)
+			""")
     List<ChemicalPropertyNames> getExperimentalPropertiesList();
     
     // *********************** Experimental - End *************************************
     // *********************** Fate - Start *************************************
     
-    @Query(value = """
+    @NativeQuery("""
     	    WITH experimentalFate AS (
     	        SELECT ex.prop_name, row_to_json(ex) AS data
     	        FROM chemprop.mv_experimental_data ex
@@ -53,11 +53,11 @@ public interface ChemicalPropertyExperimentalRepository extends JpaRepository<Ch
     	    FROM experimentalFate ef
     	    FULL OUTER JOIN predictedFate pf ON ef.prop_name = pf.prop_name
     	    GROUP BY COALESCE(ef.prop_name, pf.prop_name)
-    	    """, nativeQuery = true)
+    	    """)
     	List<ChemicalFateAllDto> findFateByDtxsid(String dtxsid);
     
     
-    @Query(value = """
+    @NativeQuery("""
     	    SELECT dtxsid,
     	           json_agg(json_build_object(
     	               'propName', prop_name,
@@ -84,7 +84,7 @@ public interface ChemicalPropertyExperimentalRepository extends JpaRepository<Ch
     	    ) sub
     	    GROUP BY dtxsid
     	    ORDER BY dtxsid ASC
-    	    """, nativeQuery = true)
+    	    """)
     	List<Object[]> findFateByDtxsidInOrderByDtxsidAsc(String[] dtxsids);
     
 }

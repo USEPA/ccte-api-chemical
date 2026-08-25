@@ -239,12 +239,12 @@ public class SearchChemicalService {
         for(Object chemical : chemicals){
             //if(chemical.getDtxsid() != null ){}
             String dtxsid = "";
-            if(chemical instanceof ChemicalSearchAll)
-                dtxsid = ((ChemicalSearchAll) chemical).getDtxsid();
-            else if (chemical instanceof CcdChemicalSearchResult)
-                dtxsid = ((CcdChemicalSearchResult) chemical).getDtxsid();
-            else if (chemical instanceof DtxsidOnly)
-                dtxsid = ((DtxsidOnly) chemical).getDtxsid();
+            if(chemical instanceof ChemicalSearchAll all)
+                dtxsid = all.getDtxsid();
+            else if (chemical instanceof CcdChemicalSearchResult result)
+                dtxsid = result.getDtxsid();
+            else if (chemical instanceof DtxsidOnly only)
+                dtxsid = only.getDtxsid();
 //            else if (chemical instanceof )
 //                dtxsid = ((DtxsidOnly) chemical).getDtxsid();
             if(!dtxsidList.contains(dtxsid)){

@@ -1,10 +1,13 @@
 package gov.epa.ccte.api.chemical.web.rest;
 
 import org.junit.jupiter.api.Test;
-import org.junit.runner.RunWith;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.junit.jupiter.api.extension.ExtendWith;
+
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.ActiveProfiles;
@@ -14,11 +17,13 @@ import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.doNothing;
 
 @ActiveProfiles("test")
+@MockitoSettings(strictness = Strictness.WARN)
 @WebMvcTest(ChemicalResource.class)
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class ChemicalResourceTest {
 
     @Autowired
@@ -44,7 +49,8 @@ public class ChemicalResourceTest {
      */
     @Test
     void testHealthCheckDatabaseAccessException() throws Exception {
-        doThrow(new DataAccessException("Database connection failed") {}).when(jdbcTemplate).execute("SELECT 1 ");
+        doThrow(new DataAccessException("Database connection failed") {
+        }).when(jdbcTemplate).execute("SELECT 1 ");
 
         mockMvc.perform(get("/chemical/health"))
                 .andDo(MockMvcResultHandlers.print())

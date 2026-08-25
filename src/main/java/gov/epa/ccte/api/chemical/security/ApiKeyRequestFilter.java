@@ -1,6 +1,8 @@
 package gov.epa.ccte.api.chemical.security;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.json.JsonMapper;
+
 import gov.epa.ccte.api.chemical.web.rest.errors.AuthorizationProblem;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -28,7 +30,7 @@ public class ApiKeyRequestFilter extends GenericFilterBean {
 
     private final ConcurrentHashMap<UUID, String> keyStore;// = new ConcurrentHashMap();
     private final ConcurrentHashMap<String, String> approvedOriginStore;// = new ConcurrentHashMap();
-    private final ObjectMapper mapper = new ObjectMapper();
+    private final ObjectMapper mapper = new JsonMapper();
     private final String keyName;
 
     public ApiKeyRequestFilter(ConcurrentHashMap<UUID, String> keyStore,

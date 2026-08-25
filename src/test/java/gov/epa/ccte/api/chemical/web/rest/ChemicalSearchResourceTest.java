@@ -4,10 +4,13 @@ import org.junit.jupiter.api.BeforeEach;
 
 //This will test REST end-points in the ChemicalSearchResource.java using WebMvcTest and MockitoBean
 import org.junit.jupiter.api.Test;
-import org.junit.runner.RunWith;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.junit.jupiter.api.extension.ExtendWith;
+
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
 import org.springframework.data.domain.Limit;
 import org.springframework.data.projection.ProjectionFactory;
 import org.springframework.data.projection.SpelAwareProxyProjectionFactory;
@@ -17,7 +20,9 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.json.JsonMapper;
+
 import static org.hamcrest.CoreMatchers.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -34,8 +39,9 @@ import java.math.BigDecimal;
 import java.util.*;
 
 @ActiveProfiles("test")
+@MockitoSettings(strictness = Strictness.WARN)
 @WebMvcTest(ChemicalSearchResource.class)
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class ChemicalSearchResourceTest {
 
     @Autowired
@@ -285,7 +291,7 @@ public class ChemicalSearchResourceTest {
     void testMsReadyByBatchDtxcid() throws Exception {
         List<String> dtxsids = Arrays.asList("DTXSID00874844", "DTXSID201151393");
         String[] dtxcidArray = {"DTXCID30182", "DTXCID90112"};
-        String jsonBody = new ObjectMapper().writeValueAsString(dtxcidArray);
+        String jsonBody = new JsonMapper().writeValueAsString(dtxcidArray);
 
         when(searchRepository.searchMsReadyByBatchDtxcid(dtxcidArray)).thenReturn(dtxsids);
 
@@ -319,7 +325,7 @@ public class ChemicalSearchResourceTest {
         Map<String, Object> jsonMap = new HashMap<>();
         jsonMap.put("error", 2);
         jsonMap.put("masses", new Double[]{12.0, 16.1});
-        String jsonBody = new ObjectMapper().writeValueAsString(jsonMap);
+        String jsonBody = new JsonMapper().writeValueAsString(jsonMap);
 
         when(searchService.getMsReadyBatchResult(any(BatchMsReadyMassForm.class))).thenReturn(dtxsids);
 

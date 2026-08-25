@@ -4,7 +4,7 @@ import gov.epa.ccte.api.chemical.domain.ChemicalSynonym;
 import gov.epa.ccte.api.chemical.projection.CcdSynonymFlatProjection;
 
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.jpa.repository.NativeQuery;
 import org.springframework.data.repository.query.Param;
 import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 import org.springframework.data.rest.core.annotation.RestResource;
@@ -25,8 +25,7 @@ public interface ChemicalSynonymRepository extends JpaRepository<ChemicalSynonym
     
     <T> List<T> findByDtxsidInAndIsPublicOrderByDtxsidAsc(Collection<String> dtxsids, Boolean isPublic, Class<T> type);
     
-    @Query(nativeQuery = true,
-    	    value = "SELECT unnest(string_to_array(valid_synonym, '|')) AS synonym, 'valid_synonym' AS quality, 1 AS rank FROM ch.v_chemical_snonyms WHERE dtxsid = :dtxsid " +
+    @NativeQuery("SELECT unnest(string_to_array(valid_synonym, '|')) AS synonym, 'valid_synonym' AS quality, 1 AS rank FROM ch.v_chemical_snonyms WHERE dtxsid = :dtxsid " +
     	            "UNION ALL " +
     	            "SELECT unnest(string_to_array(good_synonym, '|')) AS synonym, 'good_synonym' AS quality, 2 AS rank FROM ch.v_chemical_snonyms WHERE dtxsid = :dtxsid " +
     	            "UNION ALL " +
