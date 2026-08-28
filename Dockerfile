@@ -15,9 +15,9 @@ RUN --mount=type=cache,target=/root/.m2 mvn -Denvironment=${APP_SERVER_ENVIRONME
 ##################
 FROM ghcr.io/usepa/jdk-17:latest
 
-COPY --from=build /build/target/chemical-2.0-SNAPSHOT.jar /usr/local/lib/chemical-2.0-SNAPSHOT.jar
+COPY --from=build /build/target/chemical-1.2.0.jar /usr/local/lib/chemical-1.2.0.jar
 
 RUN java --version
 
-CMD ["java", "-jar", "/usr/local/lib/chemical-2.0-SNAPSHOT.jar"]
+CMD ["java", "-jar", "/usr/local/lib/chemical-1.2.0.jar"]
 
