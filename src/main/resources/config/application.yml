@@ -76,6 +76,7 @@ server:
 # ===================================================================
 
 application:
+  version: @project.version@
   api-key-name: "x-api-key"
   api-env: "Production Environment"
   api-url: "https://comptox.epa.gov/ctx-api"
