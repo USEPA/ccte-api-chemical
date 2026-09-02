@@ -24,6 +24,7 @@ jobs:
         uses: USEPA/ccte-container-scan@main
         with:
           image_name: api-chemical-security-cs
+          base-image: ghcr.io/usepa/jdk-17:latest
           dockerfile: Dockerfile
           output_path: ./output/chemical-report.html
           cleanup_path: /data/watchtower/ctx-API/container-results/api-chemical/chemical-report.html
