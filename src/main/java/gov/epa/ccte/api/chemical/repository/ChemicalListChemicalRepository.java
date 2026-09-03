@@ -4,6 +4,7 @@ import gov.epa.ccte.api.chemical.domain.ChemicalListChemical;
 import gov.epa.ccte.api.chemical.web.rest.GhsLinkResponse;
 import gov.epa.ccte.api.chemical.web.rest.WikipediaLinkResponse;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.NativeQuery;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 
@@ -18,23 +19,19 @@ public interface ChemicalListChemicalRepository extends JpaRepository<ChemicalLi
     @Query("select distinct c.listName from ChemicalListChemical c join ChemicalList l on c.listId = l.id and c.dtxsid = :dtxsid")
     List<String> getListNames(String dtxsid, String visibility);
 
-    @Query(nativeQuery = true,
-    value = " select distinct s.dtxsid from ch.v_chemical_search s join ch.v_chemical_list_chemicals_new l on l.dtxsid = s.dtxsid " +
+    @NativeQuery(" select distinct s.dtxsid from ch.v_chemical_search s join ch.v_chemical_list_chemicals_new l on l.dtxsid = s.dtxsid " +
             " where s.modified_value like :word% and upper(l.list_name) = upper(:list) ")
     List<String> startWith(String word, String list);
 
-    @Query(nativeQuery = true,
-            value = " select distinct s.dtxsid from ch.v_chemical_search s join ch.v_chemical_list_chemicals_new  l on l.dtxsid = s.dtxsid " +
+    @NativeQuery(" select distinct s.dtxsid from ch.v_chemical_search s join ch.v_chemical_list_chemicals_new  l on l.dtxsid = s.dtxsid " +
                     " where s.modified_value like %:word% and upper(l.list_name) = upper(:list) ")
     List<String> contain(String word, String list);
 
-    @Query(nativeQuery = true,
-            value = " select distinct s.dtxsid from ch.v_chemical_search s join ch.v_chemical_list_chemicals_new  l on l.dtxsid = s.dtxsid " +
+    @NativeQuery(" select distinct s.dtxsid from ch.v_chemical_search s join ch.v_chemical_list_chemicals_new  l on l.dtxsid = s.dtxsid " +
                     " where s.modified_value = :word and upper(l.list_name) = upper(:list) ")
     List<String> exact(String word, String list);
 
-    @Query(nativeQuery = true,
-    value = " select dtxsid || '-' || list_name from ch.v_chemical_list_chemicals_new  where dtxsid in (:dtxsids) and list_name in (:chemicalLists) ")
+    @NativeQuery(" select dtxsid || '-' || list_name from ch.v_chemical_list_chemicals_new  where dtxsid in (:dtxsids) and list_name in (:chemicalLists) ")
     List<String> chemicalListsAndDtxsids( List<String> chemicalLists, List<String> dtxsids);
 
 

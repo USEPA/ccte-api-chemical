@@ -5,6 +5,7 @@ import gov.epa.ccte.api.chemical.dto.ChemicalListWithDtxsidsDTO;
 import gov.epa.ccte.api.chemical.projection.chemicallist.*;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.NativeQuery;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 import org.springframework.transaction.annotation.Transactional;
@@ -41,7 +42,7 @@ public interface ChemicalListRepository extends JpaRepository<ChemicalList, Inte
     List<String> getAllTypes();
 
     @Transactional(readOnly = true)
-    @Query( nativeQuery = true, value = """
+    @NativeQuery("""
     				SELECT 
     					l.list_name as listName, 
     					l.label,
@@ -67,7 +68,7 @@ public interface ChemicalListRepository extends JpaRepository<ChemicalList, Inte
     Optional<ChemicalListWithDtxsidsDTO> getListWithDtxsidsByListName(String listName);
 
     @Transactional(readOnly = true)
-    @Query( nativeQuery = true, value = """
+    @NativeQuery("""
     				SELECT 
     					l.list_name as listName,
     					l.label, 
@@ -94,7 +95,7 @@ public interface ChemicalListRepository extends JpaRepository<ChemicalList, Inte
     List<ChemicalListWithDtxsidsDTO> getListsWithDtxsidsByType(String type);
 
     @Transactional(readOnly = true)
-    @Query( nativeQuery = true, value = """
+    @NativeQuery("""
             		SELECT 
             		    l.list_name as listName,
             		    l.label, 
@@ -118,7 +119,7 @@ public interface ChemicalListRepository extends JpaRepository<ChemicalList, Inte
     List<ChemicalListWithDtxsidsDTO> getListsWithDtxsids();
 
 	@Transactional(readOnly = true)
-	@Query(nativeQuery = true, value = """
+	@NativeQuery("""
 			    SELECT *
 			    FROM (
 			        SELECT DISTINCT ON (l.list_name)
@@ -144,7 +145,7 @@ public interface ChemicalListRepository extends JpaRepository<ChemicalList, Inte
     List<ChemicalList> getListsByDtxsid(String dtxsid);
 	
 	@Transactional(readOnly = true)
-	@Query(nativeQuery = true, value = """
+	@NativeQuery("""
 			    SELECT *
 			    FROM (
 			        SELECT DISTINCT ON (l.list_name)
@@ -164,7 +165,7 @@ public interface ChemicalListRepository extends JpaRepository<ChemicalList, Inte
 
 
     @Transactional(readOnly = true)
-    @Query( nativeQuery = true, value = """
+    @NativeQuery("""
 		    SELECT *
 		    FROM (
 		        SELECT DISTINCT ON (l.list_name)

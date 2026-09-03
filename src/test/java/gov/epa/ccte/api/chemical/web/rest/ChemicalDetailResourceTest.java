@@ -4,10 +4,13 @@ import org.junit.jupiter.api.BeforeEach;
 
 //This will test REST end-points in the ChemicalDetailResource.java using WebMvcTest and MockitoBean
 import org.junit.jupiter.api.Test;
-import org.junit.runner.RunWith;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.junit.jupiter.api.extension.ExtendWith;
+
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
 import org.springframework.data.projection.ProjectionFactory;
 import org.springframework.data.projection.SpelAwareProxyProjectionFactory;
 import org.springframework.http.MediaType;
@@ -16,7 +19,9 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.json.JsonMapper;
+
 import static org.hamcrest.CoreMatchers.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -35,8 +40,9 @@ import java.util.*;
 import static org.hamcrest.Matchers.hasSize;
 
 @ActiveProfiles("test")
+@MockitoSettings(strictness = Strictness.WARN)
 @WebMvcTest(ChemicalDetailResource.class)
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class ChemicalDetailResourceTest {
 
     @Autowired
@@ -664,7 +670,7 @@ public class ChemicalDetailResourceTest {
         final List<ChemicalDetailAll> details = Collections.singletonList(chemicalDetailAll);
         String dtxsid = "DTXSID7020182";
         String[] ids = new String[]{dtxsid};
-        String jsonBody = new ObjectMapper().writeValueAsString(ids);
+        String jsonBody = new JsonMapper().writeValueAsString(ids);
 
         when(detailService.getChemicalDetailsForBatch(ids, ChemicalDetailAll.class, "dtxsid")).thenReturn(details);
 
@@ -683,7 +689,7 @@ public class ChemicalDetailResourceTest {
         final List<CcdAssayDetails> details = Collections.singletonList(ccdAssayDetails);
         String dtxsid = "DTXSID7020182";
         String[] ids = new String[]{dtxsid};
-        String jsonBody = new ObjectMapper().writeValueAsString(ids);
+        String jsonBody = new JsonMapper().writeValueAsString(ids);
 
         when(detailService.getCcdAssayDetails(ids)).thenReturn(details);
 
@@ -703,7 +709,7 @@ public class ChemicalDetailResourceTest {
         final List<CcdChemicalDetails> details = Collections.singletonList(ccdChemicalDetails);
         String dtxsid = "DTXSID7020182";
         String[] ids = new String[]{dtxsid};
-        String jsonBody = new ObjectMapper().writeValueAsString(ids);
+        String jsonBody = new JsonMapper().writeValueAsString(ids);
 
         when(detailService.getChemicalDetailsForBatch(ids, CcdChemicalDetails.class, "dtxsid")).thenReturn(details);
 
@@ -723,7 +729,7 @@ public class ChemicalDetailResourceTest {
         final List<ChemicalDetailAll> details = Collections.singletonList(chemicalDetailAll);
         String dtxsid = "DTXSID7020182";
         String[] ids = new String[]{dtxsid};
-        String jsonBody = new ObjectMapper().writeValueAsString(ids);
+        String jsonBody = new JsonMapper().writeValueAsString(ids);
 
         when(detailService.getChemicalDetailsForBatch(ids, ChemicalDetailAll.class, "dtxsid")).thenReturn(details);
 
@@ -743,7 +749,7 @@ public class ChemicalDetailResourceTest {
         final List<ChemicalDetailStandard> details = Collections.singletonList(standard1);
         String dtxsid = "DTXSID7020182";
         String[] ids = new String[]{dtxsid};
-        String jsonBody = new ObjectMapper().writeValueAsString(ids);
+        String jsonBody = new JsonMapper().writeValueAsString(ids);
 
         when(detailService.getChemicalDetailsForBatch(ids, ChemicalDetailStandard.class, "dtxsid")).thenReturn(details);
 
@@ -762,7 +768,7 @@ public class ChemicalDetailResourceTest {
         final List<ChemicalIdentifier> details = Collections.singletonList(chemicalIdentifier);
         String dtxsid = "DTXSID7020182";
         String[] ids = new String[]{dtxsid};
-        String jsonBody = new ObjectMapper().writeValueAsString(ids);
+        String jsonBody = new JsonMapper().writeValueAsString(ids);
 
         when(detailService.getChemicalDetailsForBatch(ids, ChemicalIdentifier.class, "dtxsid")).thenReturn(details);
 
@@ -782,7 +788,7 @@ public class ChemicalDetailResourceTest {
         final List<ChemicalStructure> details = Collections.singletonList(chemicalStructure);
         String dtxsid = "DTXSID7020182";
         String[] ids = new String[]{dtxsid};
-        String jsonBody = new ObjectMapper().writeValueAsString(ids);
+        String jsonBody = new JsonMapper().writeValueAsString(ids);
 
         when(detailService.getChemicalDetailsForBatch(ids, ChemicalStructure.class, "dtxsid")).thenReturn(details);
 
@@ -802,7 +808,7 @@ public class ChemicalDetailResourceTest {
         final List<Compact> details = Collections.singletonList(compact);
         String dtxsid = "DTXSID7020182";
         String[] ids = new String[]{dtxsid};
-        String jsonBody = new ObjectMapper().writeValueAsString(ids);
+        String jsonBody = new JsonMapper().writeValueAsString(ids);
 
         when(detailService.getChemicalDetailsForBatch(ids, Compact.class, "dtxsid")).thenReturn(details);
 
@@ -822,7 +828,7 @@ public class ChemicalDetailResourceTest {
         final List<NtaToolkit> details = Collections.singletonList(ntaToolkit);
         String dtxsid = "DTXSID7020182";
         String[] ids = new String[]{dtxsid};
-        String jsonBody = new ObjectMapper().writeValueAsString(ids);
+        String jsonBody = new JsonMapper().writeValueAsString(ids);
 
         when(detailService.getChemicalDetailsForBatch(ids, NtaToolkit.class, "dtxsid")).thenReturn(details);
 
@@ -843,7 +849,7 @@ public class ChemicalDetailResourceTest {
         final List<ChemicalDetailAll> details = Collections.singletonList(chemicalDetailAll);
         String dtxcid = "DTXCID30182";
         String[] ids = new String[]{dtxcid};
-        String jsonBody = new ObjectMapper().writeValueAsString(ids);
+        String jsonBody = new JsonMapper().writeValueAsString(ids);
 
         when(detailService.getChemicalDetailsForBatch(ids, ChemicalDetailAll.class, "dtxcid")).thenReturn(details);
 
@@ -861,7 +867,7 @@ public class ChemicalDetailResourceTest {
         final List<CcdAssayDetails> details = Collections.singletonList(ccdAssayDetails);
         String dtxcid = "DTXCID30182";
         String[] ids = new String[]{dtxcid};
-        String jsonBody = new ObjectMapper().writeValueAsString(ids);
+        String jsonBody = new JsonMapper().writeValueAsString(ids);
 
         when(detailService.getCcdAssayDetails(ids)).thenReturn(details);
 
@@ -881,7 +887,7 @@ public class ChemicalDetailResourceTest {
         final List<CcdChemicalDetails> details = Collections.singletonList(ccdChemicalDetails);
         String dtxcid = "DTXCID30182";
         String[] ids = new String[]{dtxcid};
-        String jsonBody = new ObjectMapper().writeValueAsString(ids);
+        String jsonBody = new JsonMapper().writeValueAsString(ids);
 
         when(detailService.getChemicalDetailsForBatch(ids, CcdChemicalDetails.class, "dtxcid")).thenReturn(details);
 
@@ -901,7 +907,7 @@ public class ChemicalDetailResourceTest {
         final List<ChemicalDetailAll> details = Collections.singletonList(chemicalDetailAll);
         String dtxcid = "DTXCID30182";
         String[] ids = new String[]{dtxcid};
-        String jsonBody = new ObjectMapper().writeValueAsString(ids);
+        String jsonBody = new JsonMapper().writeValueAsString(ids);
 
         when(detailService.getChemicalDetailsForBatch(ids, ChemicalDetailAll.class, "dtxcid")).thenReturn(details);
 
@@ -921,7 +927,7 @@ public class ChemicalDetailResourceTest {
         final List<ChemicalDetailStandard> details = Collections.singletonList(standard1);
         String dtxcid = "DTXCID30182";
         String[] ids = new String[]{dtxcid};
-        String jsonBody = new ObjectMapper().writeValueAsString(ids);
+        String jsonBody = new JsonMapper().writeValueAsString(ids);
 
         when(detailService.getChemicalDetailsForBatch(ids, ChemicalDetailStandard.class, "dtxcid")).thenReturn(details);
 
@@ -941,7 +947,7 @@ public class ChemicalDetailResourceTest {
         final List<ChemicalIdentifier> details = Collections.singletonList(chemicalIdentifier);
         String dtxcid = "DTXCID30182";
         String[] ids = new String[]{dtxcid};
-        String jsonBody = new ObjectMapper().writeValueAsString(ids);
+        String jsonBody = new JsonMapper().writeValueAsString(ids);
 
         when(detailService.getChemicalDetailsForBatch(ids, ChemicalIdentifier.class, "dtxcid")).thenReturn(details);
 
@@ -961,7 +967,7 @@ public class ChemicalDetailResourceTest {
         final List<ChemicalStructure> details = Collections.singletonList(chemicalStructure);
         String dtxcid = "DTXCID30182";
         String[] ids = new String[]{dtxcid};
-        String jsonBody = new ObjectMapper().writeValueAsString(ids);
+        String jsonBody = new JsonMapper().writeValueAsString(ids);
 
         when(detailService.getChemicalDetailsForBatch(ids, ChemicalStructure.class, "dtxcid")).thenReturn(details);
 
@@ -981,7 +987,7 @@ public class ChemicalDetailResourceTest {
         final List<Compact> details = Collections.singletonList(compact);
         String dtxcid = "DTXCID30182";
         String[] ids = new String[]{dtxcid};
-        String jsonBody = new ObjectMapper().writeValueAsString(ids);
+        String jsonBody = new JsonMapper().writeValueAsString(ids);
 
         when(detailService.getChemicalDetailsForBatch(ids, Compact.class, "dtxcid")).thenReturn(details);
 
@@ -1001,7 +1007,7 @@ public class ChemicalDetailResourceTest {
         final List<NtaToolkit> details = Collections.singletonList(ntaToolkit);
         String dtxcid = "DTXCID30182";
         String[] ids = new String[]{dtxcid};
-        String jsonBody = new ObjectMapper().writeValueAsString(ids);
+        String jsonBody = new JsonMapper().writeValueAsString(ids);
 
         when(detailService.getChemicalDetailsForBatch(ids, NtaToolkit.class, "dtxcid")).thenReturn(details);
 

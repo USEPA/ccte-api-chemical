@@ -1,7 +1,8 @@
 package gov.epa.ccte.api.chemical.dto;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.json.JsonMapper;
 
 public class ChemicalFateAllDto {
     private String propName;
@@ -10,7 +11,7 @@ public class ChemicalFateAllDto {
 
     public ChemicalFateAllDto(String propName, String experimentalFateData, String predictedFateData) {
         this.propName = propName;
-        ObjectMapper mapper = new ObjectMapper();
+        ObjectMapper mapper = new JsonMapper();
         try {
             this.experimentalFateData = mapper.readTree(experimentalFateData);
         } catch (Exception e) {

@@ -4,11 +4,13 @@ import gov.epa.ccte.api.chemical.projection.search.CcdChemicalSearchResult;
 
 import org.springframework.data.domain.Limit;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.NativeQuery;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 import java.util.Collection;
 import java.util.List;
+
 //@SuppressWarnings("unused")
 @RepositoryRestResource(exported = false)
 public interface ChemicalSearchRepository extends JpaRepository<ChemicalSearch, Long> {
@@ -30,44 +32,44 @@ public interface ChemicalSearchRepository extends JpaRepository<ChemicalSearch, 
     List<String> getInchiKey(@Param("inchikey") String inchikey);
     // Following are defined in chemical search domain class
     
-    @Query(nativeQuery = true)
+    @NativeQuery
     List<CcdChemicalSearchResult> equalCcd(String searchWord);
     
-    @Query(nativeQuery = true)
+    @NativeQuery
     List<CcdChemicalSearchResult> containCcd(@Param("searchWord") String searchWord);
     // Advance search parameters
     
-    @Query(value = "select distinct ms_ready_dtxsid from ch.v_msready_search where mol_formula = :formula", nativeQuery = true)
+    @NativeQuery("select distinct ms_ready_dtxsid from ch.v_msready_search where mol_formula = :formula")
     List<String> searchMsReadyFormula(String formula);
 
-    @Query(value = "select distinct ms_ready_dtxsid from ch.v_msready_search where input_dtxcid = :dtxcid", nativeQuery = true)
+    @NativeQuery("select distinct ms_ready_dtxsid from ch.v_msready_search where input_dtxcid = :dtxcid")
     List<String> searchMsReadyDtxcid(String dtxcid);
 
-    @Query(value = "select distinct ms_ready_dtxsid from ch.v_msready_search where input_dtxcid in :dtxcid", nativeQuery = true)
+    @NativeQuery("select distinct ms_ready_dtxsid from ch.v_msready_search where input_dtxcid in :dtxcid")
     List<String> searchMsReadyByBatchDtxcid(String[] dtxcid);
 
-    @Query(value = "select distinct ms_ready_dtxsid from ch.v_msready_search where monoisotopic_mass between :start and :end", nativeQuery = true)
+    @NativeQuery("select distinct ms_ready_dtxsid from ch.v_msready_search where monoisotopic_mass between :start and :end")
     List<String> searchMsReadyMass(Double start, Double end);
     
-    @Query(value = "select distinct dtxsid from ch.v_chemical_details where  monoisotopic_mass between :start and :end AND is_markush is false", nativeQuery = true)
+    @NativeQuery("select distinct dtxsid from ch.v_chemical_details where  monoisotopic_mass between :start and :end AND is_markush is false")
     List<String> getMassValues(Double start, Double end);
     
-    @Query(value = "select distinct dtxsid from ch.v_chemical_details where mol_formula = :formula AND is_markush is false", nativeQuery = true)
+    @NativeQuery("select distinct dtxsid from ch.v_chemical_details where mol_formula = :formula AND is_markush is false")
     List<String> getExactFormula(String formula);
     
-    @Query(value = "select distinct dtxsid from ch.v_chemical_details where mol_formula in :formulas AND is_markush is false", nativeQuery = true)
+    @NativeQuery("select distinct dtxsid from ch.v_chemical_details where mol_formula in :formulas AND is_markush is false")
     List<String> getExactFormulaBatch(List<String> formulas);
     
-    @Query(value = "select count(distinct dtxsid) from ch.v_chemical_details where mol_formula = :formula AND is_markush is false", nativeQuery = true)
+    @NativeQuery("select count(distinct dtxsid) from ch.v_chemical_details where mol_formula = :formula AND is_markush is false")
     Long getExactFormulaCount(String formula);
     
-    @Query(value = "select distinct ms_ready_dtxsid from ch.v_msready_search where mol_formula = :formula", nativeQuery = true)
+    @NativeQuery("select distinct ms_ready_dtxsid from ch.v_msready_search where mol_formula = :formula")
     List<String> searchAllMsReadyFormula(String formula);
     
-    @Query(value = "select distinct ms_ready_dtxsid from ch.v_msready_search where mol_formula in :formulas", nativeQuery = true)
+    @NativeQuery("select distinct ms_ready_dtxsid from ch.v_msready_search where mol_formula in :formulas")
     List<String> searchAllByBatchMsReadyFormula(List<String> formulas);
     
-    @Query(value = "select count(distinct ms_ready_dtxsid) from ch.v_msready_search where mol_formula = :formula", nativeQuery = true)
+    @NativeQuery("select count(distinct ms_ready_dtxsid) from ch.v_msready_search where mol_formula = :formula")
     Long getMsReadyFormulaCount(String formula);
 
 }

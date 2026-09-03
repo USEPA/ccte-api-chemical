@@ -4,7 +4,7 @@ import gov.epa.ccte.api.chemical.domain.ChemicalPropertyPredicted;
 import gov.epa.ccte.api.chemical.projection.chemicalproperty.*;
 
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.jpa.repository.NativeQuery;
 import org.springframework.data.repository.query.Param;
 import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 import org.springframework.transaction.annotation.Transactional;
@@ -23,17 +23,17 @@ public interface ChemicalPropertyPredictedRepository extends JpaRepository<Chemi
     <T> List<T> findByPropNameAndPropValueBetweenOrderByDtxsidAsc(String propertyName, Double valueStart, Double valueEnd, Class<T> type);
 
 
-    @Query(value = """
+    @NativeQuery("""
     				SELECT prop_name as propertyName
 					FROM chemprop.mv_predicted_data
     				GROUP BY prop_name
-    				""", nativeQuery = true)
+    				""")
     List<ChemicalPropertyNames> getPredictedPropertiesList();
     
     // *********************** Predicted - End *************************************
     // *********************** Summary - start *************************************
 
-    @Query(value = """
+    @NativeQuery("""
     		WITH combined AS (
     			SELECT
     				prop_name,
@@ -70,10 +70,10 @@ public interface ChemicalPropertyPredictedRepository extends JpaRepository<Chemi
     			prop_unit AS unit
     		FROM combined
     		GROUP BY prop_name, prop_unit
-    	    """, nativeQuery = true)
+    	    """)
     	List<ChemicalPropertySummary> findSummaryByDtxsid(@Param("dtxsid")String dtxsid, @Param("propCategory")String propCategory);
     
-    @Query(value = """
+    @NativeQuery("""
     	    WITH combined AS (
     	        SELECT
     	            prop_name,
@@ -110,10 +110,10 @@ public interface ChemicalPropertyPredictedRepository extends JpaRepository<Chemi
     	        prop_unit AS unit
     	    FROM combined
     	    GROUP BY prop_name, prop_unit
-    	    """, nativeQuery = true)
+    	    """)
     	List<ChemicalPropertySummary> findSummaryByDtxsidAndPropName(@Param("dtxsid")String dtxsid, @Param("propName")String propName, @Param("propCategory")String propCategory);
     
-    @Query(value = """
+    @NativeQuery("""
     		SELECT
     		    d.source_name AS sourceName,
     		    d.source_description AS sourceDescription,
@@ -138,10 +138,10 @@ public interface ChemicalPropertyPredictedRepository extends JpaRepository<Chemi
     		WHERE
     			d.dtxsid = :dtxsid AND d.prop_name = :propName AND  d.prop_category = :propCategory AND d.prop_value IS NOT NULL
     		ORDER BY d.source_name ASC
-    				""", nativeQuery = true)
+    				""")
     List<ChemicalPropertySummaryExperimental> findExpermentalSummaryByDtxsidAndPropName(@Param("dtxsid")String dtxsid, @Param("propName")String propName, @Param("propCategory")String propCategory);
     
-    @Query(value = """
+    @NativeQuery("""
     		SELECT
     		    pd.source_name AS sourceName,
     		    pd.source_description AS sourceDescription,
@@ -174,7 +174,7 @@ public interface ChemicalPropertyPredictedRepository extends JpaRepository<Chemi
     		WHERE
     			pd.dtxsid = :dtxsid AND pd.prop_name = :propName AND  pd.prop_category = :propCategory AND pd.prop_value IS NOT NULL
             ORDER BY pd.source_name ASC
-    				""", nativeQuery = true)
+    				""")
     List<ChemicalPropertySummaryPredicted> findPredictedSummaryByDtxsidAndPropName(@Param("dtxsid")String dtxsid, @Param("propName")String propName, @Param("propCategory")String propCategory);
 
 }
