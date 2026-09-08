@@ -100,5 +100,10 @@ public class APIExceptionHandler extends ResponseEntityExceptionHandler {
         problemDetail.setDetail(detail);
         return ResponseEntity.badRequest().body(problemDetail);
     }
+    
+    @ExceptionHandler(InvalidBatchMsReadyRequestException.class)
+    ProblemDetail handleInvalidBatchMsReadyRequestException(InvalidBatchMsReadyRequestException ex) {
+        return ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, ex.getMessage());
+    }
 
 }
