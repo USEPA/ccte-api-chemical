@@ -146,7 +146,7 @@ public class ChemicalSearchResourceTest {
                 .build();
 
         form = new BatchMsReadyMassForm();
-        form.setMasses(new Double[]{12.0, 16.1});
+        form.setMasses(List.of(12.0, 16.1));
         form.setError(2);
     }
 
@@ -318,7 +318,7 @@ public class ChemicalSearchResourceTest {
         dtxsids.put(16.1, Arrays.asList());
         Map<String, Object> jsonMap = new HashMap<>();
         jsonMap.put("error", 2);
-        jsonMap.put("masses", new Double[]{12.0, 16.1});
+        jsonMap.put("masses", List.of(12.0, 16.1));
         String jsonBody = new ObjectMapper().writeValueAsString(jsonMap);
 
         when(searchService.getMsReadyBatchResult(any(BatchMsReadyMassForm.class))).thenReturn(dtxsids);
@@ -332,5 +332,86 @@ public class ChemicalSearchResourceTest {
                 .andExpect(content().string(containsString("DTXSID10846370")))
                 .andReturn();
     }
+    
+    @Test
+    void testMsReadyByBatchMassEmptyBody() throws Exception {
+        mockMvc.perform(post("/chemical/msready/search/by-mass/")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(""))
+                .andDo(MockMvcResultHandlers.print())
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.title").value("Invalid request body"))
+                .andExpect(jsonPath("$.detail").value("request body must not be empty."));
+    }
+    
+    @Test
+    void testMsReadyByBatchMassEmptyObject() throws Exception {
+        mockMvc.perform(post("/chemical/msready/search/by-mass/")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("{}"))
+                .andDo(MockMvcResultHandlers.print())
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.title").value("Constraint Violations"))
+                .andExpect(jsonPath("$.violations.masses").exists())
+                .andExpect(jsonPath("$.violations.error").exists());
+    }
+    
+    @Test
+    void testMsReadyByBatchMassEmptyMasses() throws Exception {
+        String jsonBody = """
+            {
+              "masses": [],
+              "error": 2
+            }
+            """;
+
+        mockMvc.perform(post("/chemical/msready/search/by-mass/")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(jsonBody))
+                .andDo(MockMvcResultHandlers.print())
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.title").value("Constraint Violations"))
+                .andExpect(jsonPath("$.violations.masses").value("Masses couldn't be empty"));
+    }
+    
+    @Test
+    void testMsReadyByBatchMassNullMassElement() throws Exception {
+        String jsonBody = """
+            {
+              "masses": [12.0, null],
+              "error": 2
+            }
+            """;
+
+        mockMvc.perform(post("/chemical/msready/search/by-mass/")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(jsonBody))
+                .andDo(MockMvcResultHandlers.print())
+                .andExpect(status().isBadRequest())
+                .andExpect(content().string(containsString("masses must not contain null values.")));
+    }
+    
+    @Test
+    void testMsReadyByBatchMassNullError() throws Exception {
+        String jsonBody = """
+            {
+              "masses": [12.0, 16.1],
+              "error": null
+            }
+            """;
+
+        mockMvc.perform(post("/chemical/msready/search/by-mass/")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(jsonBody))
+                .andDo(MockMvcResultHandlers.print())
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.title").value("Constraint Violations"))
+                .andExpect(jsonPath("$.violations.error").value("error value couldn't be null"));
+    }
+
+
+
+
+
 }
 
