@@ -43,7 +43,6 @@ public class BatchMsReadyMassFormTest {
         Set<ConstraintViolation<BatchMsReadyMassForm>> violations = validator.validate(form);
 
         // both error and masses are null
-        //assertThat(violations.size()).isOne();
         assertThat(violations).hasSize(1);
     }
 
@@ -56,7 +55,6 @@ public class BatchMsReadyMassFormTest {
         Set<ConstraintViolation<BatchMsReadyMassForm>> violations = validator.validate(form);
 
         // both error and masses are null
-        //assertThat(violations.size()).isOne();
         assertThat(violations).hasSize(1);
     }
     
