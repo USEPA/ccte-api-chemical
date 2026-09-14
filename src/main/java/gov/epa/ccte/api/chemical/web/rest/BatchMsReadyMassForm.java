@@ -15,8 +15,8 @@ import lombok.Setter;
 @NoArgsConstructor
 public class BatchMsReadyMassForm {
 
-    @NotEmpty(message = "Masses couldn't be empty")
+    @NotEmpty(message = "masses can't be empty")
     private List<@NotNull(message = "masses must not contain null values.") Double> masses;
-    @NotNull(message = "error value couldn't be null")
+    @NotNull(message = "error value can't be null")
     private Integer error;
 }

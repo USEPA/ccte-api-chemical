@@ -69,7 +69,7 @@ public class BatchMsReadyMassFormTest {
 
         assertThat(violations).hasSize(1);
         assertThat(violations.stream().map(ConstraintViolation::getMessage))
-                .contains("Masses couldn't be empty");
+                .contains("masses can't be empty");
     }
 
     @Test

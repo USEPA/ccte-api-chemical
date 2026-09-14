@@ -371,7 +371,7 @@ public class ChemicalSearchResourceTest {
                 .andDo(MockMvcResultHandlers.print())
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.title").value("Constraint Violations"))
-                .andExpect(jsonPath("$.violations.masses").value("Masses couldn't be empty"));
+                .andExpect(jsonPath("$.violations.masses").value("masses can't be empty"));
     }
     
     @Test
@@ -406,7 +406,7 @@ public class ChemicalSearchResourceTest {
                 .andDo(MockMvcResultHandlers.print())
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.title").value("Constraint Violations"))
-                .andExpect(jsonPath("$.violations.error").value("error value couldn't be null"));
+                .andExpect(jsonPath("$.violations.error").value("error value can't be null"));
     }
 
 
