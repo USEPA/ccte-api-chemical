@@ -17,7 +17,7 @@ import gov.epa.ccte.api.chemical.service.SearchChemicalService;
 import gov.epa.ccte.api.chemical.service.SearchFormulaService;
 import gov.epa.ccte.api.chemical.web.rest.errors.ChemicalSearchNotFoundException;
 import gov.epa.ccte.api.chemical.web.rest.errors.HigherNumberOfIdsException;
-
+import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -131,7 +131,7 @@ public class ChemicalSearchResource implements ChemicalSearchApi {
     }
     
     @Override
-    public HashMap<Double, List<String>> msReadyByBatchMass(BatchMsReadyMassForm form) {
+    public HashMap<Double, List<String>> msReadyByBatchMass(@Valid BatchMsReadyMassForm form) {
         log.debug("input masses = {} error= {} ", form.getMasses(), form.getError());
         
         return chemicalService.getMsReadyBatchResult(form);

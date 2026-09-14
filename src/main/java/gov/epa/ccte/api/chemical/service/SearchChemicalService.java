@@ -4,6 +4,7 @@ package gov.epa.ccte.api.chemical.service;
 import gov.epa.ccte.api.chemical.projection.search.*;
 import gov.epa.ccte.api.chemical.repository.ChemicalSearchRepository;
 import gov.epa.ccte.api.chemical.web.rest.BatchMsReadyMassForm;
+import gov.epa.ccte.api.chemical.web.rest.errors.InvalidBatchMsReadyRequestException;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.domain.Limit;
@@ -394,19 +395,37 @@ public class SearchChemicalService {
 
 
     public HashMap<Double, List<String>> getMsReadyBatchResult(BatchMsReadyMassForm form){
+    	
+		if (form == null) {
+			throw new InvalidBatchMsReadyRequestException("request body must not be empty.");
+		}
 
-        HashMap<Double, List<String>> result = new HashMap<>();
+		List<Double> masses = form.getMasses();
 
-        for(Double mass: form.getMasses()){
-            Double error = mass * form.getError() / 1000000;
-            Double start = mass - error;
-            Double end = mass + error;
-            log.debug("mass={} error={} cal-error={} start={} end={}",mass, form.getError(),error, start, end);
-            List<String> dtxsids = searchRepository.searchMsReadyMass(start,end);
-            result.put(mass, dtxsids);
-        }
+		if (masses == null || masses.isEmpty()) {
+			throw new InvalidBatchMsReadyRequestException("masses must not be empty.");
+		}
 
-        return result;
+		if (form.getError() == null) {
+			throw new InvalidBatchMsReadyRequestException("error must not be null.");
+		}
+
+		if (masses.stream().anyMatch(Objects::isNull)) {
+			throw new InvalidBatchMsReadyRequestException("masses must not contain null values.");
+		}
+
+		HashMap<Double, List<String>> result = new HashMap<>();
+
+		for (Double mass : masses) {
+			Double error = mass * form.getError() / 1000000;
+			Double start = mass - error;
+			Double end = mass + error;
+			log.debug("mass={} error={} cal-error={} start={} end={}", mass, form.getError(), error, start, end);
+			List<String> dtxsids = searchRepository.searchMsReadyMass(start, end);
+			result.put(mass, dtxsids);
+		}
+
+		return result;
     }
 
     public List<ChemicalSearchAll> getStartWith(String word, Integer top) {

@@ -1,5 +1,7 @@
 package gov.epa.ccte.api.chemical.web.rest;
 
+import java.util.List;
+
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
@@ -13,8 +15,8 @@ import lombok.Setter;
 @NoArgsConstructor
 public class BatchMsReadyMassForm {
 
-    @NotEmpty(message = "Array of Masses couldn't be empty")
-    private Double[] masses;
-    @NotNull(message = "error value couldn't be null")
+    @NotEmpty(message = "masses can't be empty")
+    private List<@NotNull(message = "masses must not contain null values.") Double> masses;
+    @NotNull(message = "error value can't be null")
     private Integer error;
 }

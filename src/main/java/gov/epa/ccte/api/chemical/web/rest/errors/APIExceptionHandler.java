@@ -1,6 +1,7 @@
 package gov.epa.ccte.api.chemical.web.rest.errors;
 
 import org.springframework.http.*;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.lang.NonNull;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -80,4 +81,29 @@ public class APIExceptionHandler extends ResponseEntityExceptionHandler {
         });
         return errors;
     }
+    
+    @Override
+    protected ResponseEntity<Object> handleHttpMessageNotReadable(
+            HttpMessageNotReadableException ex,
+            HttpHeaders headers,
+            HttpStatusCode status,
+            WebRequest request) {
+
+        ProblemDetail problemDetail = ProblemDetail.forStatus(HttpStatus.BAD_REQUEST);
+        problemDetail.setTitle("Invalid request body");
+
+        String detail = "Request body is malformed.";
+        if (ex.getMessage() != null && ex.getMessage().contains("Required request body is missing")) {
+            detail = "request body must not be empty.";
+        }
+
+        problemDetail.setDetail(detail);
+        return ResponseEntity.badRequest().body(problemDetail);
+    }
+    
+    @ExceptionHandler(InvalidBatchMsReadyRequestException.class)
+    ProblemDetail handleInvalidBatchMsReadyRequestException(InvalidBatchMsReadyRequestException ex) {
+        return ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, ex.getMessage());
+    }
+
 }
