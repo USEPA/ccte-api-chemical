@@ -15,6 +15,10 @@ RUN --mount=type=cache,target=/root/.m2 mvn -Denvironment=${APP_SERVER_ENVIRONME
 ##################
 FROM ghcr.io/usepa/jdk-17:latest
 
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends libfreetype6 fontconfig \
+    && rm -rf /var/lib/apt/lists/*
+
 COPY --from=build /build/target/chemical-1.2.0.jar /usr/local/lib/chemical-1.2.0.jar
 
 RUN java --version
