@@ -9,6 +9,7 @@ import org.junit.runner.RunWith;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.projection.ProjectionFactory;
 import org.springframework.data.projection.SpelAwareProxyProjectionFactory;
 import org.springframework.http.MediaType;
@@ -18,6 +19,11 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.not;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -308,6 +314,38 @@ public class ChemicalPropertyResourceTest {
 	  			.andExpect(jsonPath("$[0].dtxsid").value("DTXSID7020182"))
 	  			.andExpect(jsonPath("$[0].properties").doesNotExist());
 	}
+
+			@Test
+			void testFateBatchSearchRejectsControlCharacterInDtxsid() throws Exception {
+				String jsonBody = "[\"DTXSID7020182\\u0000\"]";
+
+				mockMvc.perform(post("/chemical/fate/search/by-dtxsid/")
+						.accept(MediaType.APPLICATION_JSON)
+						.contentType(MediaType.APPLICATION_JSON)
+						.content(jsonBody))
+						.andDo(MockMvcResultHandlers.print())
+						.andExpect(status().isBadRequest())
+						.andExpect(jsonPath("$.detail", containsString("invalid control characters")));
+
+				verify(experimentalRepository, never()).findFateByDtxsidInOrderByDtxsidAsc(any(String[].class));
+			}
+
+			@Test
+			void testFateBatchSearchReturnsBadRequestForDataIntegrityViolation() throws Exception {
+				String[] jsonArray = {"DTXSID7020182"};
+
+				when(experimentalRepository.findFateByDtxsidInOrderByDtxsidAsc(jsonArray))
+						.thenThrow(new DataIntegrityViolationException("JDBC exception executing SQL [SELECT ...]"));
+
+				mockMvc.perform(post("/chemical/fate/search/by-dtxsid/")
+						.accept(MediaType.APPLICATION_JSON)
+						.contentType(MediaType.APPLICATION_JSON)
+						.content(new ObjectMapper().writeValueAsString(jsonArray)))
+						.andDo(MockMvcResultHandlers.print())
+						.andExpect(status().isBadRequest())
+						.andExpect(jsonPath("$.detail").value("Invalid request payload. Check input values and retry."))
+						.andExpect(jsonPath("$.detail", not(containsString("SQL"))));
+			}
     
     // These summaries contain values from both experimental and predicted Env. Fate/transport properties
     @Test

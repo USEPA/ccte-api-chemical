@@ -1,5 +1,6 @@
 package gov.epa.ccte.api.chemical.web.rest.errors;
 
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.*;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.lang.NonNull;
@@ -45,6 +46,17 @@ public class APIExceptionHandler extends ResponseEntityExceptionHandler {
     ProblemDetail handleUnparseableSmilesExceptions(UnparseableSmilesException ex) {
         var problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, "Invalid SMILES string");
         return problemDetail;
+    }
+
+    @ExceptionHandler(InvalidRequestException.class)
+    ProblemDetail handleInvalidRequestException(InvalidRequestException ex) {
+        return ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, ex.getMessage());
+    }
+
+    @ExceptionHandler(DataIntegrityViolationException.class)
+    ProblemDetail handleDataIntegrityViolationException(DataIntegrityViolationException ex) {
+        return ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST,
+                "Invalid request payload. Check input values and retry.");
     }
     
 //    @ExceptionHandler(MethodArgumentNotValidException.class)
