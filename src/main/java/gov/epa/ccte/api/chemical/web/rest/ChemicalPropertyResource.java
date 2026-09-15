@@ -8,7 +8,7 @@ import gov.epa.ccte.api.chemical.projection.chemicalproperty.*;
 import gov.epa.ccte.api.chemical.repository.ChemicalPropertyExperimentalRepository;
 import gov.epa.ccte.api.chemical.repository.ChemicalPropertyPredictedRepository;
 import gov.epa.ccte.api.chemical.web.rest.errors.HigherNumberOfIdsException;
-import gov.epa.ccte.api.chemical.web.rest.errors.InvalidRequestException;
+import gov.epa.ccte.api.chemical.web.rest.errors.InvalidRequestException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.*;
@@ -68,7 +68,7 @@ public class ChemicalPropertyResource implements ChemicalPropertyApi {
 
     @Override
     public List<ChemicalPropertyExperimental> experimentalBatchSearch(String[] dtxsids) throws HigherNumberOfIdsException {
-        dtxsids = validateBatchDtxsids(dtxsids);
+        dtxsids = validateBatchDtxsids(dtxsids);
         log.debug("dtxsids = {}", dtxsids.length);
         if (dtxsids.length > batchSize)
             throw new HigherNumberOfIdsException(dtxsids.length, batchSize, "dtxsid");
@@ -109,7 +109,7 @@ public class ChemicalPropertyResource implements ChemicalPropertyApi {
 
     @Override
     public List<ChemicalPropertyPredicted> predictedBatchSearch(String[] dtxsids) throws HigherNumberOfIdsException {
-        dtxsids = validateBatchDtxsids(dtxsids);
+        dtxsids = validateBatchDtxsids(dtxsids);
         log.debug("dtxsids = {}", dtxsids.length);
         if (dtxsids.length > batchSize)
             throw new HigherNumberOfIdsException(dtxsids.length, batchSize, "dtxsid");
@@ -173,7 +173,7 @@ public class ChemicalPropertyResource implements ChemicalPropertyApi {
     
     @Override
     public List<ChemicalFateBatchDto> fateBatchSearch(String[] dtxsids) throws HigherNumberOfIdsException {
-        dtxsids = validateBatchDtxsids(dtxsids);
+        dtxsids = validateBatchDtxsids(dtxsids);
         log.debug("dtxsids = {}", dtxsids.length);
         if (dtxsids.length > batchSize)
             throw new HigherNumberOfIdsException(dtxsids.length, batchSize, "dtxsid");
@@ -184,42 +184,46 @@ public class ChemicalPropertyResource implements ChemicalPropertyApi {
             String dtxsid = (String) row[0];
             String propertiesJson = (String) row[1];
             List<ChemicalFateBatchDto.PropertyDto> properties = null;
-            try {
-                properties = mapper.readValue(
-                    propertiesJson,
-                    new TypeReference<List<ChemicalFateBatchDto.PropertyDto>>() {}
-                );
-            } catch (JsonMappingException e) {
-                log.error("Failed to map fate properties JSON for dtxsid {}: {}", dtxsid, e.getMessage(), e);
-            } catch (JsonProcessingException e) {
-                log.error("Failed to process fate properties JSON for dtxsid {}: {}", dtxsid, e.getMessage(), e);
-            }
+            try {
+                properties = mapper.readValue(
+                    propertiesJson,
+                    new TypeReference<List<ChemicalFateBatchDto.PropertyDto>>() {}
+                );
+            } catch (JsonMappingException e) {
+                log.error("Failed to map fate properties JSON for dtxsid {}: {}", dtxsid, e.getMessage(), e);
+            } catch (JsonProcessingException e) {
+                log.error("Failed to process fate properties JSON for dtxsid {}: {}", dtxsid, e.getMessage(), e);
+            }
             data.add(new ChemicalFateBatchDto(dtxsid, properties));
         }
         return data;
     }
-
-    private String[] validateBatchDtxsids(String[] dtxsids) {
-        if (dtxsids == null || dtxsids.length == 0) {
-            throw new InvalidRequestException("Request body must be a non-empty JSON array of DTXSIDs.");
-        }
-
-        String[] sanitized = new String[dtxsids.length];
-        for (int i = 0; i < dtxsids.length; i++) {
-            String dtxsid = dtxsids[i];
-            if (dtxsid == null || dtxsid.isBlank()) {
-                throw new InvalidRequestException("Request body contains empty DTXSID value(s).");
-            }
-
-            if (dtxsid.chars().anyMatch(ch -> ch == 0 || Character.isISOControl(ch))) {
-                throw new InvalidRequestException("Request body contains DTXSID value(s) with invalid control characters.");
-            }
-
-            sanitized[i] = dtxsid.trim();
-        }
-
-        return sanitized;
-    }
+
+    private String[] validateBatchDtxsids(String[] dtxsids) {
+        if (dtxsids == null || dtxsids.length == 0) {
+            throw new InvalidRequestException("Request body must be a non-empty JSON array of DTXSIDs.");
+        }
+
+        if (dtxsids.length > batchSize) {
+            throw new HigherNumberOfIdsException(dtxsids.length, batchSize, "dtxsid");
+        }
+
+        String[] sanitized = new String[dtxsids.length]
+        for (int i = 0; i < dtxsids.length; i++) {
+            String dtxsid = dtxsids[i];
+            if (dtxsid == null || dtxsid.isBlank()) {
+                throw new InvalidRequestException("Request body contains empty DTXSID value(s).");
+            }
+
+            if (dtxsid.chars().anyMatch(ch -> ch == 0 || Character.isISOControl(ch))) {
+                throw new InvalidRequestException("Request body contains DTXSID value(s) with invalid control characters.");
+            }
+
+            sanitized[i] = dtxsid.trim();
+        }
+
+        return sanitized;
+    }
     
     // *********************** Fate - end *************************************
     // *********************** Fate Summary - start *************************************
