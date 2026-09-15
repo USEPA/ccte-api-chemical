@@ -208,7 +208,7 @@ public class ChemicalPropertyResource implements ChemicalPropertyApi {
             throw new HigherNumberOfIdsException(dtxsids.length, batchSize, "dtxsid");
         }
 
-        String[] sanitized = new String[dtxsids.length]
+        String[] sanitized = new String[dtxsids.length];
         for (int i = 0; i < dtxsids.length; i++) {
             String dtxsid = dtxsids[i];
             if (dtxsid == null || dtxsid.isBlank()) {
