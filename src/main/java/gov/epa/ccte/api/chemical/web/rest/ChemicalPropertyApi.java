@@ -6,6 +6,8 @@ import gov.epa.ccte.api.chemical.dto.ChemicalFateAllDto;
 import gov.epa.ccte.api.chemical.dto.ChemicalFateBatchDto;
 import gov.epa.ccte.api.chemical.projection.chemicalproperty.*;
 import gov.epa.ccte.api.chemical.web.rest.errors.HigherNumberOfIdsException;
+import gov.epa.ccte.api.chemical.web.validation.ValidBatchSize;
+import gov.epa.ccte.api.chemical.web.validation.ValidDtxsid;
 import io.swagger.v3.oas.annotations.*;
 import io.swagger.v3.oas.annotations.media.*;
 import io.swagger.v3.oas.annotations.responses.*;
@@ -14,7 +16,6 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 
 import org.springframework.http.MediaType;
 import org.springframework.http.ProblemDetail;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -87,7 +88,8 @@ public interface ChemicalPropertyApi {
     @PostMapping(value = "chemical/property/experimental/search/by-dtxsid/", produces = MediaType.APPLICATION_JSON_VALUE)
     List<ChemicalPropertyExperimental> experimentalBatchSearch(@io.swagger.v3.oas.annotations.parameters.RequestBody(required = true, description = "JSON array of DSSTox Substance Identifiers",
             content = {@Content (array = @ArraySchema(schema = @Schema(implementation = String.class)),
-            examples = {@ExampleObject("\"[\\\"DTXSID7020182\\\",\\\"DTXSID9020112\\\"]\"")})}) @RequestBody String[] dtxsids) throws HigherNumberOfIdsException;
+            examples = {@ExampleObject("\"[\\\"DTXSID7020182\\\",\\\"DTXSID9020112\\\"]\"")})}) 
+        @RequestBody @ValidBatchSize List<@ValidDtxsid String> dtxsids) throws HigherNumberOfIdsException;
     
     // *********************** Experimental - End *************************************
     // *********************** Predicted - start *************************************
@@ -153,7 +155,8 @@ public interface ChemicalPropertyApi {
     @PostMapping(value = "chemical/property/predicted/search/by-dtxsid/", produces = MediaType.APPLICATION_JSON_VALUE)
     List<ChemicalPropertyPredicted> predictedBatchSearch(@io.swagger.v3.oas.annotations.parameters.RequestBody(required = true, description = "JSON array of DSSTox Substance Identifiers",
             content = {@Content (array = @ArraySchema(schema = @Schema(implementation = String.class)),
-            examples = {@ExampleObject("\"[\\\"DTXSID7020182\\\",\\\"DTXSID9020112\\\"]\"")})}) @RequestBody String[] dtxsids) throws HigherNumberOfIdsException;
+            examples = {@ExampleObject("\"[\\\"DTXSID7020182\\\",\\\"DTXSID9020112\\\"]\"")})}) 
+        @RequestBody @ValidBatchSize List<@ValidDtxsid String> dtxsids) throws HigherNumberOfIdsException;
     
     // *********************** Predicted - End *************************************
     // *********************** Property Summary - start *************************************
@@ -261,9 +264,11 @@ public interface ChemicalPropertyApi {
                     schema=@Schema(oneOf = {ProblemDetail.class})))
     }) 
     @PostMapping(value = "chemical/fate/search/by-dtxsid/", produces = MediaType.APPLICATION_JSON_VALUE)
-    List<ChemicalFateBatchDto> fateBatchSearch(@io.swagger.v3.oas.annotations.parameters.RequestBody(required = true, description = "JSON array of DSSTox Substance Identifier",
+    List<ChemicalFateBatchDto> fateBatchSearch(
+            @io.swagger.v3.oas.annotations.parameters.RequestBody(required = true, description = "JSON array of DSSTox Substance Identifier",
             content = {@Content (array = @ArraySchema(schema = @Schema(implementation = String.class)),
-            examples = {@ExampleObject("\"[\\\"DTXSID7020182\\\",\\\"DTXSID9020112\\\"]\"")})}) @RequestBody String[] dtxsids) throws HigherNumberOfIdsException;
+            examples = {@ExampleObject("\"[\\\"DTXSID7020182\\\",\\\"DTXSID9020112\\\"]\"")})})
+            @RequestBody @ValidBatchSize List<@ValidDtxsid String> dtxsids) throws HigherNumberOfIdsException;
     
     // *********************** Fate - End *************************************
     // *********************** Fate Summary - start *************************************

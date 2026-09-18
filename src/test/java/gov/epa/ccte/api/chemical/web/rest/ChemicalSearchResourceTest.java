@@ -340,8 +340,8 @@ public class ChemicalSearchResourceTest {
                 .content(""))
                 .andDo(MockMvcResultHandlers.print())
                 .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.title").value("Invalid request body"))
-                .andExpect(jsonPath("$.detail").value("request body must not be empty."));
+                .andExpect(jsonPath("$.title").value(Messages.INVALID_REQUEST_BODY_MSG))
+                .andExpect(jsonPath("$.detail").value(Messages.REQUEST_BODY_MUST_NOT_BE_EMPTY_MSG));
     }
     
     @Test

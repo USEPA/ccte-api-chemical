@@ -15,7 +15,7 @@ import java.util.List;
 public interface ChemicalPropertyExperimentalRepository extends JpaRepository<ChemicalPropertyExperimental, Long> {
 
     @Transactional(readOnly = true)
-    <T> List<T> findByDtxsidInOrderByDtxsidAsc(String[] dtxsids, Class<T> type);
+    <T> List<T> findByDtxsidInOrderByDtxsidAsc(List<String> dtxsids, Class<T> type);
 
     @Transactional(readOnly = true)
     <T>List<T> findByDtxsid(String dtxsid, Class<T> type);
@@ -85,6 +85,6 @@ public interface ChemicalPropertyExperimentalRepository extends JpaRepository<Ch
     	    GROUP BY dtxsid
     	    ORDER BY dtxsid ASC
     	    """, nativeQuery = true)
-    	List<Object[]> findFateByDtxsidInOrderByDtxsidAsc(String[] dtxsids);
+    	List<Object[]> findFateByDtxsidInOrderByDtxsidAsc(List<String> dtxsids);
     
 }

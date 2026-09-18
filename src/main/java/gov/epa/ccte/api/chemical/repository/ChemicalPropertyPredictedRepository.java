@@ -14,7 +14,7 @@ import java.util.List;
 @RepositoryRestResource(exported = false)
 public interface ChemicalPropertyPredictedRepository extends JpaRepository<ChemicalPropertyPredicted, Long> {
     @Transactional(readOnly = true)
-    <T> List<T> findByDtxsidInOrderByDtxsidAsc(String[] dtxsids, Class<T> type);
+    <T> List<T> findByDtxsidInOrderByDtxsidAsc(List<String> dtxsids, Class<T> type);
 
     @Transactional(readOnly = true)
     <T>List<T> findByDtxsid(String dtxsid, Class<T> type);

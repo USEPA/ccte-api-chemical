@@ -1,6 +1,6 @@
 package gov.epa.ccte.api.chemical.web.rest.errors;
 
-import org.springframework.dao.DataIntegrityViolationException;
+import jakarta.validation.ConstraintViolationException;
 import org.springframework.http.*;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.lang.NonNull;
@@ -9,7 +9,10 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.context.request.WebRequest;
+import org.springframework.web.method.annotation.HandlerMethodValidationException;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
+
+import gov.epa.ccte.api.chemical.web.rest.Messages;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -18,25 +21,25 @@ import java.util.Map;
 public class APIExceptionHandler extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler(HigherNumberOfIdsException.class)
-    ProblemDetail handleHigherNumberOfDtxsidException(HigherNumberOfIdsException ex){
+    ProblemDetail handleHigherNumberOfDtxsidException(HigherNumberOfIdsException ex) {
         return ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, ex.getMessage());
     }
 
     @ExceptionHandler(IdentifierNotFoundException.class)
-    ProblemDetail handleIdentifierNotFoundException(IdentifierNotFoundException ex){
+    ProblemDetail handleIdentifierNotFoundException(IdentifierNotFoundException ex) {
         return ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, ex.getMessage());
     }
 
     @ExceptionHandler(TypeValueNotFoundException.class)
-    ProblemDetail handleTypeValueNotFoundException(TypeValueNotFoundException ex){
+    ProblemDetail handleTypeValueNotFoundException(TypeValueNotFoundException ex) {
         return ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, ex.getMessage());
     }
 
     @ExceptionHandler(ChemicalSearchNotFoundException.class)
-    ProblemDetail handleChemicalSearchNotFoundException(ChemicalSearchNotFoundException ex){
+    ProblemDetail handleChemicalSearchNotFoundException(ChemicalSearchNotFoundException ex) {
 
         ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST,
-                String.join("\n",ex.getErrorMsgs()));
+                String.join("\n", ex.getErrorMsgs()));
         problemDetail.setProperty("suggestions", ex.getSuggestions());
 
         return problemDetail;
@@ -53,23 +56,9 @@ public class APIExceptionHandler extends ResponseEntityExceptionHandler {
         return ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, ex.getMessage());
     }
 
-    @ExceptionHandler(DataIntegrityViolationException.class)
-    ProblemDetail handleDataIntegrityViolationException(DataIntegrityViolationException ex) {
-        return ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST,
-                "Invalid request payload. Check input values and retry.");
-    }
-    
-//    @ExceptionHandler(MethodArgumentNotValidException.class)
-//    ProblemDetail handleValidationExceptions(MethodArgumentNotValidException ex){
-//        ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST,
-//                "Constraint Violation");
-//        problemDetail.setProperty("violations", extractValidationErrors(ex));
-//
-//        return problemDetail;
-//    }
-
     @Override
-    protected ResponseEntity<Object> handleMethodArgumentNotValid(@NonNull MethodArgumentNotValidException ex, @NonNull HttpHeaders headers, @NonNull HttpStatusCode status, @NonNull WebRequest request) {
+    protected ResponseEntity<Object> handleMethodArgumentNotValid(@NonNull MethodArgumentNotValidException ex,
+            @NonNull HttpHeaders headers, @NonNull HttpStatusCode status, @NonNull WebRequest request) {
 
         ProblemDetail problemDetail = ProblemDetail.forStatus(HttpStatus.BAD_REQUEST);
         problemDetail.setTitle("Constraint Violations");
@@ -77,15 +66,15 @@ public class APIExceptionHandler extends ResponseEntityExceptionHandler {
 
         return ResponseEntity.badRequest().body(problemDetail);
 
-        //return ResponseEntity.badRequest();
-        //return super.handleMethodArgumentNotValid(ex, headers, status, request);
+        // return ResponseEntity.badRequest();
+        // return super.handleMethodArgumentNotValid(ex, headers, status, request);
     }
 
     private Map<String, String> extractValidationErrors(MethodArgumentNotValidException ex) {
         Map<String, String> errors = new HashMap<>();
 
-        ex.getBindingResult().getAllErrors().forEach((error) ->{
-            if(error instanceof FieldError){
+        ex.getBindingResult().getAllErrors().forEach((error) -> {
+            if (error instanceof FieldError) {
                 String fieldName = ((FieldError) error).getField();
                 String message = error.getDefaultMessage();
                 errors.put(fieldName, message);
@@ -93,7 +82,7 @@ public class APIExceptionHandler extends ResponseEntityExceptionHandler {
         });
         return errors;
     }
-    
+
     @Override
     protected ResponseEntity<Object> handleHttpMessageNotReadable(
             HttpMessageNotReadableException ex,
@@ -102,20 +91,57 @@ public class APIExceptionHandler extends ResponseEntityExceptionHandler {
             WebRequest request) {
 
         ProblemDetail problemDetail = ProblemDetail.forStatus(HttpStatus.BAD_REQUEST);
-        problemDetail.setTitle("Invalid request body");
+        problemDetail.setTitle(Messages.INVALID_REQUEST_BODY_MSG);
 
-        String detail = "Request body is malformed.";
+        String detail = Messages.MALFORMED_REQUEST_BODY_MSG;
         if (ex.getMessage() != null && ex.getMessage().contains("Required request body is missing")) {
-            detail = "request body must not be empty.";
+            detail = Messages.REQUEST_BODY_MUST_NOT_BE_EMPTY_MSG;
         }
 
         problemDetail.setDetail(detail);
         return ResponseEntity.badRequest().body(problemDetail);
     }
-    
+
     @ExceptionHandler(InvalidBatchMsReadyRequestException.class)
     ProblemDetail handleInvalidBatchMsReadyRequestException(InvalidBatchMsReadyRequestException ex) {
         return ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, ex.getMessage());
+    }
+
+    @ExceptionHandler(ConstraintViolationException.class)
+    public ProblemDetail handleConstraintViolation(ConstraintViolationException ex) {
+
+        final var problem = ProblemDetail.forStatusAndDetail(
+                HttpStatus.BAD_REQUEST,
+                Messages.REQUEST_BODY_FAILED_VALIDATION_MSG);
+        problem.setTitle(Messages.VALIDATION_FAILURE_MSG);
+
+        final var errors = ex.getConstraintViolations().stream()
+                .map(violation -> violation.getMessage())
+                .toList();
+
+        problem.setProperty("violations", errors);
+
+        return problem;
+    }
+
+    @Override
+    protected ResponseEntity<Object> handleHandlerMethodValidationException(
+            HandlerMethodValidationException ex,
+            HttpHeaders headers,
+            HttpStatusCode status,
+            WebRequest request) {
+
+        ProblemDetail problem = ProblemDetail.forStatus(HttpStatus.BAD_REQUEST);
+        problem.setTitle(Messages.VALIDATION_FAILURE_MSG);
+        problem.setDetail(Messages.VALIDATION_FAILURE_MSG);
+
+        var errors = ex.getAllErrors().stream()
+                .map(error -> error.getDefaultMessage())
+                .toList();
+
+        problem.setProperty("violations", errors);
+
+        return ResponseEntity.badRequest().body(problem);
     }
 
 }
