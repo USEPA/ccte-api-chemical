@@ -18,6 +18,9 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -25,7 +28,6 @@ import static org.mockito.Mockito.when;
 
 import gov.epa.ccte.api.chemical.domain.ChemicalPropertyPredicted;
 import gov.epa.ccte.api.chemical.dto.ChemicalFateAllDto;
-import gov.epa.ccte.api.chemical.dto.ChemicalFateBatchDto;
 import gov.epa.ccte.api.chemical.domain.ChemicalPropertyExperimental;
 import gov.epa.ccte.api.chemical.projection.chemicalproperty.*;
 import gov.epa.ccte.api.chemical.repository.ChemicalPropertyExperimentalRepository;
@@ -34,6 +36,7 @@ import gov.epa.ccte.api.chemical.repository.ChemicalPropertyPredictedRepository;
 
 import java.time.LocalDateTime;
 import java.util.*;
+import static org.mockito.ArgumentMatchers.eq;
 
 @ActiveProfiles("test")
 @WebMvcTest(ChemicalPropertyResource.class)
@@ -308,6 +311,42 @@ public class ChemicalPropertyResourceTest {
 	  			.andExpect(jsonPath("$[0].dtxsid").value("DTXSID7020182"))
 	  			.andExpect(jsonPath("$[0].properties").doesNotExist());
 	}
+
+    @Test
+    void testFateBatchSearchInvalidDtxsidReturnsSimpleDetail() throws Exception {
+        mockMvc.perform(post("/chemical/fate/search/by-dtxsid/")
+                .accept(MediaType.APPLICATION_JSON)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("[\"DTXSID7020182\", \"DTXSID9020112\\u0000\"]"))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.detail").value("Invalid DTXSID format."));
+
+        verify(experimentalRepository, never()).findFateByDtxsidInOrderByDtxsidAsc(any(String[].class));
+    }
+    
+    @Test
+    void testPredictedPropertyBatchSearchInvalidDtxsidReturnsSimpleDetail() throws Exception {
+        mockMvc.perform(post("/chemical/property/predicted/search/by-dtxsid/")
+                .accept(MediaType.APPLICATION_JSON)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("[\"DTXSID7020182\", \"DTXSID9020112\\u0000\"]"))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.detail").value("Invalid DTXSID format."));
+
+        verify(predictedRepository, never()).findByDtxsidInOrderByDtxsidAsc(any(String[].class), eq(ChemicalPropertyPredicted.class));
+    }
+    
+    @Test
+    void testExperimentalPropertyBatchSearchInvalidDtxsidReturnsSimpleDetail() throws Exception {
+        mockMvc.perform(post("/chemical/property/experimental/search/by-dtxsid/")
+                .accept(MediaType.APPLICATION_JSON)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("[\"DTXSID7020182\", \"DTXSID9020112\\u0000\"]"))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.detail").value("Invalid DTXSID format."));
+
+        verify(experimentalRepository, never()).findByDtxsidInOrderByDtxsidAsc(any(String[].class), eq(ChemicalPropertyExperimental.class));
+    }
     
     // These summaries contain values from both experimental and predicted Env. Fate/transport properties
     @Test

@@ -11,17 +11,20 @@ import io.swagger.v3.oas.annotations.media.*;
 import io.swagger.v3.oas.annotations.responses.*;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
 
 import org.springframework.http.MediaType;
 import org.springframework.http.ProblemDetail;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import org.springframework.validation.annotation.Validated;
 
 @Tag(name = "Chemical Property Resource", 
 description = "Collection of endpoints for experimental and predictive chemical properties. This curated data is sourced from the US EPA's Distributed Structure-Searchable Toxicity (DSSTox) database and the Toxicity Estimation Software Tool (TEST) suite of QSAR models.")
 @SecurityRequirement(name = "api_key")
+@Validated
 public interface ChemicalPropertyApi {
 
 	 // *********************** Experimental - start *************************************
@@ -87,7 +90,7 @@ public interface ChemicalPropertyApi {
     @PostMapping(value = "chemical/property/experimental/search/by-dtxsid/", produces = MediaType.APPLICATION_JSON_VALUE)
     List<ChemicalPropertyExperimental> experimentalBatchSearch(@io.swagger.v3.oas.annotations.parameters.RequestBody(required = true, description = "JSON array of DSSTox Substance Identifiers",
             content = {@Content (array = @ArraySchema(schema = @Schema(implementation = String.class)),
-            examples = {@ExampleObject("\"[\\\"DTXSID7020182\\\",\\\"DTXSID9020112\\\"]\"")})}) @RequestBody String[] dtxsids) throws HigherNumberOfIdsException;
+            examples = {@ExampleObject("\"[\\\"DTXSID7020182\\\",\\\"DTXSID9020112\\\"]\"")})}) @RequestBody @NotEmpty List<@ValidDTXSID @NotNull String> dtxsids) throws HigherNumberOfIdsException;
     
     // *********************** Experimental - End *************************************
     // *********************** Predicted - start *************************************
@@ -153,7 +156,7 @@ public interface ChemicalPropertyApi {
     @PostMapping(value = "chemical/property/predicted/search/by-dtxsid/", produces = MediaType.APPLICATION_JSON_VALUE)
     List<ChemicalPropertyPredicted> predictedBatchSearch(@io.swagger.v3.oas.annotations.parameters.RequestBody(required = true, description = "JSON array of DSSTox Substance Identifiers",
             content = {@Content (array = @ArraySchema(schema = @Schema(implementation = String.class)),
-            examples = {@ExampleObject("\"[\\\"DTXSID7020182\\\",\\\"DTXSID9020112\\\"]\"")})}) @RequestBody String[] dtxsids) throws HigherNumberOfIdsException;
+            examples = {@ExampleObject("\"[\\\"DTXSID7020182\\\",\\\"DTXSID9020112\\\"]\"")})}) @RequestBody @NotEmpty List<@ValidDTXSID @NotNull String> dtxsids) throws HigherNumberOfIdsException;
     
     // *********************** Predicted - End *************************************
     // *********************** Property Summary - start *************************************
@@ -263,7 +266,7 @@ public interface ChemicalPropertyApi {
     @PostMapping(value = "chemical/fate/search/by-dtxsid/", produces = MediaType.APPLICATION_JSON_VALUE)
     List<ChemicalFateBatchDto> fateBatchSearch(@io.swagger.v3.oas.annotations.parameters.RequestBody(required = true, description = "JSON array of DSSTox Substance Identifier",
             content = {@Content (array = @ArraySchema(schema = @Schema(implementation = String.class)),
-            examples = {@ExampleObject("\"[\\\"DTXSID7020182\\\",\\\"DTXSID9020112\\\"]\"")})}) @RequestBody String[] dtxsids) throws HigherNumberOfIdsException;
+            examples = {@ExampleObject("\"[\\\"DTXSID7020182\\\",\\\"DTXSID9020112\\\"]\"")})}) @RequestBody @NotEmpty List<@ValidDTXSID @NotNull String> dtxsids) throws HigherNumberOfIdsException;
     
     // *********************** Fate - End *************************************
     // *********************** Fate Summary - start *************************************

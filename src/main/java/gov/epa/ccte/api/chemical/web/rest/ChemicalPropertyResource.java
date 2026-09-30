@@ -66,11 +66,11 @@ public class ChemicalPropertyResource implements ChemicalPropertyApi {
 
 
     @Override
-    public List<ChemicalPropertyExperimental> experimentalBatchSearch(String[] dtxsids) throws HigherNumberOfIdsException {
-        log.debug("dtxsids = {}", dtxsids.length);
-        if (dtxsids.length > batchSize)
-            throw new HigherNumberOfIdsException(dtxsids.length, batchSize, "dtxsid");
-        List<ChemicalPropertyExperimental> data = experimentalRepository.findByDtxsidInOrderByDtxsidAsc(dtxsids, ChemicalPropertyExperimental.class);
+    public List<ChemicalPropertyExperimental> experimentalBatchSearch(List<String> dtxsids) throws HigherNumberOfIdsException {
+        log.debug("dtxsids = {}", dtxsids.size());
+        if (dtxsids.size() > batchSize)
+            throw new HigherNumberOfIdsException(dtxsids.size(), batchSize, "dtxsid");
+        List<ChemicalPropertyExperimental> data = experimentalRepository.findByDtxsidInOrderByDtxsidAsc(dtxsids.toArray(String[]::new), ChemicalPropertyExperimental.class);
         
         return data;
     }
@@ -106,11 +106,11 @@ public class ChemicalPropertyResource implements ChemicalPropertyApi {
 
 
     @Override
-    public List<ChemicalPropertyPredicted> predictedBatchSearch(String[] dtxsids) throws HigherNumberOfIdsException {
-        log.debug("dtxsids = {}", dtxsids.length);
-        if (dtxsids.length > batchSize)
-            throw new HigherNumberOfIdsException(dtxsids.length, batchSize, "dtxsid");
-        List<ChemicalPropertyPredicted> data = predictedRepository.findByDtxsidInOrderByDtxsidAsc(dtxsids, ChemicalPropertyPredicted.class);
+    public List<ChemicalPropertyPredicted> predictedBatchSearch(List<String> dtxsids) throws HigherNumberOfIdsException {
+        log.debug("dtxsids = {}", dtxsids.size());
+        if (dtxsids.size() > batchSize)
+            throw new HigherNumberOfIdsException(dtxsids.size(), batchSize, "dtxsid");
+        List<ChemicalPropertyPredicted> data = predictedRepository.findByDtxsidInOrderByDtxsidAsc(dtxsids.toArray(String[]::new), ChemicalPropertyPredicted.class);
         
         return data;
     }
@@ -169,11 +169,11 @@ public class ChemicalPropertyResource implements ChemicalPropertyApi {
     }
     
     @Override
-    public List<ChemicalFateBatchDto> fateBatchSearch(String[] dtxsids) throws HigherNumberOfIdsException {
-        log.debug("dtxsids = {}", dtxsids.length);
-        if (dtxsids.length > batchSize)
-            throw new HigherNumberOfIdsException(dtxsids.length, batchSize, "dtxsid");
-        List<Object[]> results = experimentalRepository.findFateByDtxsidInOrderByDtxsidAsc(dtxsids);
+    public List<ChemicalFateBatchDto> fateBatchSearch(List<String> dtxsids) throws HigherNumberOfIdsException {
+        log.debug("dtxsids = {}", dtxsids.size());
+        if (dtxsids.size() > batchSize)
+            throw new HigherNumberOfIdsException(dtxsids.size(), batchSize, "dtxsid");
+        List<Object[]> results = experimentalRepository.findFateByDtxsidInOrderByDtxsidAsc(dtxsids.toArray(String[]::new));
         ObjectMapper mapper = new ObjectMapper();
         List<ChemicalFateBatchDto> data = new ArrayList<>();
         for (Object[] row : results) {
