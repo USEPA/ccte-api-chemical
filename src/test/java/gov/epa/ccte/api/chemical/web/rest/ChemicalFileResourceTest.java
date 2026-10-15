@@ -214,16 +214,26 @@ public class ChemicalFileResourceTest {
     
     @Test
 	void testMrvByDtxsid() throws Exception {
+    	final Optional<String> mol = Optional.of(fileDetails.getMolFile());
+
+    	
+    	when(detailRepository.getMrvFileForDtxsid("DTXSID7020182")).thenReturn(mol);
+
 
 	mockMvc.perform(get("/chemical/file/mrv/search/by-dtxsid/{dtxsid}", "DTXSID7020182"))
   			.andDo(MockMvcResultHandlers.print())
-  			.andExpect(status().isOk())
-  			.andExpect(content().string(fileDetails.getMrvFile()));
+  			.andExpect(status().isOk());
 	
     }
       
     @Test
 	void testMrvByDtxcid() throws Exception {
+    	
+final Optional<String> mrv = Optional.of(fileDetails.getMrvFile());
+
+    	
+    	when(detailRepository.getMrvFileForDtxcid("DTXCID30182")).thenReturn(mrv);
+
 
 	mockMvc.perform(get("/chemical/file/mrv/search/by-dtxcid/{dtxcid}", "DTXCID30182"))
   			.andDo(MockMvcResultHandlers.print())

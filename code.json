@@ -1,5 +1,5 @@
 {
-    "version": "2.0.0",
+    "version": "1.2.0",
     "agency": "Environmental Protection Agency",
     "releases": [
       {
@@ -36,7 +36,7 @@
         },
         "date": {
           "created": "2025-04-15",
-          "lastModified": "2025-04-15"
+          "lastModified": "2026-08-25"
         },
         "laborHours": 0
       }

@@ -1,6 +1,7 @@
 package gov.epa.ccte.api.chemical.datatest;
 
 import gov.epa.ccte.api.chemical.domain.ChemicalList;
+import gov.epa.ccte.api.chemical.repository.ChemicalListChemicalRepository;
 import gov.epa.ccte.api.chemical.repository.ChemicalListRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -8,6 +9,7 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.jdbc.Sql;
 
 import javax.sql.DataSource;
 
@@ -15,6 +17,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @DataJpaTest
 @ActiveProfiles("test")
+@Sql({"/schema.sql","/data.sql"})
 public class ChemicalListRepositoryTest {
 
     @Autowired
@@ -22,6 +25,7 @@ public class ChemicalListRepositoryTest {
     @Autowired private JdbcTemplate jdbcTemplate;
     @Autowired private TestEntityManager entityManager;
     @Autowired private ChemicalListRepository repository;
+    @Autowired private ChemicalListChemicalRepository chemicalListChemicalRepository;
 
     @Test
     void injectedComponentsAreNotNull(){
@@ -29,21 +33,22 @@ public class ChemicalListRepositoryTest {
         assertThat(jdbcTemplate).isNotNull();
         assertThat(entityManager).isNotNull();
         assertThat(repository).isNotNull();
+        assertThat(chemicalListChemicalRepository).isNotNull();
     }
 
     @Test
     void testDataLoaded(){
-        assertThat(repository.findAll().size()).isEqualTo(2);
+        assertThat(repository.findAll().size()).isEqualTo(10);
     }
 
     @Test
     void testFindByVisibilityOrderByListNameAsc(){
-        assertThat(repository.findAllOrderByTypeAscAndListNameAsc(ChemicalList.class).size()).isEqualTo(2);
+        assertThat(repository.findAllOrderByTypeAscAndListNameAsc(ChemicalList.class).size()).isEqualTo(4);
     }
 
     @Test
     void testFindByType(){
-        assertThat(repository.findByTypeIgnoreCaseOrderByListNameAsc("federal", ChemicalList.class).size()).isEqualTo(1);
+        assertThat(repository.findByTypeIgnoreCaseOrderByListNameAsc("federal", ChemicalList.class).size()).isEqualTo(3);
     }
 
 

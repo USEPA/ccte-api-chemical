@@ -40,6 +40,12 @@ public class APIExceptionHandler extends ResponseEntityExceptionHandler {
         return problemDetail;
     }
 
+    @ExceptionHandler(UnparseableSmilesException.class)
+    ProblemDetail handleUnparseableSmilesExceptions(UnparseableSmilesException ex) {
+        var problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, "Invalid SMILES string");
+        return problemDetail;
+    }
+    
 //    @ExceptionHandler(MethodArgumentNotValidException.class)
 //    ProblemDetail handleValidationExceptions(MethodArgumentNotValidException ex){
 //        ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST,

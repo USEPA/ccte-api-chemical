@@ -1,6 +1,9 @@
 CREATE SCHEMA IF NOT EXISTS ms;
 SET SCHEMA ms;
 
+-- Ensure 'ch' schema exists for test objects referenced with schema-qualified names
+CREATE SCHEMA IF NOT EXISTS ch;
+
 create table if not exists ms.chemical_details
 (
     h_chem_hash_key                    varchar(64),
@@ -14,7 +17,7 @@ create table if not exists ms.chemical_details
     cpdata_count                       bigint,
     mol_formula                        varchar(255),
     monoisotopic_mass                  double precision,
-    percent_assays                     numeric,
+    percent_assays                     numeric(10,2),
     pubchem_count                      integer,
     pubmed_count                       double precision,
     sources_count                      bigint,
@@ -81,7 +84,14 @@ create table if not exists ms.chemical_details
     is_markush                         integer
 );
 
-create table ms.chemical_search
+-- Provide a view in schema 'ch' that exposes chemical details for code expecting ch.v_chemical_details
+-- Create a view ch.v_chemical_details that includes an 'id' column required by the JPA entity.
+-- Use a deterministic row number as a synthetic id for test data.
+CREATE OR REPLACE VIEW ch.v_chemical_details AS
+SELECT ROW_NUMBER() OVER (ORDER BY dtxsid, dtxcid) AS id, md.*
+FROM ms.chemical_details md;
+
+create table if not exists ms.chemical_search
 (
     id                  integer  not null,
     dtxsid              varchar(20),
@@ -100,7 +110,7 @@ create table ms.chemical_search
     created_at          timestamp  default now()
 );
 
-create table ms.chemical_properties
+create table if not exists ms.chemical_properties
 (
     id          integer    not null,
     dtxsid      varchar(45),
@@ -116,7 +126,7 @@ create table ms.chemical_properties
     property_id varchar(300)
 );
 
-create table ms.fate
+create table if not exists ms.fate
 (
     id            integer not null,
     dtxsid        varchar(45),
@@ -133,7 +143,7 @@ create table ms.fate
     created_at    timestamp   default now()
 );
 
-create table ms.chemical_lists
+create table if not exists ms.chemical_lists
 (
     id                 integer  not null,
     list_name          varchar(255),
@@ -150,7 +160,26 @@ create table ms.chemical_lists
     type               varchar(100)
 );
 
-create table ms.chemical_list_details
+create table if not exists ch.v_chemical_lists_new
+(
+    id                 int4 not null,
+    list_name          varchar(50),
+    label              varchar(255),
+    type               varchar(50),
+    visibility         varchar(255),
+    is_visible         boolean,
+    short_description  varchar(500),
+    long_description   text,
+    chemical_count     int8,
+    created_at         timestamp,
+    created_by         varchar(255),
+    updated_at         timestamp,
+    updated_by         varchar(255),
+    import_date        timestamp,
+    export_date        timestamp
+);
+
+create table if not exists ms.chemical_list_details
 (
     id                      integer not null,
     dtxsid                  varchar(50),
@@ -192,7 +221,7 @@ create table ms.chemical_list_details
     created_by              varchar(50)
 );
 
-create table ms.chemical_synonym
+create table if not exists ms.chemical_synonym
 (
     dtxsid             varchar(45),
     pc_code            text,
@@ -202,4 +231,22 @@ create table ms.chemical_synonym
     other_synonyms     text,
     beilstein_synonyms text,
     alternate_synonyms text
+);
+
+CREATE TABLE IF NOT EXISTS ch.v_chemical_search (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    dtxsid VARCHAR(255),
+    dtxcid VARCHAR(255),
+    casrn VARCHAR(255),
+    smiles TEXT,
+    preferred_name TEXT,
+    search_group VARCHAR(50),
+    search_name VARCHAR(50),
+    search_value VARCHAR(1200),
+    modified_value VARCHAR(1200),
+    rank INT,
+    has_structure_image INT,
+    is_markush BOOLEAN,
+    created_by TEXT,
+    created_at TIMESTAMP
 );
