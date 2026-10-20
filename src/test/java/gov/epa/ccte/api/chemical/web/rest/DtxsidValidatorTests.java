@@ -12,7 +12,7 @@ public class DtxsidValidatorTests {
     private ConstraintValidatorContext context;
     
     @BeforeEach
-    private void setupEach() {
+    void setupEach() {
         validator = new DtxsidValidator();
         context = mock(ConstraintValidatorContext.class);
     }
