@@ -1,5 +1,6 @@
 package gov.epa.ccte.api.chemical.web.rest.errors;
 
+import jakarta.validation.ConstraintViolationException;
 import org.springframework.http.*;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.lang.NonNull;
@@ -12,6 +13,7 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @RestControllerAdvice
 public class APIExceptionHandler extends ResponseEntityExceptionHandler {
@@ -104,6 +106,17 @@ public class APIExceptionHandler extends ResponseEntityExceptionHandler {
     @ExceptionHandler(InvalidBatchMsReadyRequestException.class)
     ProblemDetail handleInvalidBatchMsReadyRequestException(InvalidBatchMsReadyRequestException ex) {
         return ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, ex.getMessage());
+    }
+    
+    @ExceptionHandler(ConstraintViolationException.class)
+    ProblemDetail handleConstraintViolation(ConstraintViolationException ex) {
+        // simplify the constraint violation messages into a single string
+        String detail = ex.getConstraintViolations().stream()
+                .map(violation -> violation.getMessage())
+                .distinct()
+                .sorted()
+                .collect(Collectors.joining(" "));
+        return ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, detail);
     }
 
 }
