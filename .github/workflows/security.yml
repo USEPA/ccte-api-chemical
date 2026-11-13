@@ -29,6 +29,8 @@ jobs:
           output_path: ./output/chemical-report.html
           cleanup_path: /data/watchtower/ctx-API/container-results/api-chemical/chemical-report.html
           watchtower_path: /data/watchtower/ctx-API/container-results/api-chemical
+          trivy_vulnerability_reports_url: ${{ vars.TRIVY_VULNERABILITY_REPORTS_URL }}
+          trivy_vulnerability_reports_ingest_token: ${{ secrets.TRIVY_VULNERABILITY_REPORTS_INGEST_TOKEN }}
 
   trufflehog:
     runs-on: ubuntu-latest
