@@ -22,6 +22,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 
 @Tag(name = "Chemical Search Resource", description = "Collection of endpoints for searching for chemicals across chemical names and synonyms. Search string options include starts-with, exact, or contains.")
 @SecurityRequirement(name = "api_key")
@@ -89,7 +90,7 @@ public interface ChemicalSearchApi{
     
     @Operation(summary = "Get MS-ready chemicals for a batch of mass ranges")
     @PostMapping(value = "chemical/msready/search/by-mass/", produces = MediaType.APPLICATION_JSON_VALUE)
-    HashMap<Double, List<String>> msReadyByBatchMass(@RequestBody BatchMsReadyMassForm form);
+    HashMap<Double, List<String>> msReadyByBatchMass(@Valid @RequestBody BatchMsReadyMassForm form);
     
     @Operation(summary = "Get chemicals by exact formula")
     @GetMapping(value = "chemical/search/by-exact-formula/{formula}", produces = MediaType.APPLICATION_JSON_VALUE)
